@@ -18,9 +18,7 @@ namespace Catan
 
         public List<HexTile> AdjacentHexTiles { get; } = new List<HexTile>();
 
-        public bool HasVillage { get; set; } = false;
-
-        public bool HasTown { get; set; } = false;
+        public IBuildingData Building { get; set; }
 
         public List<Edge> ConnectedEdges { get; } = new List<Edge>();
 
@@ -28,7 +26,7 @@ namespace Catan
 
         public Player? Owner { get; set; } = null;
 
-        public bool IsOwned => Owner != null;
+        public bool IsOwned => Building != null;
 
         public int Id { get; set; }
 

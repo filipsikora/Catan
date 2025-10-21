@@ -6,6 +6,7 @@ namespace Catan
 {
     internal class Program
     {
+        /*
         static void Main(string[] args)
         {
             int radius = 2;
@@ -76,8 +77,11 @@ namespace Catan
             Console.WriteLine("chuj");
 
         }
+         */
     }
+
 }
+
 
 // test
 // dostawane surowce za wioski

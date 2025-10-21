@@ -25,6 +25,8 @@ namespace Catan
 
         public List<int> FieldNumbersList { get; set; } = new List<int> { 5, 2, 6, 3, 8, 10, 9, 12, 11, 4, 8, 10, 9, 4, 5, 6, 3, 11, 12 };
 
+        public int PlayerNumber { get; set; } = 0;
+
 
         public Dictionary<EnumFieldTypes, int> FieldTypesAmount { get; set; } = new Dictionary<EnumFieldTypes, int>
         {
@@ -95,36 +97,22 @@ namespace Catan
                 {
                     foreach (Vertex vertex in hex.AdjacentVertices)
                     {
-                        if (vertex.IsOwned)
+                       int worth = vertex.Building?.Worth ?? 0;
+
+                        var resourceType = hex.GetResourceType();
+
+                        if (resourceType.HasValue)
                         {
-                            int worth = 0;
-
-                            if (vertex.HasTown)
-                            {
-                                worth = 2;
-                            }
-
-                            if (vertex.HasVillage)
-                            {
-                                worth = 1;
-                            }
-
-                            var resourceType = hex.GetResourceType();
-
-                            if (resourceType.HasValue)
-                            {
-                                vertex.Owner.Resources.AddCards(this, resourceType.Value, worth);
-                                Console.WriteLine($"{vertex.Owner.Name} gets {worth} of {resourceType}");
-                            }
+                            vertex.Owner.Resources.AddCards(this, resourceType.Value, worth);
                         }
                     }
                 }
             }
         }
 
-        public void ReadyPlayer(int playerNumber)
+        public void ReadyPlayer()
         {
-            for (int i = 1; i <= playerNumber; i++)
+            for (int i = 1; i <= PlayerNumber; i++)
             {
                 string name = $"Player{i}";
                 Player player = new Player(name);
@@ -138,6 +126,8 @@ namespace Catan
                 PlayerList = PlayerList.OrderBy(_ => Random.Next()).ToList();
             }
         }
+
+        /*
 
         public void ReadyBoard()
         {
@@ -188,7 +178,7 @@ namespace Catan
 
             if (vertex == null)
             {
-                Console.WriteLine("No edge with this ID exists.");
+                Console.WriteLine("No vertex with this ID exists.");
                 return false;
             }
 
@@ -214,7 +204,7 @@ namespace Catan
             var village = new BuildingVillage(player, vertex.X, vertex.Y, vertex);
             player.Buildings.Add(village);
 
-            vertex.HasVillage = true;
+            vertex.Building = village;
             vertex.Owner = player;
 
             Console.WriteLine($"{player.Name} has built a village on the vertex {vertex.Id}");
@@ -269,7 +259,7 @@ namespace Catan
                 return false;
             }
 
-            if (!(vertex.Owner == player && vertex.HasVillage))
+            if (!(vertex.Owner == player && vertex.Building is BuildingVillage))
             {
                 Console.WriteLine($"You need to choose a village owned by you.");
                 return false;
@@ -277,14 +267,13 @@ namespace Catan
 
             PayCost<BuildingTown>(player);
 
+            var village = vertex.Building;
+            player.Buildings.Remove((Building)village);
+
             var town = new BuildingTown(player, vertex.X, vertex.Y, vertex);
             player.Buildings.Add(town);
 
-            var village = player.Buildings.FirstOrDefault(b => b is BuildingVillage v && v.Vertex == vertex); 
-            player.Buildings.Remove(village);
-
-            vertex.HasVillage = false;
-            vertex.HasTown = true;
+            vertex.Building = town;
 
             Console.WriteLine($"{player.Name} has upgraded his village on the vertex {vertex.Id}");
             return true;
@@ -377,7 +366,7 @@ namespace Catan
                 var village = new BuildingVillage(player, vertex.X, vertex.Y, vertex);
                 player.Buildings.Add(village);
 
-                vertex.HasVillage = true;
+                vertex.Building = village;
                 vertex.Owner = player;
                 villagePlaced = true;
 
@@ -437,5 +426,7 @@ namespace Catan
         {
             Console.WriteLine($"{player.Name} won with {player.Points}.");
         }
+        */
     }
+        
 }

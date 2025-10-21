@@ -16,5 +16,7 @@ namespace Catan
         public static string Name { get; } = "Town";
 
         public Vertex Vertex { get; set; } = vertex;
+
+        public int Worth { get; } = 2;
     }
 }
