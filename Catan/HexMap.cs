@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -88,6 +87,14 @@ namespace Catan
                 corners.Add((vx, vy));
             }
             return corners;
+        }
+
+        public void ConvertHexToPixel(float size)
+        {
+            foreach (var h in HexDictionary.Values)
+            {
+                (h.X, h.Y) = AxialToPixel(h.Q, h.R, size);
+            }
         }
 
         public void GenerateVerticesInPixel(float size, int quant = 1000)
@@ -194,6 +201,8 @@ namespace Catan
                 }
             }
 
+        /*
+
         public void DrawVertices(float minX, float minY, float maxX, float maxY, int width, int height, char[,] grid)
         {
 
@@ -206,9 +215,9 @@ namespace Catan
                 if (v.IsOwned)
                 {
 
-                    if (v.Owner.Name == "Player1") displayChar = v.HasTown ? 'A' : 'a';
-                    else if (v.Owner.Name == "Player2") displayChar = v.HasTown ? 'B' : 'b';
-                    else if (v.Owner.Name == "Player3") displayChar = v.HasTown ? 'C' : 'c';
+                    if (v.Owner.Name == "Player1") displayChar = v.Building is BuildingTown ? 'A' : 'a';
+                    else if (v.Owner.Name == "Player2") displayChar = v.Building is BuildingTown ? 'B' : 'b';
+                    else if (v.Owner.Name == "Player3") displayChar = v.Building is BuildingTown ? 'C' : 'c';
                     else displayChar = '?';
 
                 }
@@ -265,14 +274,6 @@ namespace Catan
             }
         }
 
-        public void ConvertHexToPixel(float size)
-        {
-            foreach (var h in HexDictionary.Values)
-            {
-                (h.X, h.Y) = AxialToPixel(h.Q, h.R, size);
-            }
-        }
-
         public void DrawBoard(float size)
         {
             float minX = Vertices.Values.Min(v => v.X);
@@ -301,5 +302,7 @@ namespace Catan
                 Console.WriteLine();
             }
         }
+
+        */
     }
 }

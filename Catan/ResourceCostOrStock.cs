@@ -39,6 +39,8 @@ namespace Catan
             return true;
         }
 
+        /*
+
         public void ShowResources()
         {
             foreach (var entry in ResourceDictionary)
@@ -46,6 +48,8 @@ namespace Catan
                 Console.WriteLine($"{entry.Key}: {entry.Value}.");
             }
         }
+
+        */
 
         public void SubtractCards(ResourceCostOrStock other)
         {
