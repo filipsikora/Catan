@@ -1,19 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Catan
 {
-    class HexMap
+    public class HexMap
     {
         public Dictionary<(int q, int r), HexTile> HexDictionary { get; } = new();
 
+        public List<HexTile> HexList { get; set; } = new List<HexTile>();
+
         public Dictionary<(int q, int r), Vertex> Vertices { get; } = new();
 
-        public List<Edge> Edges { get; set; } = new();
+        public List<Vertex> VertexList { get; set; } = new List<Vertex>();
+
+        public List<Edge> Edges { get; set; } = new List<Edge>();
+
+        public Vertex? GetVertexById(int id) => VertexList.FirstOrDefault(v => v.Id == id);
+
+        public Edge? GetEdgeById(int id) => Edges.FirstOrDefault(e => e.Id == id);
+
 
         private static readonly (int dq, int dr)[] Offsets = new (int, int)[]
         {
@@ -32,17 +42,17 @@ namespace Catan
 
         public void GenerateHexesInAxial()
         {
-            int thisHex = 0;
-            for (int q = -Radius; q <= Radius; q++)
+            int hexID = 1;
+            for (int r = -Radius; r <= Radius; r++)
             {
-                int id = thisHex;
-                int r1 = Math.Max(-Radius, -q - Radius);
-                int r2 = Math.Min(Radius, -q + Radius);
-                for (int r = r1; r <= r2; r++)
+                int q1 = Math.Max(-Radius, -r - Radius);
+                int q2 = Math.Min(Radius, -r + Radius);
+                for (int q = q1; q <= q2; q++)
                 {
-                    HexTile h = new HexTile(q, r, thisHex);
+                    HexTile h = new HexTile(q, r, hexID);
                     HexDictionary[(q, r)] = h;
-                    thisHex++;
+                    HexList.Add(h);
+                    hexID++;
                 }
             }
         }
@@ -86,11 +96,13 @@ namespace Catan
             foreach (var hex in HexDictionary.Values)
             {
                 var corners = GetHexCorners(hex.Q, hex.R, size);
+
                 foreach (var (x, y) in corners)
                 {
                     int kx = (int)Math.Round(x * quant);
                     int ky = (int)Math.Round(y * quant);
                     var key = (kx, ky);
+
                     if (!Vertices.ContainsKey(key))
                     {
                         Vertices[key] = new Vertex(x, y, quant);
@@ -99,6 +111,56 @@ namespace Catan
                         Vertices[key].AdjacentHexTiles.Add(hex);
                 } 
             }
+        }
+
+        public void AddVerticesToHex(float size, int quant = 1000)
+        {
+            foreach (var hex in HexDictionary.Values)
+            {
+                var corners = GetHexCorners(hex.Q, hex.R, size);
+
+                foreach (var (x, y) in corners)
+
+                {
+                    int kx = (int)Math.Round(x * quant);
+                    int ky = (int)Math.Round(y * quant);
+                    var key = (kx, ky);
+
+                    var vertex = Vertices[key];
+
+                    if (!hex.AdjacentVertices.Contains(vertex))
+                    {
+                        hex.AdjacentVertices.Add(vertex);
+                    }
+                }
+            }
+        }
+
+        public void SortAndIDVertices()
+        {
+
+            foreach (var entry in Vertices)
+            {
+                VertexList.Add(entry.Value);
+            }
+
+            VertexList = VertexList.OrderBy(v => v.Y).ThenBy(v => v.X).ToList();
+
+            for (int index = 0; index < VertexList.Count; index++)
+            {
+                VertexList[index].Id = index + 1;
+            }
+
+        }
+
+        public void SortAndIDEdges()
+        {
+                Edges = Edges.OrderBy(e => e.Y).ThenBy(e => e.X).ToList();
+
+                for (int index = 0; index < Edges.Count; index++)
+                {
+                    Edges[index].Id = index + 1;
+                }
         }
 
         public void GenerateEdgesInPixels(float size, int quant = 1000)
@@ -134,11 +196,32 @@ namespace Catan
 
         public void DrawVertices(float minX, float minY, float maxX, float maxY, int width, int height, char[,] grid)
         {
-            foreach (var v in Vertices.Values)
+
+            char letter = 'A';
+
+            foreach (var v in VertexList)
             {
+                char displayChar;
+
+                if (v.IsOwned)
+                {
+
+                    if (v.Owner.Name == "Player1") displayChar = v.HasTown ? 'A' : 'a';
+                    else if (v.Owner.Name == "Player2") displayChar = v.HasTown ? 'B' : 'b';
+                    else if (v.Owner.Name == "Player3") displayChar = v.HasTown ? 'C' : 'c';
+                    else displayChar = '?';
+
+                }
+
+                else
+                {
+                    displayChar = letter;
+                    letter++;
+                }
+
                 int gx = (int)((v.X - minX) / (maxX - minX) * (width - 1));
                 int gy = (int)((v.Y - minY) / (maxY - minY) * (height - 1));
-                grid[gy, gx] = 'X';
+                grid[gy, gx] = displayChar;
             }
         }
 
@@ -146,19 +229,39 @@ namespace Catan
         {
             foreach (var e in Edges)
             {
-                int gx = (int)((e.X - minX) / (maxX - minX) * (width - 1));
+
+                char letter = (char)('0' + (e.Id % 10));
+                Console.WriteLine(letter);
+
+                if (e.IsOwned)
+                {
+                    if (e.Owner.Name == "Player1")
+                    {
+                        letter = '1';
+                    }
+                    if (e.Owner.Name == "Player2")
+                    {
+                        letter = '2';
+                    }
+                    if (e.Owner.Name == "Player3")
+                    {
+                        letter = '3';
+                    }
+                }
+                    int gx = (int)((e.X - minX) / (maxX - minX) * (width - 1));
                 int gy = (int)((e.Y - minY) / (maxY - minY) * (height - 1));
-                grid[gy, gx] = '+';
+                grid[gy, gx] = letter;
             }
         }
 
         public void DrawHexes(float minX, float minY, float maxX, float maxY, int width, int height, char[,] grid)
         {
+            char letter = '*';
             foreach (var h in HexDictionary.Values)
             {
                 int gx = (int)((h.X - minX) / (maxX - minX) * (width - 1));
                 int gy = (int)((h.Y - minY) / (maxY - minY) * (height - 1));
-                grid[gy, gx] = 'H';
+                grid[gy, gx] = letter;
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Reflection.Metadata.Ecma335;
 
 namespace Catan
 
@@ -18,19 +19,66 @@ namespace Catan
 
             game.Map.GenerateVerticesInPixel(hexSize);
 
+            game.Map.AddVerticesToHex(hexSize);
+
             game.Map.GenerateEdgesInPixels(hexSize);
+
+            game.Map.SortAndIDVertices();
+
+            game.Map.SortAndIDEdges();
 
             game.Map.DrawBoard(hexSize);
 
+            game.ReadyBoard();
+
+            Console.WriteLine(game.Map.HexList.Count());
+
             Console.WriteLine(game.Map.Edges.Count());
 
-            var vertex = game.Map.Vertices.Values.First();  // bierzesz pierwszy wierzchołek    
-            var neighbors = vertex.NeighbourVertices;       // to zwraca listę sąsiadów
+            Console.WriteLine(game.Map.VertexList.Count());
 
-            foreach (var n in neighbors)
+            game.ReadyPlayer(2);
+
+
+            for (int i = 0; i < 2; i++)
             {
-                Console.WriteLine($"Sąsiad wierzchołka ({vertex.X}, {vertex.Y}) -> ({n.X}, {n.Y})");
+
+                foreach (Player player in game.PlayerList)
+                {
+
+                    game.FirstVillagesAndRoads(player);
+
+                    game.Map.DrawBoard(hexSize);
+
+                }
             }
+                            
+            while (!game.AnyoneHasTenPoints)
+            {
+
+                foreach (Player player in game.PlayerList)
+                {
+
+                    game.RollAndServePlayers();
+
+                    game.LetPlayerChoose(player);
+
+                    player.Resources.ShowResources();
+
+                    game.WinCheck(player);
+
+                    game.Map.DrawBoard(hexSize);
+
+                }
+            }
+
+
+            Console.WriteLine("chuj");
+
         }
     }
 }
+
+// test
+// dostawane surowce za wioski
+// next turn

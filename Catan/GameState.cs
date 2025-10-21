@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Catan.Catan;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,18 +7,11 @@ using System.Threading.Tasks;
 
 namespace Catan
 {
-    internal class GameState
+    public class GameState
     {
         public List<Player> PlayerList { get; set; } = new List<Player>();
 
-        public Dictionary<EnumFieldTypes, int> Bank { get; set; } = new Dictionary<EnumFieldTypes, int>()
-        {
-            { EnumFieldTypes.Wheat, 19 },
-            { EnumFieldTypes.Wood, 19 },
-            { EnumFieldTypes.Wool, 19 },
-            { EnumFieldTypes.Stone, 19 },
-            { EnumFieldTypes.Clay, 19 }
-        };
+        public ResourceCostOrStock Bank { get; set; } = new ResourceCostOrStock(19, 19, 19, 19, 19);
 
         public bool AnyoneHasTenPoints { get; set; } = false;
 
@@ -25,9 +19,24 @@ namespace Catan
 
         public int? LastRoll { get; set; } = null;
 
-        public int Turn { get; set; } = 0;
+        public int Turn { get; set; } = 1;
 
         public HexMap? Map { get; set; } = null;
+
+        public List<int> FieldNumbersList { get; set; } = new List<int> { 5, 2, 6, 3, 8, 10, 9, 12, 11, 4, 8, 10, 9, 4, 5, 6, 3, 11, 12 };
+
+
+        public Dictionary<EnumFieldTypes, int> FieldTypesAmount { get; set; } = new Dictionary<EnumFieldTypes, int>
+        {
+            { EnumFieldTypes.Wheat, 4 },
+            { EnumFieldTypes.Wood, 4 },
+            { EnumFieldTypes.Wool, 4 },
+            { EnumFieldTypes.Stone, 3 },
+            { EnumFieldTypes.Clay, 3 },
+            { EnumFieldTypes.Desert, 1 }
+        };
+
+        public List<EnumFieldTypes> FieldTypesList { get; set; } = new List<EnumFieldTypes>();
 
 
         public GameState(HexMap map)
@@ -36,27 +45,397 @@ namespace Catan
         }
 
 
-        public void AddResource(Player player, EnumFieldTypes type, int amount)
+        public void ReadyFieldList()
         {
-            if (!Bank.ContainsKey(type) || amount <= 0)
+
+            foreach (var entry in FieldTypesAmount)
             {
-                Console.WriteLine("Invalid request.");
+                int i = FieldTypesAmount[entry.Key];
+                {
+                    for (int value = 1; value <= i; value++)
+                    {
+                        FieldTypesList.Add(entry.Key);
+                    }
+                }
             }
 
-            int available = Bank[type];
-            int toGive = Math.Min(available, amount);
+            FieldTypesList = FieldTypesList.OrderBy(_ => Random.Next()).ToList();
+        }
 
-            Bank[type] -= toGive;
-            player.Resources[type] += toGive;
+        public void GiveHexesData(List<HexTile> hexList)
+        {
+            int numberIndex = 0;
+            for (int index = 0; index < hexList.Count; index++)
+            {
+                hexList[index].FieldType = FieldTypesList[index];
 
-            if (toGive < amount)
-            {
-                Console.WriteLine($"There was not enough {type} in the bank, {player.Name} received {toGive} {type}.");
+                if (hexList[index].FieldType != EnumFieldTypes.Desert)
+                {
+                    hexList[index].FieldNumber = FieldNumbersList[numberIndex];
+                    numberIndex++;
+                }
             }
-            else
+        }
+
+        public void RollDice()
+        {
+            int diceOne = Random.Next(1, 7);
+            int diceTwo = Random.Next(1, 7);
+
+            LastRoll = diceOne + diceTwo;
+        }
+
+        public void RollAndServePlayers()
+        {
+            RollDice();
+
+            foreach (HexTile hex in Map.HexList)
             {
-                Console.WriteLine($"{player.Name} received {toGive} {type}.");
+                if (hex.FieldNumber == LastRoll)
+                {
+                    foreach (Vertex vertex in hex.AdjacentVertices)
+                    {
+                        if (vertex.IsOwned)
+                        {
+                            int worth = 0;
+
+                            if (vertex.HasTown)
+                            {
+                                worth = 2;
+                            }
+
+                            if (vertex.HasVillage)
+                            {
+                                worth = 1;
+                            }
+
+                            var resourceType = hex.GetResourceType();
+
+                            if (resourceType.HasValue)
+                            {
+                                vertex.Owner.Resources.AddCards(this, resourceType.Value, worth);
+                                Console.WriteLine($"{vertex.Owner.Name} gets {worth} of {resourceType}");
+                            }
+                        }
+                    }
+                }
             }
+        }
+
+        public void ReadyPlayer(int playerNumber)
+        {
+            for (int i = 1; i <= playerNumber; i++)
+            {
+                string name = $"Player{i}";
+                Player player = new Player(name);
+                PlayerList.Add(player);
+
+                foreach (var key in player.Resources.ResourceDictionary.Keys)
+                {
+                    player.Resources.ResourceDictionary[key] = 7;
+                }
+
+                PlayerList = PlayerList.OrderBy(_ => Random.Next()).ToList();
+            }
+        }
+
+        public void ReadyBoard()
+        {
+            ReadyFieldList();
+            GiveHexesData(Map.HexList);
+        }
+
+        public bool CheckConstructionCondition<T>(Player player, IPositionData position)
+            where T : Building, IBuildingData
+        {
+
+            if (!player.Resources.CanAfford(T.Cost))
+            {
+                Console.WriteLine($"{player.Name} can't afford to build a {T.Name}.");
+                return false;
+            }
+
+            if (!player.HasAvailable<T>())
+            {
+                Console.WriteLine($"{player.Name} has no more {T.Name}s left to build.");
+                return false;
+            }
+
+            if (!position.AccessibleByPlayer(player))
+            {
+                Console.WriteLine($"{player.Name} has no access to this location.");
+                return false;
+            }
+
+            return true;
+        }
+
+        public void PayCost<T>(Player player)
+            where T : Building, IBuildingData
+        {
+
+            foreach (var resource in T.Cost.ResourceDictionary.Keys)
+            {
+                player.Resources.ResourceDictionary[resource] -= T.Cost.ResourceDictionary[resource];
+                Bank.ResourceDictionary[resource] += T.Cost.ResourceDictionary[resource];
+            }
+        }
+
+        public bool BuildVillage(Player player, int id)
+        {
+            Vertex vertex = Map.GetVertexById(id);
+            int turn = Turn;
+
+            if (vertex == null)
+            {
+                Console.WriteLine("No edge with this ID exists.");
+                return false;
+            }
+
+            if (!CheckConstructionCondition<BuildingVillage>(player, vertex))
+            {
+                return false;
+            }
+
+            if (vertex.IsOwned)
+            {
+                Console.WriteLine("This spot is already occupied.");
+                return false;
+            }
+
+            if (!vertex.NoSettlementsInRange())
+            {
+                Console.WriteLine("There is a settlement too close to this spot.");
+                return false;
+            }
+             
+            PayCost<BuildingVillage>(player);
+
+            var village = new BuildingVillage(player, vertex.X, vertex.Y, vertex);
+            player.Buildings.Add(village);
+
+            vertex.HasVillage = true;
+            vertex.Owner = player;
+
+            Console.WriteLine($"{player.Name} has built a village on the vertex {vertex.Id}");
+            return true;
+        }
+
+        public bool BuildRoad(Player player, int id)
+        {
+            Edge? edge = Map.GetEdgeById(id);
+
+            if (edge == null)
+            {
+                Console.WriteLine("No edge with this ID exists.");
+                return false;
+            }
+
+            if (!CheckConstructionCondition<BuildingRoad>(player, edge))
+            {
+                return false;
+            }
+
+            if (edge.IsOwned)
+            {
+                Console.WriteLine("This spot is already occupied.");
+                return false;
+            }
+
+            PayCost<BuildingRoad>(player);
+
+            var road = new BuildingRoad(player, edge.X, edge.Y, edge);
+            player.Buildings.Add(road);
+
+            edge.Owner = player;
+
+            Console.WriteLine($"{player.Name} has built a road on the edge {edge.Id}");
+            return true;
+        }
+
+        public bool UpgradeToCity(Player player, int id)
+        {
+            Vertex vertex = Map.GetVertexById(id);
+            int turn = Turn;
+
+            if (vertex == null)
+            {
+                Console.WriteLine("No edge with this ID exists.");
+                return false;
+            }
+
+            if (!CheckConstructionCondition<BuildingTown>(player, vertex))
+            {
+                return false;
+            }
+
+            if (!(vertex.Owner == player && vertex.HasVillage))
+            {
+                Console.WriteLine($"You need to choose a village owned by you.");
+                return false;
+            }
+
+            PayCost<BuildingTown>(player);
+
+            var town = new BuildingTown(player, vertex.X, vertex.Y, vertex);
+            player.Buildings.Add(town);
+
+            var village = player.Buildings.FirstOrDefault(b => b is BuildingVillage v && v.Vertex == vertex); 
+            player.Buildings.Remove(village);
+
+            vertex.HasVillage = false;
+            vertex.HasTown = true;
+
+            Console.WriteLine($"{player.Name} has upgraded his village on the vertex {vertex.Id}");
+            return true;
+        }
+
+        public void LetPlayerChoose(Player player)
+        {
+            bool activeTurn = true;
+
+            Console.WriteLine($"{player.Name}'s turn: " +
+              $"1 - build a road" +
+              $"2 - build a village" +
+              $"3 - upgrade a village" +
+              $"4 - end turn");
+
+            while (activeTurn)
+            { 
+
+                string decision = Console.ReadLine();
+
+                if (decision != "4")
+                {
+                    Console.WriteLine($"Give the position's ID:");
+                }
+
+                string stringId = Console.ReadLine();
+                int id = int.Parse(stringId);
+
+                switch (decision)
+                {
+                    case "1":
+
+                        BuildRoad(player, id);
+                        break;
+
+                    case "2":
+
+                        BuildVillage(player, id);
+                        break;
+
+                    case "3":
+
+                        UpgradeToCity(player, id);
+                        break;
+
+                    case "4":
+                        activeTurn = false;
+                        player.Points = player.CountPoints();
+                        break;
+
+                    default:
+                        Console.WriteLine("Invalid choice, try again.");
+                        break;
+
+                }
+            }
+        }
+
+        public void FirstVillagesAndRoads(Player player)
+        {
+            Vertex vertex = null;
+            bool villagePlaced = false;
+            while (!villagePlaced)
+            {
+                Console.WriteLine($"{player.Name} chooses where to place his free village:");
+
+                string stringvertexid = Console.ReadLine();
+                int vertexid = int.Parse(stringvertexid);
+
+                vertex = Map.GetVertexById(vertexid);
+
+                if (vertex == null)
+                {
+                    Console.WriteLine("No vertex with this ID exists.");
+                    continue;
+                }
+
+                if (vertex.IsOwned)
+                {
+                    Console.WriteLine("This spot is already occupied.");
+                    continue;
+                }
+
+                if (!vertex.NoSettlementsInRange())
+                {
+                    Console.WriteLine("There is a settlement too close to this spot.");
+                    continue;
+                }
+
+                var village = new BuildingVillage(player, vertex.X, vertex.Y, vertex);
+                player.Buildings.Add(village);
+
+                vertex.HasVillage = true;
+                vertex.Owner = player;
+                villagePlaced = true;
+
+                Console.WriteLine($"{player.Name} has built a village on the vertex {vertex.Id}");
+                break;
+            }
+
+            bool roadPLaced = false;
+            while (!roadPLaced)
+            {
+                Console.WriteLine($"{player.Name} chooses where to place his free road:");
+
+                string stringedgeid = Console.ReadLine();
+                int edgeid = int.Parse(stringedgeid);
+
+                Edge? edge = Map.GetEdgeById(edgeid);
+
+                if (edge == null)
+                {
+                    Console.WriteLine("No edge with this ID exists.");
+                    continue;
+                }
+
+                if (edge.IsOwned)
+                {
+                    Console.WriteLine("This spot is already occupied.");
+                    continue;
+                }
+
+                if (!edge.IsNextToVertex(vertex))
+                {
+                    Console.WriteLine("The road needs to be placed next to the latest village.");
+                    continue;
+                }
+
+                var road = new BuildingRoad(player, edge.X, edge.Y, edge);
+                player.Buildings.Add(road);
+
+                edge.Owner = player;
+                roadPLaced = true;
+
+                Console.WriteLine($"{player.Name} has built a village on the edge {edge.Id}");
+                break;
+            }
+        }
+
+        public void WinCheck(Player player)
+        {
+            if (player.Points > 9)
+            {
+                AnyoneHasTenPoints = true;
+                GameOver(player);
+            }
+        }
+
+        public void GameOver(Player player)
+        {
+            Console.WriteLine($"{player.Name} won with {player.Points}.");
         }
     }
 }

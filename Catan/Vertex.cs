@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Catan
 {
-    class Vertex
+    public class Vertex : IPositionData
     {
         public int KeyX { get; }
 
@@ -18,13 +18,19 @@ namespace Catan
 
         public List<HexTile> AdjacentHexTiles { get; } = new List<HexTile>();
 
-        public bool HasSettlement { get; set; } = false;
+        public bool HasVillage { get; set; } = false;
+
+        public bool HasTown { get; set; } = false;
 
         public List<Edge> ConnectedEdges { get; } = new List<Edge>();
 
         public List<Vertex> NeighbourVertices => ConnectedEdges.Select(e => e.VertexA == this ? e.VertexB : e.VertexA).ToList();
 
         public Player? Owner { get; set; } = null;
+
+        public bool IsOwned => Owner != null;
+
+        public int Id { get; set; }
 
 
         public Vertex(float x, float y, int quant = 1000)
@@ -35,7 +41,19 @@ namespace Catan
         }
 
 
-        public bool HasAccessToVertex(Player player)
+        public bool NoSettlementsInRange()
+        {
+            foreach (var vertex in NeighbourVertices)
+            {
+                if (vertex.IsOwned)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public bool AccessibleByPlayer(Player player)
         {
             return (Owner == player) || (ConnectedEdges.Any(e => e.Owner == player));
         }

@@ -10,7 +10,6 @@ namespace Catan
 {
     public abstract class Building
     {
-        public List<int> Cost { get; set; }
 
         public float X { get; set; }
 
@@ -24,10 +23,8 @@ namespace Catan
             X = x;
             Y = y;
             Owner = owner;
-            Cost = new List<int>();
         }
 
         
-
     }
 }

@@ -1,13 +1,15 @@
-﻿using System;
+﻿using Catan.Catan;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Catan
 {
-    class HexTile
+    public class HexTile
     {
         public int Q { get; }
 
@@ -44,7 +46,19 @@ namespace Catan
             return $"Hex ({Q}, {R}) - {FieldNumber}, {FieldType}";
         }
 
-
+        public EnumResourceTypes? GetResourceType()
+        {
+            return FieldType switch
+            {
+                EnumFieldTypes.Wheat => EnumResourceTypes.Wheat,
+                EnumFieldTypes.Wood => EnumResourceTypes.Wood,
+                EnumFieldTypes.Wool => EnumResourceTypes.Wool,
+                EnumFieldTypes.Stone => EnumResourceTypes.Stone,
+                EnumFieldTypes.Clay => EnumResourceTypes.Clay,
+                EnumFieldTypes.Desert => null,
+                _ => null
+            };
+        }
 
     }
 }

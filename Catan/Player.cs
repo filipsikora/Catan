@@ -14,47 +14,38 @@ namespace Catan
 
         public int Points { get; set; } = 0;
 
-        public int VillagesLeft { get; set; } = 5;
+        public List<Building> Buildings = new();
 
-        public int TownsLeft { get; set; } = 4;
-
-        public int RoadsLeft { get; set; } = 15;
-
-        public Dictionary<EnumFieldTypes, int> Resources { get; set; } = new Dictionary<EnumFieldTypes, int>()
-        {
-            { EnumFieldTypes.Wheat, 0 },
-            { EnumFieldTypes.Wood, 0 },
-            { EnumFieldTypes.Wool, 0 },
-            { EnumFieldTypes.Stone, 0 },
-            { EnumFieldTypes.Clay, 0 }
-        };
+        public ResourceCostOrStock Resources { get; set; } = new ResourceCostOrStock();
 
 
         public Player(string? name)
         {
             Name = name;
+            Resources = new ResourceCostOrStock() { Name = name };
         }
 
 
-        public bool CanAfford(Building building)
+        public int BuildingCount<T>()
+            where T : Building
         {
-            var resourceValues = Enum.GetValues(typeof(EnumResourceTypes)).ToL
+            return Buildings.Count(b => b is T);
+        }
 
-            for (int i = 0; i < resourceValues.Count; i++)
-            {
-                if (resourceValues[i] < building.Cost[i])
-                    return false;
-            }
-            return true;
-        } ZAMIENIC BUILDING COST NA SLOWNIK I TUTAJ POROWNAC PO KISACH
-            pozmywac naczynia
+        public bool HasAvailable<T>()
+            where T : Building, IBuildingData
+        {
+            return BuildingCount<T>() < T.MaxPerPlayer;
+        }
 
         public int CountPoints()
         {
-            int townPoints = (4 - TownsLeft) * 2;
-            int villagesPoints = (5 - VillagesLeft) * 1;
+            int villagesPoints = BuildingCount<BuildingVillage>();
+            int townPoints = BuildingCount<BuildingTown>() * 2;
+            int points = villagesPoints + townPoints;
+            Points = points;
 
-            return (villagesPoints + townPoints);
+            return points;
         }
    }
 }

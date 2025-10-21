@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Catan
 {
-    internal class Edge
+    public class Edge : IPositionData
     {
         public Vertex VertexA { get; }
 
@@ -17,6 +17,14 @@ namespace Catan
         public float X { get; set; }
 
         public float Y { get; set; }
+
+        public int Id { get; set; }
+
+        public bool IsNextToVertex(Vertex vertex)
+        {
+            return VertexA == vertex || VertexB == vertex;
+        }
+
 
 
         public Edge(Vertex a, Vertex b)
@@ -32,9 +40,9 @@ namespace Catan
         }
 
 
-        public bool HasAccessToEdge(Player player)
+        public bool AccessibleByPlayer(Player player)
         {
-            return VertexA.HasAccessToVertex(player) || VertexB.HasAccessToVertex(player);
+            return VertexA.AccessibleByPlayer(player) || VertexB.AccessibleByPlayer(player);
         }
 
         public Player? RoadOwner()
