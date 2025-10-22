@@ -1,9 +1,11 @@
 ﻿using Catan.Catan;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Catan
 {
@@ -43,7 +45,7 @@ namespace Catan
         {
             foreach (var entry in ResourceDictionary)
             {
-                Console.WriteLine($"{entry.Key}: {entry.Value}.");
+                Debug.Log($"{entry.Key}: {entry.Value}.");
             }
         }
 
@@ -60,7 +62,7 @@ namespace Catan
 
             if (!game.Bank.ResourceDictionary.ContainsKey(type) || amount <= 0)
             {
-                Console.WriteLine("Invalid request.");
+                Debug.Log("Invalid request.");
                 return;
             }
 
@@ -72,12 +74,12 @@ namespace Catan
 
             if (available < amount)
             {
-                Console.WriteLine($"Not enough {type} in the bank, {Name} received {toGive} {type}.");
+                Debug.Log($"Not enough {type} in the bank, {Name} received {toGive} {type}.");
             }
 
             else
             {
-                Console.WriteLine($"{Name} received {toGive} {type}."); 
+                Debug.Log($"{Name} received {toGive} {type}."); 
             }
         }
     }

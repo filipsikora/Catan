@@ -15,5 +15,11 @@ namespace Catan
         public static string Name { get; } = "Road";
 
         public Edge Edge { get; set; } = edge;
+<<<<<<< Updated upstream
+=======
+
+        public static int Worth { get; } = 0;
+
+>>>>>>> Stashed changes
     }
 }

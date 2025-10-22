@@ -16,5 +16,10 @@ namespace Catan
         public static string Name { get; } = "Town";
 
         public Vertex Vertex { get; set; } = vertex;
+<<<<<<< Updated upstream
+=======
+
+        public static int Worth { get; } = 2;
+>>>>>>> Stashed changes
     }
 }

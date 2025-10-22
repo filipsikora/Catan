@@ -13,5 +13,10 @@ namespace Catan
         static abstract int MaxPerPlayer { get; }
 
         static abstract string Name { get; }
+<<<<<<< Updated upstream
+=======
+
+        static abstract int Worth { get; } 
+>>>>>>> Stashed changes
     } 
 }
