@@ -1,9 +1,11 @@
 ﻿using Catan.Catan;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Catan
 {
@@ -114,7 +116,7 @@ namespace Catan
                             if (resourceType.HasValue)
                             {
                                 vertex.Owner.Resources.AddCards(this, resourceType.Value, worth);
-                                Console.WriteLine($"{vertex.Owner.Name} gets {worth} of {resourceType}");
+                                Debug.Log($"{vertex.Owner.Name} gets {worth} of {resourceType}");
                             }
                         }
                     }
@@ -149,21 +151,25 @@ namespace Catan
             where T : Building, IBuildingData
         {
 
-            if (!player.Resources.CanAfford(T.Cost))
+            var cost = BuildingDataRegistry.Cost[typeof(T)];
+            var name = BuildingDataRegistry.Name[typeof(T)];
+            var max = BuildingDataRegistry.MaxPerPlayer[typeof(T)];
+
+            if (!player.Resources.CanAfford(cost))
             {
-                Console.WriteLine($"{player.Name} can't afford to build a {T.Name}.");
+                Debug.Log($"{player.Name} can't afford to build a {name}.");
                 return false;
             }
 
             if (!player.HasAvailable<T>())
             {
-                Console.WriteLine($"{player.Name} has no more {T.Name}s left to build.");
+                Debug.Log($"{player.Name} has no more {name}s left to build.");
                 return false;
             }
 
             if (!position.AccessibleByPlayer(player))
             {
-                Console.WriteLine($"{player.Name} has no access to this location.");
+                Debug.Log($"{player.Name} has no access to this location.");
                 return false;
             }
 
@@ -173,11 +179,12 @@ namespace Catan
         public void PayCost<T>(Player player)
             where T : Building, IBuildingData
         {
+            var cost = BuildingDataRegistry.Cost[typeof(T)];
 
-            foreach (var resource in T.Cost.ResourceDictionary.Keys)
+            foreach (var resource in cost.ResourceDictionary.Keys)
             {
-                player.Resources.ResourceDictionary[resource] -= T.Cost.ResourceDictionary[resource];
-                Bank.ResourceDictionary[resource] += T.Cost.ResourceDictionary[resource];
+                player.Resources.ResourceDictionary[resource] -= cost.ResourceDictionary[resource];
+                Bank.ResourceDictionary[resource] += cost.ResourceDictionary[resource];
             }
         }
 
@@ -188,7 +195,7 @@ namespace Catan
 
             if (vertex == null)
             {
-                Console.WriteLine("No edge with this ID exists.");
+                Debug.Log("No edge with this ID exists.");
                 return false;
             }
 
@@ -199,13 +206,13 @@ namespace Catan
 
             if (vertex.IsOwned)
             {
-                Console.WriteLine("This spot is already occupied.");
+                Debug.Log("This spot is already occupied.");
                 return false;
             }
 
             if (!vertex.NoSettlementsInRange())
             {
-                Console.WriteLine("There is a settlement too close to this spot.");
+                Debug.Log("There is a settlement too close to this spot.");
                 return false;
             }
              
@@ -217,7 +224,7 @@ namespace Catan
             vertex.HasVillage = true;
             vertex.Owner = player;
 
-            Console.WriteLine($"{player.Name} has built a village on the vertex {vertex.Id}");
+            Debug.Log($"{player.Name} has built a village on the vertex {vertex.Id}");
             return true;
         }
 
@@ -227,7 +234,7 @@ namespace Catan
 
             if (edge == null)
             {
-                Console.WriteLine("No edge with this ID exists.");
+                Debug.Log("No edge with this ID exists.");
                 return false;
             }
 
@@ -238,7 +245,7 @@ namespace Catan
 
             if (edge.IsOwned)
             {
-                Console.WriteLine("This spot is already occupied.");
+                Debug.Log("This spot is already occupied.");
                 return false;
             }
 
@@ -249,7 +256,7 @@ namespace Catan
 
             edge.Owner = player;
 
-            Console.WriteLine($"{player.Name} has built a road on the edge {edge.Id}");
+            Debug.Log($"{player.Name} has built a road on the edge {edge.Id}");
             return true;
         }
 
@@ -260,7 +267,7 @@ namespace Catan
 
             if (vertex == null)
             {
-                Console.WriteLine("No edge with this ID exists.");
+                Debug.Log("No edge with this ID exists.");
                 return false;
             }
 
@@ -271,7 +278,7 @@ namespace Catan
 
             if (!(vertex.Owner == player && vertex.HasVillage))
             {
-                Console.WriteLine($"You need to choose a village owned by you.");
+                Debug.Log($"You need to choose a village owned by you.");
                 return false;
             }
 
@@ -286,15 +293,16 @@ namespace Catan
             vertex.HasVillage = false;
             vertex.HasTown = true;
 
-            Console.WriteLine($"{player.Name} has upgraded his village on the vertex {vertex.Id}");
+            Debug.Log($"{player.Name} has upgraded his village on the vertex {vertex.Id}");
             return true;
         }
 
+        /*
         public void LetPlayerChoose(Player player)
         {
             bool activeTurn = true;
 
-            Console.WriteLine($"{player.Name}'s turn: " +
+            Debug.Log($"{player.Name}'s turn: " +
               $"1 - build a road" +
               $"2 - build a village" +
               $"3 - upgrade a village" +
@@ -307,7 +315,7 @@ namespace Catan
 
                 if (decision != "4")
                 {
-                    Console.WriteLine($"Give the position's ID:");
+                    Debug.Log($"Give the position's ID:");
                 }
 
                 string stringId = Console.ReadLine();
@@ -424,6 +432,8 @@ namespace Catan
             }
         }
 
+        */
+
         public void WinCheck(Player player)
         {
             if (player.Points > 9)
@@ -435,7 +445,7 @@ namespace Catan
 
         public void GameOver(Player player)
         {
-            Console.WriteLine($"{player.Name} won with {player.Points}.");
+            Debug.Log($"{player.Name} won with {player.Points}.");
         }
     }
 }
