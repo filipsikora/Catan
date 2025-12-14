@@ -18,10 +18,11 @@ namespace Catan
         {
             _handler = new HandlerMonopolyCard(Game, EventBus);
             _binder = new BinderCardSelection(UI, EventBus);
-            _binder.Bind();
 
             VisualsUI.SetMainAndPlayerUIVisibility(false, UI.MainUIPanel, UI.PlayerUIPanel);
             UI.CardSelectorPanel.Show("Choose resource to steal from the other players", yearOfPlenty);
+
+            _binder.Bind();
 
             EventBus.Subscribe<ResourceSelectedSignal>(OnResourceSelected);
 

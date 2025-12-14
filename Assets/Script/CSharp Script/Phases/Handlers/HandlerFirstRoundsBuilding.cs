@@ -29,8 +29,6 @@ namespace Catan.Core
 
         private void OnVertexClicked(VertexClickedSignal signal)
         {
-            UnityEngine.Debug.Log($"OnVertexClicked fired: villagePlaced={villagePlaced}, vertex={signal.VertexId}");
-
             if (villagePlaced)
                 return;
 
@@ -61,10 +59,6 @@ namespace Catan.Core
 
         private void OnVillageRequested(RequestBuildVillageSignal signal)
         {
-            if (SelectedVertexId == null)
-            {
-                UnityEngine.Debug.Log("chuj");
-            }   
             
             int id = SelectedVertexId.Value;
             var vertex = Game.Map.GetVertexById(id);

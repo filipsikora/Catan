@@ -1,7 +1,9 @@
 ﻿using Catan.Communication;
 using Catan.Communication.Signals;
 using Catan.Core;
+using System.Diagnostics;
 using System.Reflection;
+using UnityEngine;
 
 namespace Catan
 {
@@ -21,10 +23,11 @@ namespace Catan
         {
             _handler = new HandlerDevelopmentCards(Game, Manager.EventBus);
             _binder = new BinderDevelopmentCards(UI, Manager.EventBus);
-            _binder.Bind();
 
             VisualsUI.SetMainAndPlayerUIVisibility(false, UI.MainUIPanel, UI.PlayerUIPanel);
             UI.DevelopmentCardsPanel.Show(CurrentPlayer, _afterRoll);
+
+            _binder.Bind();
 
             Manager.EventBus.Subscribe<DevelopmentCardsCanceledSignal>(OnDevelopmentCardsCanceled);
 
@@ -44,6 +47,9 @@ namespace Catan
 
         private void OnDevelopmentCardsCanceled(DevelopmentCardsCanceledSignal signal)
         {
+            UnityEngine.Debug.Log("chuj");
+            UnityEngine.Debug.Log($"{_afterRoll}");
+
             Handler.TransitionTo(_afterRoll ? new NormalRound() : new BeforeRoll());
         }
 

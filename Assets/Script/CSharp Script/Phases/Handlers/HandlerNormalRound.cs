@@ -143,7 +143,7 @@ namespace Catan.Core
 
             foreach (int id in Game.CurrentPlayer.DevelopmentCardsByID)
             {
-                DevelopmentCard card = Game.DevelopmentCardsDeck.Find(c => c.ID == id);
+                DevelopmentCard card = Game.DevelopmentCardsDeckAll.Find(c => c.ID == id);
                 card.IsNew = false;
             }
 

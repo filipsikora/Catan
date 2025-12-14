@@ -19,6 +19,8 @@ namespace Catan
 
         public override void OnEnter()
         {
+            Debug.Log($"{Game.CurrentPlayer} chooses a hex to block");
+
             _handler = new HandlerRobberPlacing(Game, Manager.EventBus);
 
             Manager.EventBus.Subscribe<RobberPlacedSignal>(OnRobberPlaced);
@@ -34,6 +36,8 @@ namespace Catan
             if (signal.VictimsIds.Count == 0)
             {
                 Debug.Log("No victim to steal from");
+
+                VisualsUI.SetMainAndPlayerUIVisibility(true, UI.MainUIPanel, UI.PlayerUIPanel);
 
                 Handler.TransitionTo(_afterRoll ? new NormalRound() : new BeforeRoll());
             }

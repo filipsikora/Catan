@@ -90,7 +90,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65a48a4cd36295548a57ce4f44c060b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ResourceCardVisual
-  Type: 0
   Container: {fileID: 0}
 --- !u!114 &326843210572590437
 MonoBehaviour:

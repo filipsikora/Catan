@@ -17,10 +17,11 @@ namespace Catan
         {
             _handler = new HandlerNormalRound(Game, EventBus);
             _binder = new BinderNormalRound(UI, EventBus);
-            _binder.Bind();
 
             UI.UpdatePlayerInfo(Game.CurrentPlayer);
             VisualsUI.ShowNextTurnUI(UI.MainUIPanel);
+
+            _binder.Bind();
 
             EventBus.Subscribe<TradeOfferPossibleSignal>(OnTradePossible);
             EventBus.Subscribe<TradeOfferConfirmedSignal>(OnTradeConfirmed);
@@ -129,6 +130,8 @@ namespace Catan
             UI.HideTradeOfferButton();
             UI.UpdatePlayerInfo(Game.CurrentPlayer);
             UI.UpdateTurnCounter(Game.Turn);
+
+            Handler.TransitionTo(new BeforeRoll());
         }
 
         private void OnDevelopmentCardBought(DevelopmentCardBoughtSignal signal)

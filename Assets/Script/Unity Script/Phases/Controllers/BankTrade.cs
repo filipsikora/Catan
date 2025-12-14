@@ -13,10 +13,11 @@ namespace Catan
         {
             _handler = new HandlerBankTrade(Game, EventBus);
             _binder = new BinderBankTrade(UI, EventBus);
-            _binder.Bind();
 
             VisualsUI.SetMainAndPlayerUIVisibility(false, UI.MainUIPanel, UI.PlayerUIPanel);
             UI.BankTradePanel.Show();
+
+            _binder.Bind();
 
             EventBus.Subscribe<BankTradeCompletedSignal>(OnTradeFinished);
             EventBus.Subscribe<BankTradeRatioChangedSignal>(OnRatioChanged);

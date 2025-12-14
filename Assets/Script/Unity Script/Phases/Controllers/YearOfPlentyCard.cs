@@ -18,10 +18,11 @@ namespace Catan
         {
             _handler = new HandlerYearOfPlentyCard(Game, EventBus);
             _binder = new BinderCardSelection(UI, EventBus);
-            _binder.Bind();
 
             VisualsUI.SetMainAndPlayerUIVisibility(false, UI.MainUIPanel, UI.PlayerUIPanel);
             UI.CardSelectorPanel.Show("Choose two resources to get for free", yearOfPlenty);
+
+            _binder.Bind();
 
             EventBus.Subscribe<ReviewDesiredCardsChangedSignal>(OnDesiredCardsChanged);
 

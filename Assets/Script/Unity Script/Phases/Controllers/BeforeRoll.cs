@@ -14,14 +14,14 @@ namespace Catan
         {
             _handler = new HandlerBeforeRoll(Game, Manager.EventBus);
             _binder = new BinderBeforeRoll(UI, Manager.EventBus);
-            _binder.Bind();
 
             UI.UpdatePlayerInfo(CurrentPlayer);
 
-            VisualsUI.SetMainAndPlayerUIVisibility(false, UI.MainUIPanel, UI.PlayerUIPanel);
-
+            VisualsUI.SetMainAndPlayerUIVisibility(true, UI.MainUIPanel, UI.PlayerUIPanel);
             VisualsUI.ShowRollDiceUI(UI.MainUIPanel);
             UI.MainUIPanel.DevelopmentCardsButton.gameObject.SetActive(true);
+
+            _binder.Bind();
 
             Manager.EventBus.Subscribe<DevelopmentCardsShownSignal>(OnDevelopmentCardsShown);
             Manager.EventBus.Subscribe<DiceRolledSignal>(OnDiceRolled);

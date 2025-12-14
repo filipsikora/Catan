@@ -24,10 +24,11 @@ namespace Catan
         {
             _handler = new HandlerTradeOffer(Game, Manager.EventBus);
             _binder = new BinderTradeOffer(UI, Manager.EventBus);
-            _binder.Bind();
 
             VisualsUI.SetMainAndPlayerUIVisibility(false, UI.MainUIPanel, UI.PlayerUIPanel);
             UI.TradeOfferPanel.Show();
+
+            _binder.Bind();
 
             Manager.EventBus.Subscribe<ReviewDesiredCardsChangedSignal>(OnDesiredCardsChanged);
             Manager.EventBus.Subscribe<TradeOfferCanceledSignal>(OnTradeOfferCanceled);

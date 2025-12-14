@@ -31,6 +31,8 @@ namespace Catan
             VisualsUI.SetMainAndPlayerUIVisibility(false, UI.MainUIPanel, UI.PlayerUIPanel);
             UI.TradeRequestPanel.Show(_player, _cardsOffered, _cardsRequested);
 
+            _binder.Bind();
+
             Manager.EventBus.Subscribe<TradeFinishedSignal>(OnTradeFinished);
             Manager.EventBus.Subscribe<TradeRequestSentSignal>(OnTradeRequestSent);
         }

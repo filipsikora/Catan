@@ -10,8 +10,6 @@ namespace Catan
 
         public override void Bind()
         {
-            Debug.Log("BinderFirstRoundBuildings.Bind()");
-
             UI.MainUIPanel.Bind(EnumMainUIButtons.BuildFreeVillage, () =>
             {
                 Bus.Publish(new RequestBuildVillageSignal());
@@ -30,8 +28,6 @@ namespace Catan
 
         public override void Unbind()
         {
-            Debug.Log("BinderFirstRoundBuildings.Unbind()");
-
             UI.MainUIPanel.Unbind(EnumMainUIButtons.BuildFreeVillage);
             UI.MainUIPanel.Unbind(EnumMainUIButtons.BuildFreeRoad);
             UI.MainUIPanel.Unbind(EnumMainUIButtons.NextTurn);

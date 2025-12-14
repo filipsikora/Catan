@@ -14,15 +14,10 @@ namespace Catan
 
         public override void OnEnter()
         {
-            Debug.Log("FirstRoundsBuilding.OnEnter START");
-
             _handler = new HandlerFirstRoundsBuilding(Game, EventBus);
-            Debug.Log("Handler instance created");
-
             _binder = new BinderFirstRoundBuildings(UI, EventBus);
-            _handler.Activate();
-            Debug.Log("Handler activated");
 
+            _handler.Activate();
             _binder.Bind();
 
             UI.PlayerUIPanel.UpdatePlayerInfo(CurrentPlayer);
@@ -38,7 +33,6 @@ namespace Catan
             EventBus.Subscribe<RoadPlacedSignal>(OnRoadBought);
 
             EventBus.Subscribe<TurnEndedSignal>(OnNextTurnClicked);
-            Debug.Log("FirstRoundHandler chuj");
         }
 
         private void OnVertexClicked(VertexHighlightedSignal signal)
@@ -114,8 +108,6 @@ namespace Catan
             EventBus.Unsubscribe<RoadPlacedSignal>(OnRoadBought);
 
             EventBus.Unsubscribe<TurnEndedSignal>(OnNextTurnClicked);
-
-            Debug.Log("FirstRoundHandler DISPOSED");
         }
     }
 }

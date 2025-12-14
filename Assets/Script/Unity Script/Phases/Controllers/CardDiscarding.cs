@@ -20,10 +20,11 @@ namespace Catan
         {
             _handler = new HandlerCardDiscarding(Game, Manager.EventBus);
             _binder = new BinderCardDiscarding(UI, Manager.EventBus);
-            _binder.Bind();
 
             VisualsUI.SetMainAndPlayerUIVisibility(false, UI.MainUIPanel, UI.PlayerUIPanel);
             UI.CardDiscardPanel.Show();
+
+            _binder.Bind();
 
             Manager.EventBus.Subscribe<AllDiscardingCompleteSignal>(OnAllDone);
             Manager.EventBus.Subscribe<AcceptedDiscardVisibilitySignal>(OnAcceptedDiscardVisibilityChanged);

@@ -19,7 +19,8 @@ namespace Catan
 
         public ResourceCostOrStock Bank { get; set; } = new ResourceCostOrStock(19, 19, 19, 19, 19);
 
-        public List<DevelopmentCard> DevelopmentCardsDeck { get; private set; } = new();
+        public List<DevelopmentCard> DevelopmentCardsDeckAvailable { get; private set; } = new();
+        public List<DevelopmentCard> DevelopmentCardsDeckAll { get; private set; } = new();
 
         public bool AnyoneHasTenPoints { get; set; } = false;
 
@@ -489,7 +490,7 @@ namespace Catan
 
         public void PrepareDevelopmentDeck()
         {
-            DevelopmentCardsDeck.Clear();
+            DevelopmentCardsDeckAvailable.Clear();
             int id = 1;
 
             foreach (var entry in DevelopmentCardDataRegistry.TotalCount)
@@ -500,12 +501,13 @@ namespace Catan
                 for (int i = 0; i < amount; i++)
                 {
                     DevelopmentCard card = new DevelopmentCard(type, id);
-                    DevelopmentCardsDeck.Add(card);
+                    DevelopmentCardsDeckAvailable.Add(card);
+                    DevelopmentCardsDeckAll.Add(card);
                     id++;
                 }
             }
 
-            DevelopmentCardsDeck = DevelopmentCardsDeck.OrderBy(_ => Random.Next()).ToList();
+            DevelopmentCardsDeckAvailable = DevelopmentCardsDeckAvailable.OrderBy(_ => Random.Next()).ToList();
         }
 
         public DevelopmentCard BuyDevelopmentCard(Player player)
@@ -515,7 +517,7 @@ namespace Catan
             if (!Conditions.CanAfford(player.Resources, cost))
                 return null;
 
-            if (DevelopmentCardsDeck.Count == 0)
+            if (DevelopmentCardsDeckAvailable.Count == 0)
             {
                 UnityEngine.Debug.Log("No cards left");
                 return null;
@@ -527,8 +529,8 @@ namespace Catan
                 Bank.ResourceDictionary[type] += cost.ResourceDictionary[type];
             }
 
-            var card = DevelopmentCardsDeck[0];
-            DevelopmentCardsDeck.RemoveAt(0);
+            var card = DevelopmentCardsDeckAvailable[0];
+            DevelopmentCardsDeckAvailable.RemoveAt(0);
             player.DevelopmentCardsByID.Add(card.ID);
 
             card.Owner = player;
