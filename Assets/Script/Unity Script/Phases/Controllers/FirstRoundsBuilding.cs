@@ -92,7 +92,7 @@ namespace Catan
 
             if (Game.FirstRoundsIndices.Count != 0)
             {
-                Handler.TransitionTo(() => new FirstRoundsBuilding());
+                Handler.TransitionTo(new FirstRoundsBuilding());
             }
 
             else

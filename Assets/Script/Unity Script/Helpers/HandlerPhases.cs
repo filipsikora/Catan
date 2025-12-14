@@ -20,18 +20,5 @@ namespace Catan
 
             CurrentPhase.OnEnter();
         }
-
-        public void TransitionTo(Func<GamePhase> phaseFactory)
-        {
-            Debug.Log($"PHASE TRANSITION (SAFE FACTORY): {CurrentPhase?.GetType().Name} → {phaseFactory.Method.Name}");
-
-            CurrentPhase?.OnExit();
-
-            var newPhase = phaseFactory();
-            newPhase.Handler = this;
-
-            newPhase.OnEnter();
-            CurrentPhase = newPhase;
-        }
     }
 }

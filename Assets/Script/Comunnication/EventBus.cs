@@ -5,45 +5,61 @@ namespace Catan.Communication
 {
     public class EventBus
     {
-        private readonly Dictionary<Type, List<Action<object>>> _subscribers =
-            new Dictionary<Type, List<Action<object>>>();
+        private readonly Dictionary<Type, List<Subscription>> _subscribers = new();
+
+        private class Subscription
+        {
+            public object Target;
+            public Delegate Callback;
+            public Action<object> Wrapper;
+        }
 
         public void Subscribe<T>(Action<T> callback)
         {
             var type = typeof(T);
 
-            if (!_subscribers.ContainsKey(type))
-                _subscribers[type] = new List<Action<object>>();
+            if (!_subscribers.TryGetValue(type, out var list))
+            {
+                list = new List<Subscription>();
+                _subscribers[type] = list;
+            }
 
-            _subscribers[type].Add(obj => callback((T)obj));
+            var wrapper = new Action<object>(obj => callback((T)obj));
+
+            list.Add(new Subscription
+            {
+                Target = callback.Target,
+                Callback = callback,
+                Wrapper = wrapper
+            });
         }
 
         public void Unsubscribe<T>(Action<T> callback)
         {
             var type = typeof(T);
 
-
             if (!_subscribers.TryGetValue(type, out var list))
                 return;
 
-            list.RemoveAll(wrapper =>
-            {
-                var method = wrapper.Method;
+            list.RemoveAll(sub =>
+                sub.Callback == (Delegate)callback &&
+                sub.Target == callback.Target
+            );
 
-                return method == callback.Method;
-            });
+            if (list.Count == 0)
+                _subscribers.Remove(type);
         }
 
         public void Publish<T>(T signal)
         {
             var type = typeof(T);
 
-            if (!_subscribers.TryGetValue(type, out var callbacks))
+            if (!_subscribers.TryGetValue(type, out var list))
                 return;
 
-            foreach (var cb in callbacks.ToArray())
+            foreach (var sub in list.ToArray())
             {
-                cb(signal);
+                sub.Wrapper(signal);
             }
         }
     }
