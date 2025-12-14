@@ -1,8 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.36518.9 d17.14
-MinimumVisualStudioVersion = 10.0.40219.1
+# Visual Studio 15
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{C4738008-B38B-A26D-412F-A4FE1EAA2FF2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Editor", "Assembly-CSharp-Editor.csproj", "{9A5B950A-957B-94FD-AE1F-C45609D44400}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catan", "Catan\Catan.csproj", "{3B302DA9-50FF-478D-8756-A77E98916FD0}"
 EndProject
 Global
@@ -11,6 +13,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C4738008-B38B-A26D-412F-A4FE1EAA2FF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4738008-B38B-A26D-412F-A4FE1EAA2FF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4738008-B38B-A26D-412F-A4FE1EAA2FF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4738008-B38B-A26D-412F-A4FE1EAA2FF2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A5B950A-957B-94FD-AE1F-C45609D44400}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A5B950A-957B-94FD-AE1F-C45609D44400}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A5B950A-957B-94FD-AE1F-C45609D44400}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A5B950A-957B-94FD-AE1F-C45609D44400}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3B302DA9-50FF-478D-8756-A77E98916FD0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3B302DA9-50FF-478D-8756-A77E98916FD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B302DA9-50FF-478D-8756-A77E98916FD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -18,8 +28,5 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {BA8B810F-86E3-445C-B4BE-4CD8C2873133}
 	EndGlobalSection
 EndGlobal

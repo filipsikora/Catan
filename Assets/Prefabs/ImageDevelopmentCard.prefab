@@ -275,7 +275,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.71359915, g: 0.79622644, b: 0.79042137, a: 1}
+  m_Color: {r: 0.7137255, g: 0.7921569, b: 0.79607844, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -336,8 +336,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: Catan.VisualResourceCard, Assembly-CSharp
+      - m_Target: {fileID: 2511075036531635703}
+        m_TargetAssemblyTypeName: Catan.VisualDevelopmentCard, Assembly-CSharp
         m_MethodName: OnCardClicked
         m_Mode: 1
         m_Arguments:
@@ -363,8 +363,8 @@ MonoBehaviour:
   Type: 0
   KnightSprite: {fileID: 21300000, guid: a6a765aef75947442a19abc1b8106663, type: 3}
   VictoryPointSprite: {fileID: 21300000, guid: 1c71ff14e8c167046859a656b077a924, type: 3}
+  CardBackground: {fileID: 1077793686861666447}
   Icon: {fileID: 7542650473234769349}
-  ImageColorCard: {fileID: 0}
   Name: {fileID: 2204336572608996733}
   Label: {fileID: 5225997841203446553}
 --- !u!1 &2548256174889808525
