@@ -13,8 +13,6 @@ namespace Catan.Core
 {
     public class HandlerDevelopmentCards : BaseHandler
     {
-        private readonly List<int> DevelopmentCardsByID = new();
-
         public HandlerDevelopmentCards(GameState game, EventBus bus) : base(game, bus)
         {
             Bus.Subscribe<DevelopmentCardClickedSignal>(OnDevelopmentCardClicked);
@@ -22,9 +20,7 @@ namespace Catan.Core
 
         public void OnDevelopmentCardClicked(DevelopmentCardClickedSignal signal)
         {
-            VisualDevelopmentCard cardVisual = signal.Card;
-            DevelopmentCard cardModel = cardVisual.LinkedCard;
-            int cardID = cardModel.ID;
+            DevelopmentCard cardModel = Game.DevelopmentCardsDeckAll.Find(d => d.ID == signal.DevelopmentCardId);
 
             if (!cardModel.IsNew)
             {

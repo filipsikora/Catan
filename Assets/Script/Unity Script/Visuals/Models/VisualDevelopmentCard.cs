@@ -26,7 +26,7 @@ namespace Catan
 
         public void OnCardClicked()
         {
-            ManagerGame.Instance.EventBus.Publish(new DevelopmentCardClickedSignal(this));  
+            ManagerGame.Instance.EventBus.Publish(new DevelopmentCardClickedSignal(LinkedCard.ID));  
         }
 
         public void SetupVisuals()

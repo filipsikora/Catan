@@ -19,6 +19,12 @@ namespace Catan
 
         public FactoryResourceCards CardFactory;
 
+        public void Awake()
+        {
+            RegisterButton(EnumTradeRequestUIButtons.AcceptTradeRequest, AcceptTradeButton);
+            RegisterButton(EnumTradeRequestUIButtons.RefuseTradeRequest, RefuseTradeButton);
+        }
+
         public void Show(Player offeredPlayer, ResourceCostOrStock offeredCards, ResourceCostOrStock desiredCards)
         {
             Player offeringPLayer = ManagerGame.Instance.Game.CurrentPlayer;

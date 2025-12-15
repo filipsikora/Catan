@@ -40,6 +40,9 @@ namespace Catan
 
             EventBus.Subscribe<DevelopmentCardBoughtSignal>(OnDevelopmentCardBought);
             EventBus.Subscribe<DevelopmentCardsShownSignal>(OnDevelopmentCardsShown);
+
+            EventBus.Publish(new TradeOfferPossibleSignal(false));
+            EventBus.Publish(new MultipleResourceCardVisualStateChangedResetSignal(EnumResourceCardLocation.PlayerHand));
         }
 
         private void OnTradePossible(TradeOfferPossibleSignal signal)

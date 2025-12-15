@@ -47,10 +47,10 @@ namespace Catan.Communication.Signals
 
     public class DevelopmentCardClickedSignal
     {
-        public VisualDevelopmentCard Card;
-        public DevelopmentCardClickedSignal(VisualDevelopmentCard card)
+        public int DevelopmentCardId;
+        public DevelopmentCardClickedSignal(int developmentCardId)
         {
-            Card = card;
+            DevelopmentCardId = developmentCardId;
         }
     }
 

@@ -61,7 +61,7 @@ namespace Catan
             _cards.Remove(card.VisualResourceCardId);
         }
 
-        private VisualResourceCard? GetVisualResourceCardById(int id)
+        public VisualResourceCard? GetVisualResourceCardById(int id)
         {
             _cards.TryGetValue(id, out var card);
 

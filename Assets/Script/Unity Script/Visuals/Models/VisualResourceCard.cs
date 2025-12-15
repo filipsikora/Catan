@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using Catan.Communication.Signals;
 using Catan.Core;
+using System;
 
 namespace Catan
 {
@@ -38,6 +39,11 @@ namespace Catan
         public override string ToString()
         {
             return $"Card: {Type}, {VisualResourceCardId}";
+        }
+
+        internal VisualResourceCard First()
+        {
+            throw new NotImplementedException();
         }
     }
 }

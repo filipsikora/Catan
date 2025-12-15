@@ -109,8 +109,6 @@ namespace Catan
 
         wybor imienia i koloru
 
-        zaznaczane vertices przechodza nextturn
-
         rozmiar kart na panelach
 
         refaktor unity
@@ -123,11 +121,13 @@ namespace Catan
 
         check reosurces max after roll + extract to a method - resourcecost.addcards/addsingletype
 
-        signals remove visuals
-
         data separation
 
         auto register auto binder auto subscribe
+
+        nullable cleanup
+
+        remove peeking into game frmo ui
         */
 
 

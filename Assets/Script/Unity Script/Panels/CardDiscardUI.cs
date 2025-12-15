@@ -23,8 +23,6 @@ namespace Catan
         {
             VisualsUI.ClearContainer(CardsContainer);
 
-            CardFactory.ResetIds();
-
             gameObject.SetActive(true);
             ConfirmDiscardButton.gameObject.SetActive(false);
         }
