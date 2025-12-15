@@ -2,6 +2,7 @@ using Catan.Catan;
 using Catan.Communication;
 using Catan.Communication.Signals;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEditor;
@@ -53,17 +54,15 @@ namespace Catan
             }
         }
 
-        public void OnDesiredUpdated(ResourceCostOrStock cardsDesired)
+        public void DrawVisualResourceCardInReview(EnumResourceTypes type)
         {
-            VisualsUI.ClearContainer(CardsReviewContainer);
+            CardFactory.DrawResourceCard(type, EnumResourceCardLocation.ReviewTrade, CardsReviewContainer);
+        }
 
-            foreach (var (type, amount) in cardsDesired.ResourceDictionary)
-            {
-                for (int i = 0; i < amount; i++)
-                {
-                    CardFactory.DrawResourceCard(type, EnumResourceCardLocation.ReviewTrade, CardsReviewContainer);
-                }
-            }
+        public void DestroyVisualResourceCardInReview(EnumResourceTypes type)
+        {
+            VisualResourceCard card = CardsReviewContainer.GetComponentsInChildren<VisualResourceCard>().First(c => c.Type == type);
+            Destroy(card.gameObject);
         }
     }
 }

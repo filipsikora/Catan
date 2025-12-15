@@ -38,7 +38,7 @@ namespace Catan
             {
                 foreach (var id in player.DevelopmentCardsByID)
                 {
-                    DevelopmentCard card = ManagerGame.Instance.Game.DevelopmentCardsDeckAvailable.Find(c => c.ID == id);
+                    DevelopmentCard card = ManagerGame.Instance.Game.DevelopmentCardsDeckAll.Find(c => c.ID == id);
 
                     if (card.Type == EnumDevelopmentCardTypes.Knight)
                     {

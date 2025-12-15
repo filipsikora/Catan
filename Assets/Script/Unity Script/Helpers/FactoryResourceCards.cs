@@ -12,14 +12,15 @@ namespace Catan
     {
 
         public GameObject ResourceCardPrefab;
+        private int _nextVisualId = 0;
 
-        public ResourceCard DrawResourceCard(EnumResourceTypes type, EnumResourceCardLocation location, Transform parent, bool visible = true)
+        public VisualResourceCard DrawResourceCard(EnumResourceTypes type, EnumResourceCardLocation location, Transform parent, bool visible = true)
         {
             GameObject cardObject = Instantiate(ResourceCardPrefab, parent);
             var cardVisual = cardObject.GetComponent<VisualResourceCard>();
 
-            var cardModel = new ResourceCard(type, location);
-            cardVisual.Initialize(cardModel);
+            cardVisual.Initialize(location, _nextVisualId++, type);
+            ManagerGame.Instance.HandlerResourceCardsUI.Register(cardVisual);
 
             var image = cardObject.transform.Find("ImageColorCard")?.GetComponent<Image>();
             
@@ -37,7 +38,12 @@ namespace Catan
                 }
             }
 
-            return cardModel;
+            return cardVisual;
+        }
+
+        public void ResetIds()
+        {
+            _nextVisualId = 0;
         }
     }
 }

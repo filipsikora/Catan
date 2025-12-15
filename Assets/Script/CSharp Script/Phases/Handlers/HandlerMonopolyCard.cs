@@ -20,18 +20,19 @@ namespace Catan.Core
 
         private void OnResourceCardClicked(ResourceCardClickedSignal signal)
         {
-            EnumResourceTypes type = signal.Card.LinkedCard.Type;
-
-            if (!signal.IsLeftClick)
+            if (!signal.IsLeftClicked)
                 return;
 
-            if (_type == type)
+            if (_type == signal.Type)
             {
                 _type = null;
+                Bus.Publish(new MultipleResourceCardVisualStateChangedResetSignal(signal.Location));
             }
             else
             {
-                _type = type;
+                _type = signal.Type;
+                Bus.Publish(new MultipleResourceCardVisualStateChangedResetSignal(signal.Location));
+                Bus.Publish(new ResourceCardVisualStateChangedSignal(signal.VisualResourceCardId, signal.Location, EnumResourceCardVisualState.Highlighted));
             }
 
             bool hasSelected = _type != null;

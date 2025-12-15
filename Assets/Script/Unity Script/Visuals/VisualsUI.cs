@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using Catan.Catan;
+using JetBrains.Annotations;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
@@ -24,9 +25,22 @@ namespace Catan
             Debug.Log($"{card} up");
         }
 
-        public static void MoveResourceCardDown(VisualResourceCard card)
+        public static void HighlightResourceCard(VisualResourceCard card)
         {
-            Debug.Log($"{card} down");
+            Debug.Log($"{card} highlighted");
+        }
+
+        public static void ResetResourceCard(VisualResourceCard card)
+        {
+            Debug.Log($"{card} reset");
+        }
+
+        public static void ResetResourceCardsInParent(Transform container)
+        {
+            foreach (VisualResourceCard card in container)
+            {
+                ResetResourceCard(card);
+            }
         }
 
         public static void ShowNextTurnUI(MainUI ui)

@@ -11,6 +11,7 @@ namespace Catan.Core
     public class HandlerRobberPlacing : BaseHandler
     {
         private int? _hexId;
+        private bool clickableHexes = true;
 
         public HandlerRobberPlacing(GameState game, EventBus bus) : base(game, bus)
         {
@@ -19,6 +20,9 @@ namespace Catan.Core
 
         private void OnHexClicked(HexClickedSignal signal)
         {
+            if (!clickableHexes)
+                return;
+
             _hexId = signal.HexId;
             HexTile hex = Game.Map.HexList.Find(h => h.Id == _hexId);
 
@@ -34,6 +38,8 @@ namespace Catan.Core
             victims.Remove(Game.CurrentPlayer);
 
             var victimIds = victims.Select(v => Game.PlayerList.IndexOf(v)).ToList();
+
+            clickableHexes = false;
 
             Bus.Publish(new RobberPlacedSignal(victimIds, hex.Id));
         }

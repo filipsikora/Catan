@@ -30,11 +30,13 @@ namespace Catan.Communication.Signals
 
     public class ReviewDesiredCardsChangedSignal
     {
-        public ResourceCostOrStock CardsDesired { get; }
+        public EnumResourceTypes Type { get; }
+        public EnumResourceCardLocation Location { get; set; }
         public bool HasDesired { get; }
-        public ReviewDesiredCardsChangedSignal(ResourceCostOrStock cardsDesired, bool hasDesired)
+        public ReviewDesiredCardsChangedSignal(EnumResourceTypes type, EnumResourceCardLocation location, bool hasDesired)
         {
-            CardsDesired = cardsDesired;
+            Type = type;
+            Location = location;
             HasDesired = hasDesired;
         }
     }

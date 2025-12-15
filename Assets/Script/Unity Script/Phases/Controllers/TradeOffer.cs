@@ -13,7 +13,6 @@ namespace Catan
         private BinderTradeOffer _binder;
 
         private ResourceCostOrStock _cardsOffered;
-        private ResourceCostOrStock _cardsDesired = new();
 
         public TradeOffer(ResourceCostOrStock cardsOffered)
         {
@@ -37,7 +36,18 @@ namespace Catan
 
         private void OnDesiredCardsChanged(ReviewDesiredCardsChangedSignal signal)
         {
-            UI.TradeOfferPanel.OnDesiredUpdated(signal.CardsDesired);
+            EnumResourceTypes type = signal.Type;
+
+            if (signal.Location == EnumResourceCardLocation.DesiredTrade)
+            {
+                UI.TradeOfferPanel.DrawVisualResourceCardInReview(type);
+            }
+
+            else
+            {
+                UI.TradeOfferPanel.DestroyVisualResourceCardInReview(type);
+            }
+
             UI.TradeOfferPanel.PlayersButtonsContainer.gameObject.SetActive(signal.HasDesired);
         }
 
@@ -52,6 +62,7 @@ namespace Catan
         private void OnTradePartnerChosen(TradePartnerChosenSignal signal)
         {
             var partner = Game.PlayerList.First(p => p.ID == signal.PlayerId);
+            var _cardsDesired = _handler.GetDesiredCards();
 
             UI.TradeOfferPanel.gameObject.SetActive(false);
 

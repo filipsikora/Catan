@@ -5,30 +5,46 @@ using System.Text;
 using System.Threading.Tasks;
 using Catan.Catan;
 using Catan.Core;
+using JetBrains.Annotations;
 
 namespace Catan.Communication.Signals
 {
     public class ResourceCardClickedSignal
     {
-        public VisualResourceCard Card;
-        public bool IsLeftClick { get; }
+        public int VisualResourceCardId;
+        public EnumResourceTypes Type;
+        public EnumResourceCardLocation Location;
+        public bool IsLeftClicked { get; }
 
-        public ResourceCardClickedSignal(VisualResourceCard card, bool isLeftClick)
+        public ResourceCardClickedSignal(int visualResourceCardId, EnumResourceTypes type, EnumResourceCardLocation location, bool isLeftClicked)
         {
-            Card = card;
-            IsLeftClick = isLeftClick;
+            VisualResourceCardId = visualResourceCardId;
+            Type = type;
+            Location = location;
+            IsLeftClicked = isLeftClicked;
         }
     }
 
-    public class ResourceCardSelectionChangedSignal
+    public class ResourceCardVisualStateChangedSignal
     {
-        public VisualResourceCard Card { get; }
-        public bool IsSelected { get; }
+        public int VisualResourceCardId;
+        public EnumResourceCardLocation Location;
+        public EnumResourceCardVisualState State { get; }
 
-        public ResourceCardSelectionChangedSignal(VisualResourceCard card, bool isSelected)
+        public ResourceCardVisualStateChangedSignal(int visualResourceCardId, EnumResourceCardLocation location, EnumResourceCardVisualState state)
         {
-            Card = card;
-            IsSelected = isSelected;
+            VisualResourceCardId = visualResourceCardId;
+            Location = location;
+            State = state;
+        }
+    }
+
+    public class MultipleResourceCardVisualStateChangedResetSignal
+    {
+        public EnumResourceCardLocation Location;
+        public MultipleResourceCardVisualStateChangedResetSignal(EnumResourceCardLocation location)
+        {
+            Location = location;
         }
     }
 }

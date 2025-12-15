@@ -15,6 +15,7 @@ namespace Catan.Core
         private ResourceCostOrStock _resourcesSelected = new();
         private Player _currentPlayer;
         private int _requiredResources;
+        private readonly List<int> _selectedCardsIds = new();
 
         public HandlerCardDiscarding(GameState game, EventBus bus) : base(game, bus)
         {
@@ -50,24 +51,23 @@ namespace Catan.Core
 
         private void OnResourceCardClicked(ResourceCardClickedSignal signal)
         {
-            ResourceCard cardModel = signal.Card.LinkedCard;
-
-            if (signal.IsLeftClick && cardModel.IsSelected)
+            if (signal.IsLeftClicked && _selectedCardsIds.Contains(signal.VisualResourceCardId))
             {
-                cardModel.Toggle();
-                _resourcesSelected.SubtractSingleType(cardModel.Type, 1);
+                _resourcesSelected.SubtractSingleType(signal.Type, 1);
+                _selectedCardsIds.Remove(signal.VisualResourceCardId);
+                Bus.Publish(new ResourceCardVisualStateChangedSignal(signal.VisualResourceCardId, signal.Location, EnumResourceCardVisualState.None));
             }
 
-            else if (signal.IsLeftClick && !cardModel.IsSelected)
+            else if (signal.IsLeftClicked && !_selectedCardsIds.Contains(signal.VisualResourceCardId))
             {
-                cardModel.Toggle();
-                _resourcesSelected.AddSingleType(cardModel.Type, 1);
+                _resourcesSelected.AddSingleType(signal.Type, 1);
+                _selectedCardsIds.Add(signal.VisualResourceCardId);
+                Bus.Publish(new ResourceCardVisualStateChangedSignal(signal.VisualResourceCardId, signal.Location, EnumResourceCardVisualState.Highlighted));
             }
 
             bool canDiscard = UpdateRequiredResources();
 
             Bus.Publish(new AcceptedDiscardVisibilitySignal(canDiscard));
-            Bus.Publish(new ResourceCardSelectionChangedSignal(signal.Card, cardModel.IsSelected));
         }
 
         private void OnDiscardingAccepted(DiscardingAcceptedSignal signal)

@@ -42,7 +42,7 @@ namespace Catan
             {
                 if (child.TryGetComponent(out VisualResourceCard visual))
                 {
-                    if (visual.LinkedCard.Type == type)
+                    if (visual.Type == type)
                     {
                         visual.GetComponent<Collider>().enabled = available;
                     }

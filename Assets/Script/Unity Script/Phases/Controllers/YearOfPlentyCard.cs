@@ -10,7 +10,7 @@ namespace Catan
     public class YearOfPlentyCard : GamePhase
     {
         HandlerYearOfPlentyCard _handler;
-        BinderCardSelection _binder;    
+        BinderCardSelection _binder;
 
         bool yearOfPlenty = true;
 
@@ -26,17 +26,19 @@ namespace Catan
 
             EventBus.Subscribe<ReviewDesiredCardsChangedSignal>(OnDesiredCardsChanged);
 
-            EventBus.Subscribe <YearOfPlentyFinishedSignal>(OnYearOfPlentyFinished);
+            EventBus.Subscribe<YearOfPlentyFinishedSignal>(OnYearOfPlentyFinished);
         }
 
         private void OnDesiredCardsChanged(ReviewDesiredCardsChangedSignal signal)
         {
             UI.CardSelectorPanel.AcceptCardsButton.gameObject.SetActive(signal.HasDesired);
 
+            var desired = _handler.GetDesiredCards();
+
             foreach (var entry in Game.Bank.ResourceDictionary)
             {
                 EnumResourceTypes type = entry.Key;
-                bool available = Game.Bank.ResourceDictionary[type] > signal.CardsDesired.ResourceDictionary[type];
+                bool available = Game.Bank.ResourceDictionary[type] > desired.ResourceDictionary[type];
 
                 UI.CardSelectorPanel.SetCardAvailability(type, available);
             }

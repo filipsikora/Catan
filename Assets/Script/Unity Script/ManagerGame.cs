@@ -23,6 +23,7 @@ namespace Catan
         public ManagerUI UIManager;
         public HandlerPhases? PhaseHandler { get; private set; }
         public EventBus EventBus { get; private set; }
+        public ControllerResourceCardsUI HandlerResourceCardsUI { get; private set; }
 
 
         public float Size = 1f;
@@ -55,6 +56,7 @@ namespace Catan
 
             PortColorLookup = ResourceList.ToDictionary(r => r.Type, r => r.Color);
             EventBus = new EventBus();
+            HandlerResourceCardsUI = new ControllerResourceCardsUI(EventBus);
         }
 
         void Start()
@@ -112,8 +114,6 @@ namespace Catan
         rozmiar kart na panelach
 
         refaktor unity
-
-        handel odwrotny 
 
         exceptions
 

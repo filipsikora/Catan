@@ -21,8 +21,8 @@ namespace Catan.Core
 
         private void OnCardClicked(ResourceCardClickedSignal signal)
         {
-            Game.CurrentPlayer.Resources.AddSingleType(signal.Card.LinkedCard.Type, 1);
-            _victim.Resources.SubtractSingleType(signal.Card.LinkedCard.Type, 1);
+            Game.CurrentPlayer.Resources.AddSingleType(signal.Type, 1);
+            _victim.Resources.SubtractSingleType(signal.Type, 1);
 
             Bus.Publish(new StealingFinishedSignal());
         }

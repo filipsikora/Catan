@@ -32,9 +32,8 @@ namespace Catan
 
             foreach (var key in ManagerGame.Instance.Game.Bank.ResourceDictionary.Keys)
             {
-                var offeredCardObject = ResourceCardFactory.DrawResourceCard(key, EnumResourceCardLocation.OfferedTrade, OfferedCardsContainer);
-
-                var desiredCardObject = ResourceCardFactory.DrawResourceCard(key, EnumResourceCardLocation.DesiredTrade, DesiredCardsContainer);
+                ResourceCardFactory.DrawResourceCard(key, EnumResourceCardLocation.OfferedTrade, OfferedCardsContainer);
+                ResourceCardFactory.DrawResourceCard(key, EnumResourceCardLocation.DesiredTrade, DesiredCardsContainer);
             }
         }
 

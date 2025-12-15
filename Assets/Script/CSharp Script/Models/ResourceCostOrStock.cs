@@ -107,5 +107,17 @@ namespace Catan
 
             return true;
         }
+
+        public ResourceCostOrStock Clone()
+        {
+            var copy = new ResourceCostOrStock();
+
+            foreach (var kv in ResourceDictionary)
+            {
+                copy.ResourceDictionary[kv.Key] = kv.Value;
+            }
+
+            return copy;
+        }
     }
 }

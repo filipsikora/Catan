@@ -24,14 +24,6 @@ namespace Catan
             SetupVisuals();
         }
 
-        private void Start()
-        {
-            if (LinkedCard != null)
-            {
-                SetupVisuals();
-            }
-        }
-
         public void OnCardClicked()
         {
             ManagerGame.Instance.EventBus.Publish(new DevelopmentCardClickedSignal(this));  
@@ -39,6 +31,12 @@ namespace Catan
 
         public void SetupVisuals()
         {
+            Icon.gameObject.SetActive(false);
+            Icon.sprite = null;
+            Name.text = "";
+            Label.text = "";
+            CardBackground.color = Color.white;
+
             switch (LinkedCard.Type)
             {
                 case EnumDevelopmentCardTypes.Knight:

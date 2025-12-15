@@ -4,6 +4,8 @@ using Catan.Core;
 using UnityEngine;
 using Catan.Communication.Signals;
 using System.Linq;
+using NUnit.Framework;
+using System.Collections.Generic;
 
 
 namespace Catan.Core
@@ -19,21 +21,27 @@ namespace Catan.Core
 
         private void OnResourceCardClicked(ResourceCardClickedSignal signal)
         {
-            var cardModel = signal.Card.LinkedCard;
+            if (!signal.IsLeftClicked)
+                return;
 
-            if (cardModel.Location == EnumResourceCardLocation.OfferedTrade)
+            if (signal.Location == EnumResourceCardLocation.DesiredTrade)
             {
-                _cardsDesired.AddSingleType(cardModel.Type, 1);
+                _cardsDesired.AddSingleType(signal.Type, 1);
             }
 
-            if (cardModel.Location == EnumResourceCardLocation.ReviewTrade)
+            if (signal.Location == EnumResourceCardLocation.ReviewTrade)
             {
-                _cardsDesired.SubtractSingleType(cardModel.Type, 1);
+                _cardsDesired.SubtractSingleType(signal.Type, 1);
             }
 
             bool hasDesired = _cardsDesired.ResourceDictionary.Values.Sum() > 0;
 
-            Bus.Publish(new ReviewDesiredCardsChangedSignal(_cardsDesired, hasDesired));
+            Bus.Publish(new ReviewDesiredCardsChangedSignal(signal.Type, signal.Location, hasDesired));
+        }
+
+        public ResourceCostOrStock GetDesiredCards()
+        {
+            return _cardsDesired.Clone();
         }
 
         public override void Dispose()

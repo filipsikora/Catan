@@ -3,6 +3,7 @@ using Catan.Communication;
 using Catan.Core;
 using UnityEngine;
 using Catan.Communication.Signals;
+using NUnit.Framework;
 
 
 namespace Catan.Core
@@ -20,17 +21,20 @@ namespace Catan.Core
 
         private void OnCardClicked(ResourceCardClickedSignal signal)
         {
-            var cardVisual = signal.Card;
-            var cardModel = cardVisual.LinkedCard;
-            var type = cardModel.Type;
             var player = Game.CurrentPlayer;
 
-            if (cardModel.Location == EnumResourceCardLocation.OfferedTrade)
-            {
-                _chosenResource = type;
-                _ratio = Game.FindTradeRatio(type);
+            if (signal.Location == EnumResourceCardLocation.OfferedTrade)
+            {                
+                if (_chosenResource != signal.Type)
+                {
+                    Bus.Publish(new MultipleResourceCardVisualStateChangedResetSignal(EnumResourceCardLocation.OfferedTrade));
+                    Bus.Publish(new ResourceCardVisualStateChangedSignal(signal.VisualResourceCardId, signal.Location, EnumResourceCardVisualState.Highlighted));
+                }
 
-                int amount = player.Resources.ResourceDictionary[type];
+                _chosenResource = signal.Type;
+                _ratio = Game.FindTradeRatio(signal.Type);
+
+                int amount = player.Resources.ResourceDictionary[signal.Type];
                 bool possible = amount >= _ratio;
 
                 Bus.Publish(new BankTradeRatioChangedSignal(_ratio, possible, _chosenResource));
@@ -38,7 +42,7 @@ namespace Catan.Core
                 return;
             }
 
-            else if (cardModel.Location == EnumResourceCardLocation.DesiredTrade)
+            else if (signal.Location == EnumResourceCardLocation.DesiredTrade)
             {
                 if (_chosenResource == null) 
                     return;
@@ -51,8 +55,8 @@ namespace Catan.Core
                 player.Resources.SubtractSingleType(give, _ratio);
                 Game.Bank.AddSingleType(give, _ratio);
 
-                player.Resources.AddSingleType(type, 1);
-                Game.Bank.SubtractSingleType(type, 1);
+                player.Resources.AddSingleType(signal.Type, 1);
+                Game.Bank.SubtractSingleType(signal.Type, 1);
 
                 Bus.Publish(new BankTradeCompletedSignal());
             }

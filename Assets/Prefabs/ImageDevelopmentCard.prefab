@@ -357,14 +357,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 554889442222743439}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 611180d7947821143b63fea31ad6fe98, type: 3}
+  m_Script: {fileID: 11500000, guid: 479d975be85769c43a50e5175c873266, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Catan.VisualDevelopmentCard
-  Type: 0
   KnightSprite: {fileID: 21300000, guid: a6a765aef75947442a19abc1b8106663, type: 3}
   VictoryPointSprite: {fileID: 21300000, guid: 1c71ff14e8c167046859a656b077a924, type: 3}
-  CardBackground: {fileID: 1077793686861666447}
-  Icon: {fileID: 7542650473234769349}
+  CardBackground: {fileID: 7542650473234769349}
+  Icon: {fileID: 2933093487043511574}
   Name: {fileID: 2204336572608996733}
   Label: {fileID: 5225997841203446553}
 --- !u!1 &2548256174889808525

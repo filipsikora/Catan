@@ -21,26 +21,34 @@ namespace Catan.Core
 
         private void OnResourceCardClicked(ResourceCardClickedSignal signal)
         {
-            EnumResourceTypes type = signal.Card.LinkedCard.Type;
+            EnumResourceTypes type = signal.Type;
 
-            if (signal.IsLeftClick)
-            { 
+            if (!signal.IsLeftClicked)
+            {
+                if (_cardsDesired.ResourceDictionary[type] > 0)
+                {
+                    _cardsDesired.SubtractSingleType(type, 1);
+                }
+            }
+
+            if (signal.IsLeftClicked)
+            {
                 _cardsDesired.AddSingleType(type, 1);
             }
 
-            if (!signal.IsLeftClick)
-            {
-                _cardsDesired.SubtractSingleType(type, 1);
-            }
-
-            bool canAccept = _cardsDesired.ResourceDictionary.Values.Sum() == 2;
-            Bus.Publish(new ReviewDesiredCardsChangedSignal(_cardsDesired, canAccept));
+            bool canAccept = _cardsDesired.ResourceDictionary.Values.Sum() == 2;    
+            Bus.Publish(new ReviewDesiredCardsChangedSignal(type, signal.Location, canAccept));
         }
 
         private void OnResourceSelected(CardSelectionAcceptedSignal signal)
         {
             Game.OnYearOfPlentyUsed(Game.CurrentPlayer, _cardsDesired);
             Bus.Publish(new YearOfPlentyFinishedSignal());
+        }
+
+        public ResourceCostOrStock GetDesiredCards()
+        {
+            return _cardsDesired;
         }
 
         public override void Dispose()

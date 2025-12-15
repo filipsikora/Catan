@@ -2,6 +2,8 @@
 using Catan.Communication;
 using Catan.Communication.Signals;
 using Catan.Core;
+using NUnit.Framework;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Catan.Core
@@ -10,6 +12,7 @@ namespace Catan.Core
     {
         private readonly ResourceCostOrStock _selected = new();
         private bool _afterRoll = true;
+        private readonly List<int> _selectedVisualResourceCardsIds = new();
 
         public HandlerNormalRound(GameState game, EventBus bus) : base(game, bus)
         {
@@ -32,24 +35,27 @@ namespace Catan.Core
 
         private void OnCardClicked(ResourceCardClickedSignal signal)
         {
-            var cardVisual = signal.Card;
-            var type = cardVisual.LinkedCard.Type;
+            var type = signal.Type;
 
-            if (signal.IsLeftClick && !cardVisual.IsSelected)
+            if (!signal.IsLeftClicked)
+                return;
+
+            if (!_selectedVisualResourceCardsIds.Contains(signal.VisualResourceCardId))
             {
-                cardVisual.LinkedCard.Toggle();
                 _selected.AddSingleType(type, 1);
+                _selectedVisualResourceCardsIds.Add(signal.VisualResourceCardId);
+                Bus.Publish(new ResourceCardVisualStateChangedSignal(signal.VisualResourceCardId, signal.Location, EnumResourceCardVisualState.Lifted));
             }
 
-            if (!signal.IsLeftClick && cardVisual.IsSelected)
+            else
             {
-                cardVisual.LinkedCard.Toggle();
                 _selected.SubtractSingleType(type, 1);
+                _selectedVisualResourceCardsIds.Remove(signal.VisualResourceCardId);
+                Bus.Publish(new ResourceCardVisualStateChangedSignal(signal.VisualResourceCardId, signal.Location, EnumResourceCardVisualState.None));
             }
 
             bool canTrade = _selected.ResourceDictionary.Values.Sum() > 0;
 
-            Bus.Publish(new ResourceCardSelectionChangedSignal(cardVisual, cardVisual.IsSelected));
             Bus.Publish(new TradeOfferPossibleSignal(canTrade));
         }
 
