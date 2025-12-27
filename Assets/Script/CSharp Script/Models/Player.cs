@@ -1,14 +1,8 @@
 ﻿#nullable enable
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.AccessControl;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
-using static UnityEngine.UI.GridLayoutGroup;
 
-namespace Catan
+namespace Catan.Core.Models
 {
     public class Player
     {
@@ -31,8 +25,6 @@ namespace Catan
         public int ID;
 
         public ResourceCostOrStock Resources { get; set; } = new ResourceCostOrStock();
-
-        public Color PlayerColor;
 
         public List<Port> Ports { get; set; } = new();
 
@@ -64,7 +56,6 @@ namespace Catan
         public override string ToString()
         {
             return Name ?? "Unnamed Player";
-            ;
         }
     }
 }

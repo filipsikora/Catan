@@ -1,10 +1,14 @@
-﻿using Catan.Catan;
-using System;
+﻿using Catan.Unity.Data;
+using Catan.Unity.Helpers;
+using Catan.Unity.Visuals.Models;
+using Catan.Unity.Visuals;
+using Catan.Shared.Data;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
-namespace Catan
+namespace Catan.Unity.Panels
 {
     public class BankTradeUI : VisualButton<EnumBankTradeUIButtons>
     {
@@ -23,17 +27,21 @@ namespace Catan
             RegisterButton(EnumBankTradeUIButtons.CancelBankTrade, CancelTradeButton);
         }
 
-        public void Show()
+        public void Show(Dictionary<EnumResourceTypes, bool> resourcesAvailability)
         {
             gameObject.SetActive(true);
 
             VisualsUI.ClearContainer(OfferedCardsContainer);
             VisualsUI.ClearContainer(DesiredCardsContainer);
 
-            foreach (var key in ManagerGame.Instance.Game.Bank.ResourceDictionary.Keys)
+            foreach (var (key, value) in resourcesAvailability)
             {
                 ResourceCardFactory.DrawResourceCard(key, EnumResourceCardLocation.OfferedTrade, OfferedCardsContainer);
-                ResourceCardFactory.DrawResourceCard(key, EnumResourceCardLocation.DesiredTrade, DesiredCardsContainer);
+
+                if (value == true)
+                {
+                    ResourceCardFactory.DrawResourceCard(key, EnumResourceCardLocation.DesiredTrade, DesiredCardsContainer);
+                }
             }
         }
 

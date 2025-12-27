@@ -1,15 +1,7 @@
 ﻿#nullable enable
-using Catan.Catan;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.AccessControl;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
-using static UnityEngine.UI.GridLayoutGroup;
+using Catan.Shared.Data;
 
-namespace Catan
+namespace Catan.Core.Models
 {
     public class Port
     {

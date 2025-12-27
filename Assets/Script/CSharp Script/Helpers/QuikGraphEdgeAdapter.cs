@@ -1,8 +1,7 @@
 ﻿using QuikGraph;
-using System.Collections.Generic;
-using System.Linq;
+using Catan.Core.Models;
 
-namespace Catan
+namespace Catan.Core.Helpers
 {
     public class EdgeAdapter : IEdge<Vertex>
     {

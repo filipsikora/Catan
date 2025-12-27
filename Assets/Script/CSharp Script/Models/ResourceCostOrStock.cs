@@ -1,18 +1,14 @@
 ﻿#nullable enable
-using Catan.Catan;
+using Catan.Shared.Data;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
 
-namespace Catan
+namespace Catan.Core.Models
 {
     public class ResourceCostOrStock
     {
-
         public ResourceCostOrStock(int Wheat = 0, int Wood = 0, int Wool = 0, int Stone = 0, int Clay = 0)
         {
             ResourceDictionary = new Dictionary<EnumResourceTypes, int>()
@@ -25,67 +21,69 @@ namespace Catan
             };
         }
 
-        public Dictionary<EnumResourceTypes, int> ResourceDictionary { get; set; }
+        public Dictionary<EnumResourceTypes, int> ResourceDictionary { get; }
 
         public string? Name { get; set; } = null;
 
-        public void ShowResources()
+        public int Get(EnumResourceTypes type)
         {
-            foreach (var entry in ResourceDictionary)
-            {
-                UnityEngine.Debug.Log($"{entry.Key}: {entry.Value}.");
-            }
+            return ResourceDictionary.TryGetValue(type, out var v) ? v : 0;
         }
 
-        public void SubtractCards(ResourceCostOrStock other)
+        public int SubtractUpTo(EnumResourceTypes type, int amountWanted)
         {
-            foreach (var key in ResourceDictionary.Keys.ToList())
-            {
-                ResourceDictionary[key] -= other.ResourceDictionary[key];
-            }    
+            if (amountWanted < 0)
+                return (0);
+
+            int available = Get(type);
+            int actualAmount = Math.Min(amountWanted, available);
+
+            ResourceDictionary[type] -= actualAmount;
+
+            return actualAmount;
         }
 
-        public void AddCards(ResourceCostOrStock other)
+        public void AddExactAmount(EnumResourceTypes type, int amount)
         {
-            foreach (var key in ResourceDictionary.Keys.ToList())    
-            {
-                ResourceDictionary[key] += other.ResourceDictionary[key];
-            }
-        }
+            if (amount < 0)
+                return;
 
-        public void AddSingleType(EnumResourceTypes type, int amount)
-        {
             ResourceDictionary[type] += amount;
         }
 
-        public void SubtractSingleType(EnumResourceTypes type, int amount)
+        public void SubtractExactAmount(EnumResourceTypes type, int amount)
         {
+            if (amount < 0)
+                return;
+
             ResourceDictionary[type] -= amount;
         }
 
-        public void AddCardsFromTheBank (GameState game, EnumResourceTypes type, int amount)
+        public void AddExact(ResourceCostOrStock other)
         {
-
-            if (!game.Bank.ResourceDictionary.ContainsKey(type) || amount <= 0)
+            foreach (var (type, amount) in other.ResourceDictionary)
             {
-                UnityEngine.Debug.Log("Invalid request.");
-                return;
+                if (amount < 0)
+                {
+                    Debug.Assert(amount >= 0);
+                    continue;
+                }
+
+                ResourceDictionary[type] += amount;
             }
+        }
 
-            int available = game.Bank.ResourceDictionary[type];
-            int toGive = Math.Min(amount, available);
-
-            ResourceDictionary[type] += toGive;
-            game.Bank.ResourceDictionary[type] -= toGive;
-
-            if (available < amount)
+        public void SubtractExact(ResourceCostOrStock other)
+        {
+            foreach (var (type, amount) in other.ResourceDictionary)
             {
-                UnityEngine.Debug.Log($"Not enough {type} in the bank, {Name} received {toGive} {type}.");
-            }
+                if (amount < 0)
+                {
+                    Debug.Assert(amount >= 0);
+                    continue;
+                }
 
-            else
-            {
-                UnityEngine.Debug.Log($"{Name} received {toGive} {type}."); 
+                ResourceDictionary[type] -= amount;
             }
         }
 
@@ -118,6 +116,19 @@ namespace Catan
             }
 
             return copy;
+        }
+
+        public void Clear()
+        {
+            foreach (var (key, value) in ResourceDictionary)
+            {
+                ResourceDictionary[key] = 0;
+            }
+        }
+
+        public int Total()
+        {
+            return ResourceDictionary.Values.Sum();
         }
     }
 }

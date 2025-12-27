@@ -1,17 +1,18 @@
-using Catan.Catan;
-using Catan.Communication;
-using Catan.Communication.Signals;
-using System;
-using System.Collections.Generic;
+using Catan.Shared.Data;
+using Catan.Shared.Communication;
+using Catan.Shared.Communication.Commands;
+using Catan.Unity.Visuals.Models;
+using Catan.Unity.Visuals;
+using Catan.Unity.Data;
+using Catan.Unity.Helpers;
 using System.Linq;
 using TMPro;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
-namespace Catan
+namespace Catan.Unity.Panels
 {
-
     public class TradeOfferUI : VisualButton<EnumTradeOfferUIButtons>
     {
         public Transform CardsChoiceContainer;
@@ -24,14 +25,13 @@ namespace Catan
         public GameObject PlayerButtonPrefab;
 
         private EventBus Bus => ManagerGame.Instance.EventBus;
-        private GameState Game => ManagerGame.Instance.Game;
 
         public void Awake()
         {
             RegisterButton(EnumTradeOfferUIButtons.CancelTradeOffer, CancelTradeButton);
         }
 
-        public void Show()
+        public void Show(Dictionary<int, string> potentialPartnersIds)
         {
             gameObject.SetActive(true);
 
@@ -44,13 +44,11 @@ namespace Catan
                 CardFactory.DrawResourceCard(key, EnumResourceCardLocation.DesiredTrade, CardsChoiceContainer);
             }
 
-            foreach (var player in Game.PlayerList.Where(p => p != Game.CurrentPlayer))
+            foreach (var (value, key) in potentialPartnersIds)
             {
-                int playerId = player.ID;
-
                 var buttonObj = Instantiate(PlayerButtonPrefab, PlayersButtonsContainer);
-                buttonObj.GetComponentInChildren<TextMeshProUGUI>().text = player.Name;
-                buttonObj.GetComponent<Button>().onClick.AddListener(() => Bus.Publish(new TradePartnerChosenSignal(playerId)));
+                buttonObj.GetComponentInChildren<TextMeshProUGUI>().text = potentialPartnersIds[value];
+                buttonObj.GetComponent<Button>().onClick.AddListener(() => Bus.Publish(new TradePartnerChosenCommand(value)));
             }
         }
 

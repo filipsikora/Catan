@@ -1,101 +1,87 @@
 ﻿#nullable enable
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine.UIElements;
+using Catan.Shared.Data;
+using Catan.Shared.Results;
+using Catan.Core.Interfaces;
+using Catan.Core.Models;
 
-namespace Catan
+namespace Catan.Core.Helpers
 {
     public static class Conditions
     {
-        public static bool PositionExists(int id, Func<int, IPositionData?> getPositionFunc)
+        public static ResultCondition PositionExists(int id, Func<int, IPositionData?> getPositionFunc)
         {
             var position = getPositionFunc(id);
+
             if (position == null)
             {
-                UnityEngine.Debug.Log("This position doesn't exist.");
-                return false;
+                return ResultCondition.Fail(ConditionFailureReason.NoPosition);
             }
-            return true;
+            return ResultCondition.Ok();
         }
 
-        public static bool NoSettlementsInRange(Vertex vertex)
+        public static ResultCondition NoSettlementsInRange(Vertex vertex)
         {
-
             foreach (var position in vertex.NeighbourVertices)
             {
                 if (position.IsOwned)
                 {
-                    UnityEngine.Debug.Log("There is a settlement too close to this position.");
-                    return false;
+                    return ResultCondition.Fail(ConditionFailureReason.TooCloseToSettlement);
                 }
             }
 
-            return true;
+            return ResultCondition.Ok();
         }
 
-        public static bool HasVillage(Player player, Vertex vertex)
+        public static ResultCondition HasVillage(Player player, Vertex vertex)
         {
-
             if (vertex.Owner == player && vertex.HasVillage)
             {
-                return true;
+                return ResultCondition.Ok();
             }
 
-            UnityEngine.Debug.Log("You don't own a village on this position.");
-            return false;
+            return ResultCondition.Fail(ConditionFailureReason.NotOwner);
         }
 
-        public static bool CanAfford(ResourceCostOrStock playerResources, ResourceCostOrStock cost)
+        public static ResultCondition CanAfford(ResourceCostOrStock playerResources, ResourceCostOrStock cost)
         {
-
             if (!playerResources.HasEnoughCards(cost))
-            {
-                UnityEngine.Debug.Log("You can't afford it");
-                return false;
-            }
+                return ResultCondition.Fail(ConditionFailureReason.CannotAfford);
 
-            return true;
+            return ResultCondition.Ok();
         }
 
-        public static bool HasAvailable<T>(Player player)
+        public static ResultCondition HasAvailable<T>(Player player)
             where T : Building, IBuildingData
         {
             int max = BuildingDataRegistry.MaxPerPlayer[typeof(T)];
 
             if (player.BuildingCount<T>() < max)
             {
-                return true;
+                return ResultCondition.Ok();
             }
 
-            UnityEngine.Debug.Log("No more buildings of this type available.");
-            return false;
+            return ResultCondition.Fail(ConditionFailureReason.NoBuildingsAvailable);
         }
 
-        public static bool IsNotOwned(IPositionData position)
+        public static ResultCondition IsNotOwned(IPositionData position)
         {
-
             if (position.Owner != null)
             {
-                UnityEngine.Debug.Log("Position already occupied.");
-                return false;
+                return ResultCondition.Fail(ConditionFailureReason.PositionOccupied);
             }
 
-            return true;
+            return ResultCondition.Ok();
         }
 
-        public static bool HasAccessToPosition(Player player, IPositionData position)
+        public static ResultCondition HasAccessToPosition(Player player, IPositionData position)
         {
-
             if (position.AccessibleByPlayer(player))
             {
-                return true;
+                return ResultCondition.Ok();
             }
 
-            UnityEngine.Debug.Log("No access to this position.");
-            return false;
+            return ResultCondition.Fail(ConditionFailureReason.NoAccess);
         }
     }
 }

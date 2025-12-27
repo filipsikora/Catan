@@ -1,14 +1,11 @@
 ﻿#nullable enable
-using Catan.Catan;
+using Catan.Shared.Data;
+using Catan.Core.Models;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
 
-namespace Catan
+namespace Catan.Core.Engine
 {
     public class HexMap
     {

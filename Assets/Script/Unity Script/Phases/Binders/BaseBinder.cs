@@ -1,7 +1,7 @@
-﻿using Catan.Communication;
-using Catan.Communication.Signals;
+﻿using Catan.Shared.Communication;
+using Catan.Unity.Panels;
 
-namespace Catan
+namespace Catan.Unity.Phases.Binders
 {
     public abstract class BaseBinder
     {

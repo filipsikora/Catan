@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Catan.Core.Interfaces;
 
-namespace Catan
+namespace Catan.Core.Models
 {
     public class BuildingRoad : Building, IBuildingData
     {

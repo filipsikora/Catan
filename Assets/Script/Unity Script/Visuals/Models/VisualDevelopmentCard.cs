@@ -1,10 +1,11 @@
-﻿using Catan.Catan;
-using Catan.Communication.Signals;
+﻿using Catan.Core.Models;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Catan.Shared.Communication.Commands;
+using Catan.Shared.Data;
 
-namespace Catan
+namespace Catan.Unity.Visuals.Models
 {
     public class VisualDevelopmentCard : MonoBehaviour
     {
@@ -26,7 +27,7 @@ namespace Catan
 
         public void OnCardClicked()
         {
-            ManagerGame.Instance.EventBus.Publish(new DevelopmentCardClickedSignal(LinkedCard.ID));  
+            ManagerGame.Instance.EventBus.Publish(new DevelopmentCardClickedCommand(LinkedCard.ID));  
         }
 
         public void SetupVisuals()

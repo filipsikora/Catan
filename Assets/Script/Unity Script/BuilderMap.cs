@@ -1,14 +1,15 @@
 ﻿#nullable enable
-using Catan.Catan;
+using Catan.Unity.Data;
+using Catan.Unity.Visuals.Models;
+using Catan.Shared.Data;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using TMPro;
-using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.UIElements;
+using Catan.Core.Engine;
+using Catan.Core.Models;
 
-namespace Catan
+namespace Catan.Unity
 {
     internal class BuilderMap
     {

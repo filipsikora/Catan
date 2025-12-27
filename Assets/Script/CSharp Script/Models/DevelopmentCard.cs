@@ -1,12 +1,7 @@
-﻿using Catan.Catan;
-using System;
-using System.Buffers;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿#nullable enable
+using Catan.Shared.Data;
 
-namespace Catan
+namespace Catan.Core.Models
 {
     public class DevelopmentCard
     {

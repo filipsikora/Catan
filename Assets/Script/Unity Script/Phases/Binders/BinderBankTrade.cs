@@ -1,7 +1,9 @@
-﻿using Catan.Communication;
-using Catan.Communication.Signals;
+﻿using Catan.Shared.Communication;
+using Catan.Shared.Communication.Commands;
+using Catan.Unity.Panels;
+using Catan.Unity.Data;
 
-namespace Catan
+namespace Catan.Unity.Phases.Binders
 {
     public class BinderBankTrade : BaseBinder
     {
@@ -11,7 +13,7 @@ namespace Catan
         {
             UI.BankTradePanel.Bind(EnumBankTradeUIButtons.CancelBankTrade, () =>
             {
-                Bus.Publish(new BankTradeCanceledSignal());
+                Bus.Publish(new BankTradeCanceledCommand());
             });
         }
 

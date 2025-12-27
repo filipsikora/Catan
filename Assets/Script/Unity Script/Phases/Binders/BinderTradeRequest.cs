@@ -1,8 +1,9 @@
-﻿using Catan.Communication;
-using Catan.Communication.Signals;
-using TMPro.EditorUtilities;
+﻿using Catan.Shared.Communication;
+using Catan.Shared.Communication.Commands;
+using Catan.Unity.Data;
+using Catan.Unity.Panels;
 
-namespace Catan
+namespace Catan.Unity.Phases.Binders
 {
     public class BinderTradeRequest : BaseBinder
     {
@@ -12,12 +13,12 @@ namespace Catan
         {
             UI.TradeRequestPanel.Bind(EnumTradeRequestUIButtons.AcceptTradeRequest, () =>
             {
-                Bus.Publish(new TradeRequestAcceptedSignal());
+                Bus.Publish(new TradeRequestAcceptedCommand());
             });
 
             UI.TradeRequestPanel.Bind(EnumTradeRequestUIButtons.RefuseTradeRequest, () =>
             {
-                Bus.Publish(new TradeRequestRefusedSignal());
+                Bus.Publish(new TradeRequestRefusedCommand());
             });
         }
 

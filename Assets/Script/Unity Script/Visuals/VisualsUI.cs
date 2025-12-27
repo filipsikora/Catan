@@ -1,14 +1,10 @@
 ﻿#nullable enable
-using Catan.Catan;
-using JetBrains.Annotations;
-using System.Collections.Generic;
-using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Rendering;
-using UnityEngine.UI;
+using Catan.Unity.Visuals.Models;
+using Catan.Unity.Data;
+using Catan.Unity.Panels;
 
-namespace Catan
+namespace Catan.Unity.Visuals
 {
     public static class VisualsUI
     {
@@ -37,8 +33,13 @@ namespace Catan
 
         public static void ResetResourceCardsInParent(Transform container)
         {
-            foreach (VisualResourceCard card in container)
+            foreach (Transform child in container)
             {
+                var card = child.GetComponent<VisualResourceCard>();
+
+                if (card == null)
+                    return;
+
                 ResetResourceCard(card);
             }
         }

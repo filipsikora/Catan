@@ -1,10 +1,8 @@
-﻿using Catan;
-using Catan.Catan;
-using System.Linq;
-using Unity.VisualScripting;
-using UnityEngine;
+﻿using UnityEngine;
+using Catan.Core.Models;
+using Catan.Unity.Visuals.Models;
 
-namespace Catan
+namespace Catan.Unity.Helpers
 {
     public class FactoryDevelopmentCards : MonoBehaviour
     {

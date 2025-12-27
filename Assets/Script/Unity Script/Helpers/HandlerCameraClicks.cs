@@ -1,8 +1,8 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using Catan.Unity.Visuals.Models;
 
-namespace Catan
+namespace Catan.Unity.Helpers
 {
     public class HandlerCameraClicks : MonoBehaviour
     {

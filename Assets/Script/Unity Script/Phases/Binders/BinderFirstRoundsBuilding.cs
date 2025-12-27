@@ -1,8 +1,9 @@
-﻿using Catan.Communication;
-using Catan.Communication.Signals;
-using UnityEngine;
+﻿using Catan.Shared.Communication;
+using Catan.Shared.Communication.Commands;
+using Catan.Unity.Data;
+using Catan.Unity.Panels;
 
-namespace Catan
+namespace Catan.Unity.Phases.Binders
 {
     public class BinderFirstRoundBuildings : BaseBinder
     {
@@ -12,17 +13,17 @@ namespace Catan
         {
             UI.MainUIPanel.Bind(EnumMainUIButtons.BuildFreeVillage, () =>
             {
-                Bus.Publish(new RequestBuildVillageSignal());
+                Bus.Publish(new BuildVillageCommand());
             });
 
             UI.MainUIPanel.Bind(EnumMainUIButtons.BuildFreeRoad, () =>
             {
-                Bus.Publish(new RequestBuildRoadSignal());
+                Bus.Publish(new BuildRoadCommand());
             });
 
             UI.MainUIPanel.Bind(EnumMainUIButtons.NextTurn, () =>
             {
-                Bus.Publish(new RequestEndTurnSignal());
+                Bus.Publish(new EndTurnCommand());
             });
         }
 

@@ -1,9 +1,10 @@
+using Catan.Unity.Data;
+using Catan.Unity.Visuals.Models;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
-using System;
 
-namespace Catan
+namespace Catan.Unity.Panels
 {
     public class MainUI : VisualButton<EnumMainUIButtons>
     {

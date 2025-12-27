@@ -1,12 +1,11 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using Unity.VisualScripting;
-using Catan.Communication.Signals;
+using Catan.Shared.Communication.Commands;
+using Catan.Core.Models;
 
-namespace Catan
+namespace Catan.Unity.Panels
 {
     public class VictimSelectionUI : MonoBehaviour
     {
@@ -30,9 +29,9 @@ namespace Catan
 
                 buttonObj.GetComponent<Button>().onClick.AddListener(() =>
                 {
-                    int victimId = ManagerGame.Instance.Game.PlayerList.IndexOf(player);
+                    int victimId = player.ID;
 
-                    ManagerGame.Instance.EventBus.Publish(new VictimChosenSignal(victimId));
+                    ManagerGame.Instance.EventBus.Publish(new VictimChosenCommand(victimId));
                     gameObject.SetActive(false);
                 });
             }

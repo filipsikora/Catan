@@ -1,11 +1,14 @@
-using Catan.Catan;
-using System;
-using System.Linq;
-using TMPro;
+using Catan.Shared.Data;
+using Catan.Core.Models;
+using Catan.Unity.Helpers;
+using Catan.Unity.Data;
+using Catan.Unity.Visuals;
+using Catan.Unity.Visuals.Models;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
-namespace Catan
+namespace Catan.Unity.Panels
 {
     public class DevelopmentCardsUI : VisualButton<EnumDevelopmentCardsUIButtons>
     {
@@ -18,15 +21,16 @@ namespace Catan
             RegisterButton(EnumDevelopmentCardsUIButtons.CancelDevelopmentCards, CancelDevelopmentCardsButton);
         }
 
-        public void Show(Player player, bool rolled)
+        public void Show(List<int> playerCardsById, bool afterRoll)
         {
+            CancelDevelopmentCardsButton.gameObject.SetActive(true);
             gameObject.SetActive(true);
 
             VisualsUI.ClearContainer(CardsContainer);
 
-            if (rolled)
+            if (afterRoll)
             {
-                foreach (var id in player.DevelopmentCardsByID)
+                foreach (var id in playerCardsById)
                 {
                     DevelopmentCard card = ManagerGame.Instance.Game.DevelopmentCardsDeckAll.Find(c => c.ID == id);
 
@@ -36,7 +40,7 @@ namespace Catan
 
             else
             {
-                foreach (var id in player.DevelopmentCardsByID)
+                foreach (var id in playerCardsById)
                 {
                     DevelopmentCard card = ManagerGame.Instance.Game.DevelopmentCardsDeckAll.Find(c => c.ID == id);
 

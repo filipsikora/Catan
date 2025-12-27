@@ -1,14 +1,8 @@
 ﻿#nullable enable
-using Catan.Catan;
-using System;
+using Catan.Shared.Data;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Security.AccessControl;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Catan
+namespace Catan.Core.Models
 {
     public class HexTile
     {

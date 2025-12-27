@@ -1,16 +1,13 @@
-﻿using Catan;
-using Catan.Catan;
-using Catan.Core;
+﻿using Catan.Shared.Data;
+using Catan.Unity.Visuals.Models;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Catan
+namespace Catan.Unity.Helpers
 {
     public class FactoryResourceCards : MonoBehaviour
     {
-
         public GameObject ResourceCardPrefab;
         private int _nextVisualId = 0;
 
@@ -20,7 +17,7 @@ namespace Catan
             var cardVisual = cardObject.GetComponent<VisualResourceCard>();
 
             cardVisual.Initialize(location, _nextVisualId++, type);
-            ManagerGame.Instance.HandlerResourceCardsUI.Register(cardVisual);
+            ManagerGame.Instance.ControllerResourceCardsUI.Register(cardVisual);
 
             var image = cardObject.transform.Find("ImageColorCard")?.GetComponent<Image>();
             

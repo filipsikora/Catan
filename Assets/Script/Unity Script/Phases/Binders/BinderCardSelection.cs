@@ -1,7 +1,9 @@
-﻿using Catan.Communication;
-using Catan.Communication.Signals;
+﻿using Catan.Shared.Communication;
+using Catan.Shared.Communication.Commands;
+using Catan.Unity.Data;
+using Catan.Unity.Panels;
 
-namespace Catan
+namespace Catan.Unity.Phases.Binders
 {
     public class BinderCardSelection : BaseBinder
     {
@@ -11,7 +13,7 @@ namespace Catan
         {
             UI.CardSelectorPanel.Bind(EnumCardSelectorDevelopmentUIButtons.AcceptCards, () =>
             {
-                Bus.Publish(new CardSelectionAcceptedSignal());
+                Bus.Publish(new CardSelectionAcceptedCommand());
             });
         }
 

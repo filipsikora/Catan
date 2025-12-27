@@ -1,8 +1,7 @@
-using Catan.Communication.Signals;
-using System;
+using Catan.Shared.Communication.Commands;
 using UnityEngine;
 
-namespace Catan
+namespace Catan.Unity.Visuals.Models
 {
     public class VisualHex : MonoBehaviour
     {
@@ -10,7 +9,7 @@ namespace Catan
 
         public void OnHexClicked()
         {
-            ManagerGame.Instance.EventBus.Publish(new HexClickedSignal(HexId));
+            ManagerGame.Instance.EventBus.Publish(new HexClickedCommand(HexId));
         }    
     }
 }

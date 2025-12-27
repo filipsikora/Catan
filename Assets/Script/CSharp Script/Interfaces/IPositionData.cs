@@ -1,11 +1,6 @@
-﻿#nullable enable
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Catan.Core.Models;
 
-namespace Catan
+namespace Catan.Core.Interfaces
 {
     public interface IPositionData
     {

@@ -1,8 +1,7 @@
-﻿using Catan.Communication.Signals;
-using System;
+﻿using Catan.Shared.Communication.Commands;
 using UnityEngine;
 
-namespace Catan
+namespace Catan.Unity.Visuals.Models
 {
     public class VisualVertex : MonoBehaviour
     {
@@ -10,7 +9,8 @@ namespace Catan
 
         public void OnVertexClicked()
         {
-            ManagerGame.Instance.EventBus.Publish(new VertexClickedSignal(VertexId));
+            Debug.Log($"[CLICK] Vertex {VertexId} clicked");
+            ManagerGame.Instance.EventBus.Publish(new VertexClickedCommand(VertexId));
         }
     }
 }

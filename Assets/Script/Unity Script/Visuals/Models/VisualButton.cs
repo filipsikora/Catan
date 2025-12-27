@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Catan
+namespace Catan.Unity.Visuals.Models
 {
     public abstract class VisualButton<TEnum> : MonoBehaviour where TEnum : Enum
     {

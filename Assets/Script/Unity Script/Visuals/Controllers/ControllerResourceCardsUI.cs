@@ -1,9 +1,10 @@
-﻿using Catan.Communication;
-using Catan.Communication.Signals;
+﻿using Catan.Shared.Communication;
+using Catan.Unity.Communication.InternalUICommands;
+using Catan.Unity.Visuals.Models;
+using Catan.Unity.Data;
 using System.Collections.Generic;
-using UnityEngine;
 
-namespace Catan
+namespace Catan.Unity.Visuals.Controllers
 {
     public class ControllerResourceCardsUI
     {
@@ -13,18 +14,14 @@ namespace Catan
         public ControllerResourceCardsUI(EventBus bus)
         {
             _bus = bus;
-            _bus.Subscribe<ResourceCardVisualStateChangedSignal>(OnResourceCardVisualStateChanged);
-            _bus.Subscribe<MultipleResourceCardVisualStateChangedResetSignal>(OnMultipleResourceCardsVisualStateChanged);
+            _bus.Subscribe<ResourceCardVisualStateChangedUICommand>(OnResourceCardVisualStateChanged);
+            _bus.Subscribe<MultipleResourceCardVisualStateResetUICommand>(OnMultipleResourceCardsVisualStateChanged);
+            _bus.Subscribe<ResourceCardTypeVisualStateChangedUICommand>(OnResourceCardTypeVisualStateChanged);
         }
 
-        private void OnResourceCardVisualStateChanged(ResourceCardVisualStateChangedSignal signal)
+        private void ApplyVisualChange(VisualResourceCard card, EnumResourceCardVisualState state)
         {
-            var card = GetVisualResourceCardById(signal.VisualResourceCardId);
-
-            if (card == null)
-                return;
-
-            switch (signal.State)
+            switch (state)
             {
                 case EnumResourceCardVisualState.None:
                     VisualsUI.ResetResourceCard(card);
@@ -40,7 +37,31 @@ namespace Catan
             }
         }
 
-        private void OnMultipleResourceCardsVisualStateChanged(MultipleResourceCardVisualStateChangedResetSignal signal)
+        private void OnResourceCardVisualStateChanged(ResourceCardVisualStateChangedUICommand signal)
+        {
+            var card = GetVisualResourceCardById(signal.VisualResourceCardId);
+
+            if (card == null)
+                return;
+
+            ApplyVisualChange(card, signal.State);
+        }
+
+        private void OnResourceCardTypeVisualStateChanged(ResourceCardTypeVisualStateChangedUICommand signal)
+        {
+            foreach (var card in _cards.Values)
+            {
+                if (card.Type == signal.Type)
+                {
+                    if (card == null)
+                        return;
+                }
+
+                ApplyVisualChange(card, signal.State);
+            }
+        }
+
+        private void OnMultipleResourceCardsVisualStateChanged(MultipleResourceCardVisualStateResetUICommand signal)
         {
             foreach (var card in _cards.Values)
             {
@@ -70,8 +91,9 @@ namespace Catan
 
         public void Dispose()
         {
-            _bus.Unsubscribe<ResourceCardVisualStateChangedSignal>(OnResourceCardVisualStateChanged);
-            _bus.Unsubscribe<MultipleResourceCardVisualStateChangedResetSignal>(OnMultipleResourceCardsVisualStateChanged);
+            _bus.Unsubscribe<ResourceCardVisualStateChangedUICommand>(OnResourceCardVisualStateChanged);
+            _bus.Unsubscribe<MultipleResourceCardVisualStateResetUICommand>(OnMultipleResourceCardsVisualStateChanged);
+            _bus.Unsubscribe<ResourceCardTypeVisualStateChangedUICommand>(OnResourceCardTypeVisualStateChanged);
         }
     }
 }

@@ -1,10 +1,14 @@
-using Catan.Catan;
-using System;
+using Catan.Unity.Data;
+using Catan.Unity.Visuals;
+using Catan.Unity.Visuals.Models;
+using Catan.Core.Models;
+using Catan.Shared.Data;
+using Catan.Unity.Helpers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Catan
+namespace Catan.Unity.Panels
 {
     public class CardDiscardUI : VisualButton<EnumCardSelectorDiscardUIButtons>
     {
@@ -24,7 +28,6 @@ namespace Catan
             VisualsUI.ClearContainer(CardsContainer);
 
             gameObject.SetActive(true);
-            ConfirmDiscardButton.gameObject.SetActive(false);
         }
 
         public void ShowForPlayer(Player player)

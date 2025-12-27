@@ -1,15 +1,14 @@
-using Catan.Communication.Signals;
-using System;
+using Catan.Shared.Communication.Commands;
 using UnityEngine;
 
-namespace Catan
+namespace Catan.Unity.Visuals.Models
 {
     public class VisualEdge : MonoBehaviour
     {
         public int EdgeId;
         public void OnEdgeClicked()
         {
-            ManagerGame.Instance.EventBus.Publish(new EdgeClickedSignal(EdgeId));
+            ManagerGame.Instance.EventBus.Publish(new EdgeClickedCommand(EdgeId));
         }
     }
 }

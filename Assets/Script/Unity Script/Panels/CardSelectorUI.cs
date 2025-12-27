@@ -1,11 +1,14 @@
-﻿using Catan.Catan;
-using Catan.Core;
-using System;
+﻿using Catan.Unity.Data;
+using Catan.Unity.Helpers;
+using Catan.Unity.Visuals.Models;
+using Catan.Unity.Visuals;
+using Catan.Shared.Data;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
-namespace Catan
+namespace Catan.Unity.Panels
 {
     public class CardSelectorUI : VisualButton<EnumCardSelectorDevelopmentUIButtons>
     {
@@ -15,38 +18,21 @@ namespace Catan
 
         public FactoryResourceCards CardFactory;
 
-
         public void Awake()
         {
             RegisterButton(EnumCardSelectorDevelopmentUIButtons.AcceptCards, AcceptCardsButton);
         }
 
-
-        public void Show(string description, bool yearOfPlenty)
+        public void Show(string description)
         {
             DescriptionText.text = description;
             gameObject.SetActive(true);
 
-            foreach (var key in ManagerGame.Instance.Game.Bank.ResourceDictionary.Keys)
-            {
-                if (yearOfPlenty && ManagerGame.Instance.Game.Bank.ResourceDictionary[key] <= 0)
-                    continue;
+            VisualsUI.ClearContainer(DesiredCardsContainer);
 
-                CardFactory.DrawResourceCard(key, EnumResourceCardLocation.DesiredTrade, DesiredCardsContainer);
-            }
-        }
-
-        public void SetCardAvailability(EnumResourceTypes type, bool available)
-        {
-            foreach (Transform child in DesiredCardsContainer)
+            foreach (EnumResourceTypes type in Enum.GetValues(typeof(EnumResourceTypes)))
             {
-                if (child.TryGetComponent(out VisualResourceCard visual))
-                {
-                    if (visual.Type == type)
-                    {
-                        visual.GetComponent<Collider>().enabled = available;
-                    }
-                }
+                CardFactory.DrawResourceCard(type, EnumResourceCardLocation.DesiredTrade, DesiredCardsContainer);
             }
         }
     }

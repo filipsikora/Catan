@@ -1,10 +1,8 @@
 ﻿using QuikGraph;
 using System.Collections.Generic;
-using System.Linq;
-using Unity.VisualScripting;
-using System;
+using Catan.Core.Models;
 
-namespace Catan
+namespace Catan.Core.Helpers
 {
     public class QuikGraphLongestRoad
     {

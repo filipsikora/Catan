@@ -1,11 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
-using Unity.VisualScripting;
-using Catan.Communication.Signals;
+using Catan.Shared.Communication.Commands;
 
-namespace Catan
+namespace Catan.Unity.Panels
 {
-
     public class PlayerSelectorUI : MonoBehaviour
     {
         public Button[] playerButtons;
@@ -21,7 +19,7 @@ namespace Catan
 
         private void SelectPlayerCount(int count)
         {
-            ManagerGame.Instance.EventBus.Publish(new PlayerCountSelectedSignal(count));
+            ManagerGame.Instance.EventBus.Publish(new PlayerCountSelectedCommand(count));
         }
     }
 }

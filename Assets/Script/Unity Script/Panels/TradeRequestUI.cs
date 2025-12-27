@@ -1,11 +1,14 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
-using System;
-using Catan.Catan;
-using JetBrains.Annotations;
+using Catan.Unity.Data;
+using Catan.Unity.Helpers;
+using Catan.Shared.Data;
+using Catan.Unity.Visuals.Models;
+using Catan.Unity.Visuals;
+using Catan.Core.Models;
 
-namespace Catan
+namespace Catan.Unity.Panels
 {
     public class TradeRequestUI : VisualButton<EnumTradeRequestUIButtons>
     {
@@ -25,11 +28,9 @@ namespace Catan
             RegisterButton(EnumTradeRequestUIButtons.RefuseTradeRequest, RefuseTradeButton);
         }
 
-        public void Show(Player offeredPlayer, ResourceCostOrStock offeredCards, ResourceCostOrStock desiredCards)
+        public void Show(Player offeredPlayer, Player offeringPlayer, ResourceCostOrStock offeredCards, ResourceCostOrStock desiredCards)
         {
-            Player offeringPLayer = ManagerGame.Instance.Game.CurrentPlayer;
-
-            string text = $"{offeredPlayer}, {offeringPLayer} is offering";
+            string text = $"{offeredPlayer}, {offeringPlayer} is offering";
             TradeOfferText.text = text;
 
             VisualsUI.ClearContainer(OfferedCardsContainer);

@@ -1,10 +1,12 @@
 ﻿using UnityEngine;
 using TMPro;
 using System.Linq;
-using System.Collections.Generic;
-using Catan.Catan;
+using Catan.Unity.Helpers;
+using Catan.Shared.Data;
+using Catan.Core.Models;
+using Catan.Unity.Visuals;
 
-namespace Catan
+namespace Catan.Unity.Panels
 {
     public class PlayerUI : MonoBehaviour
     {

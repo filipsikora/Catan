@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
+﻿using UnityEngine;
+using Catan.Core.Models;
+using Catan.Core.Engine;
+using Catan.Shared.Data;
 
-namespace Catan
+namespace Catan.Unity.Visuals
 {
     public class VisualsBoard : MonoBehaviour
     {

@@ -1,11 +1,9 @@
-﻿using Catan.Catan;
-using System;
-using TMPro;
+﻿using Catan.Core.Models;
 using UnityEngine;
-using UnityEngine.UI;
 
-namespace Catan
+namespace Catan.Unity.Panels
 {
+
     public class ManagerUI : MonoBehaviour
     {
         public MainUI MainUIPanel;

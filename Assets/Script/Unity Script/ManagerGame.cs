@@ -1,33 +1,45 @@
 ﻿#nullable enable
-using Catan.Communication;
-using Catan.Catan;
-using System;
+using Catan.Shared.Communication;
+using Catan.Shared.Data;
+using Catan.Core.Engine;
+using Catan.Core.Phases.Controllers;
+using Catan.Unity.Phases.Controllers;
+using Catan.Unity.Data;
+using Catan.Unity.Visuals;
+using Catan.Unity.Visuals.Controllers;
 using System.Collections.Generic;
 using System.Linq;
-using TMPro;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.UIElements;
+using Catan.Core.Routing;
+using Catan.Shared.Communication.Events;
+using Catan.Unity.Phases.Adapters;
+using Catan.Unity.Panels;
 
-
-namespace Catan
+namespace Catan.Unity
 {
 
     public class ManagerGame : MonoBehaviour
     {
         public static ManagerGame Instance { get; private set; }
+
         public GameState? Game { get; set; }
+        public LogicPhaseTransition LogicPhaseTransition;
+        public LogicGameFlow LogicGameFlow; 
+        public CommandRouter CommandRouter { get; set; }
+
         public Transform Board;
         private BuilderMap? Builder;
         public VisualsBoard BoardVisuals;
         public ManagerUI UIManager;
-        public HandlerPhases? PhaseHandler { get; private set; }
+
         public EventBus EventBus { get; private set; }
-        public ControllerResourceCardsUI HandlerResourceCardsUI { get; private set; }
+
+        public AdapterPhaseTransition? AdapterPhaseTransition;
+        public AdapterGameFlow AdapterGameFlow;
+        public ControllerResourceCardsUI ControllerResourceCardsUI { get; private set; }
 
 
         public float Size = 1f;
-
         public Material WaterMaterial;
         public Material IdleGridMaterial;
 
@@ -40,8 +52,7 @@ namespace Catan
         public GameObject? CubePortPrefab;
 
         public List<FieldTypeMaterial> FieldMaterialsList;
-        public List<ResourceDataRegistry> ResourceList;
-
+        public List<RegistryDataResource> ResourceList;
         public Dictionary<EnumResourceTypes, Color> PortColorLookup { get; private set; }
 
         private void Awake()
@@ -51,18 +62,35 @@ namespace Catan
                 Destroy(gameObject);
                 return;
             }
+
             Instance = this;
             DontDestroyOnLoad(gameObject);
 
             PortColorLookup = ResourceList.ToDictionary(r => r.Type, r => r.Color);
+
             EventBus = new EventBus();
-            HandlerResourceCardsUI = new ControllerResourceCardsUI(EventBus);
+
+            LogicPhaseTransition = new LogicPhaseTransition(EventBus);
+            CommandRouter = new CommandRouter(EventBus, LogicPhaseTransition);
+
+            AdapterPhaseTransition = new AdapterPhaseTransition();
+            AdapterGameFlow = new AdapterGameFlow(EventBus, AdapterPhaseTransition);
+
+            ControllerResourceCardsUI = new ControllerResourceCardsUI(EventBus);
+
+            EventBus.Subscribe<StartGameRequestedEvent>(OnStartGameRequested);
         }
 
         void Start()
         {
-            PhaseHandler = new HandlerPhases();
-            PhaseHandler.TransitionTo(new PlayerSetup());
+            AdapterPhaseTransition.TransitionTo(new AdapterPlayerSetup());
+        }
+
+        private void OnStartGameRequested(StartGameRequestedEvent signal)
+        {
+            InitializeGame(signal.PlayerCount);
+
+            EventBus.Publish(new GameInitializedEvent());
         }
 
         public void BuildMap()
@@ -96,6 +124,8 @@ namespace Catan
             Game.ReadyPlayer(playerNumber);
             Game.ReadyBoard();
 
+            LogicGameFlow = new LogicGameFlow(Game, LogicPhaseTransition, EventBus);
+
             BuildMap();
         }
 
@@ -113,23 +143,23 @@ namespace Catan
 
         refaktor unity
 
-        exceptions
+        1. exceptions + log controller 
 
         dodatkowy złodziej
-
-        signals -> logs
-
-        check reosurces max after roll + extract to a method - resourcecost.addcards/addsingletype
-
-        data separation
 
         auto register auto binder auto subscribe
 
         nullable cleanup
 
-        remove peeking into game frmo ui
+        slow with many dev cards
+
+        2. normal round onexit resetselection check
+
+        3. make safeguards into core not ui check
+
+        4. board controller
+
+        dev cards internal event
         */
-
-
     }
 }

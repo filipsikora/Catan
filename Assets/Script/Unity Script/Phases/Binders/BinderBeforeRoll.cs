@@ -1,7 +1,9 @@
-﻿using Catan.Communication;
-using Catan.Communication.Signals;
+﻿using Catan.Shared.Communication;
+using Catan.Shared.Communication.Commands;
+using Catan.Unity.Panels;
+using Catan.Unity.Data;
 
-namespace Catan
+namespace Catan.Unity.Phases.Binders
 {
     public class BinderBeforeRoll : BaseBinder
     {
@@ -11,12 +13,12 @@ namespace Catan
         {
             UI.MainUIPanel.Bind(EnumMainUIButtons.RollDice, () =>
             {
-                Bus.Publish(new RequestDiceRollSignal());
+                Bus.Publish(new RollDiceCommand());
             });
 
             UI.MainUIPanel.Bind(EnumMainUIButtons.DevelopmentCards, () =>
             {
-                Bus.Publish(new RequestShowDevelopmentCardsSignal());
+                Bus.Publish(new ShowDevelopmentCardsCommand());
             });
         }
 

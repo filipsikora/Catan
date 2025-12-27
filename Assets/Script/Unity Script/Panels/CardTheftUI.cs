@@ -1,10 +1,11 @@
-using Catan.Catan;
-using System;
+using Catan.Unity.Helpers;
+using Catan.Unity.Visuals;
+using Catan.Shared.Data;
+using Catan.Core.Models;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
-namespace Catan
+namespace Catan.Unity.Panels
 {
     public class CardTheftUI : MonoBehaviour
     {
@@ -12,13 +13,13 @@ namespace Catan
         public FactoryResourceCards CardFactory;
         public TextMeshProUGUI TitleText;
 
-        public void Show(Player victim)
+        public void Show(ResourceCostOrStock victimCards)
         {
             gameObject.SetActive(true);
 
             VisualsUI.ClearContainer(CardsContainer);
 
-            foreach (var entry in victim.Resources.ResourceDictionary)
+            foreach (var entry in victimCards.ResourceDictionary)
             {
                 EnumResourceTypes type = entry.Key;
                 int count = entry.Value;
