@@ -86,7 +86,6 @@ namespace Catan.Core.Phases.Handlers
 
         private void HandleDiscardingAccepted(DiscardingAcceptedCommand signal)
         {
-            Debug.Log("chuj w logice");
             _currentPlayer.Resources.SubtractExact(_resourcesSelected);
             Game.Bank.AddExact(_resourcesSelected);
 

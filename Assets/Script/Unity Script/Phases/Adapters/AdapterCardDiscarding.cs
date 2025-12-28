@@ -4,7 +4,6 @@ using Catan.Unity.Communication.InternalUICommands;
 using Catan.Unity.Communication.InternalUIEvents;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
-using static Catan.Shared.Communication.Events.ResourcesAvailabilityEvent;
 
 namespace Catan.Unity.Phases.Adapters
 {

@@ -28,8 +28,6 @@ namespace Catan.Unity.Phases.Adapters
 
             EventBus.Subscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
 
-            EventBus.Subscribe<LogMessageEvent>(OnLogMessageReceived);
-
             EventBus.Publish(new RequestBankTradeAvailabilityCommand());
         }
 
@@ -65,11 +63,6 @@ namespace Catan.Unity.Phases.Adapters
             }
         }
 
-        private void OnLogMessageReceived(LogMessageEvent signal)
-        {
-            Debug.Log($"{signal.Type}: {signal.Message}");
-        }
-
         public override void OnExit()
         {
             _binder.Unbind();
@@ -78,8 +71,6 @@ namespace Catan.Unity.Phases.Adapters
             EventBus.Unsubscribe<ResourcesAvailabilityEvent>(OnResourcesAvailabilityReceived);
 
             EventBus.Unsubscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
-
-            EventBus.Unsubscribe<LogMessageEvent>(OnLogMessageReceived);
 
             VisualsUI.SetMainAndPlayerUIVisibility(true, UI.MainUIPanel, UI.PlayerUIPanel);
             UI.BankTradePanel.gameObject.SetActive(false);

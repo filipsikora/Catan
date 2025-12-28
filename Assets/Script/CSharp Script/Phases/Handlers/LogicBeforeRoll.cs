@@ -49,17 +49,17 @@ namespace Catan.Core.Phases.Handlers
             {
                 if (r.Granted == 0)
                 {
-                    Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, $"Bank has no {r.Type} to give to {r.PlayerId}"));
+                    Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, $"Bank has no {r.Type} to give to Player{r.PlayerId}"));
                 }
 
                 if (r.Granted < r.Requested)
                 {
-                    Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, $"Bank has not enough {r.Type}, {r.PlayerId} gets {r.Granted} {r.Type}"));
+                    Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, $"Bank has not enough {r.Type}, Player{r.PlayerId} gets {r.Granted} {r.Type}"));
                 }
 
                 else
                 {
-                    Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, $"{r.PlayerId} received {r.Granted} {r.Type}"));   
+                    Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, $"Player{r.PlayerId} received {r.Granted} {r.Type}"));   
                 }
             }
 

@@ -308,7 +308,7 @@ namespace Catan.Core.Engine
         {
             ResultCondition result;
 
-            result = Conditions.PositionExists(edge.Id, id => Map.GetVertexById(id));
+            result = Conditions.PositionExists(edge.Id, id => Map.GetEdgeById(id));
             if (!result.Success)
                 return Result<BuildingRoad>.Fail(result.Reason);
 
@@ -382,7 +382,7 @@ namespace Catan.Core.Engine
         {
             ResultCondition result;
 
-            result = Conditions.PositionExists(edge.Id, id => Map.GetVertexById(id));
+            result = Conditions.PositionExists(edge.Id, id => Map.GetEdgeById(id));
             if (!result.Success)
                 return Result<BuildingRoad>.Fail(result.Reason);
 

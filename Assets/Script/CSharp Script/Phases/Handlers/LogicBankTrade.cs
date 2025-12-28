@@ -78,7 +78,7 @@ namespace Catan.Core.Phases.Handlers
                 Bus.Publish(new ActionRejectedEvent(player.ID, result.Reason));
             }
 
-            Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, $"{player.ID} traded {_ratio} {_chosenResource} for 1 {signal.Type}"));
+            Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, $"Player{player.ID} traded {_ratio} {_chosenResource} for 1 {signal.Type}"));
 
             FinishPhase();
         }

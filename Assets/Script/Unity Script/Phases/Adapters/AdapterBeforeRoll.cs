@@ -16,23 +16,14 @@ namespace Catan.Unity.Phases.Adapters
 
             UI.UpdatePlayerInfo(Manager.Game.GetCurrentPlayer());
 
-            EventBus.Subscribe<LogMessageEvent>(OnLogMessageReceived);
-
             VisualsUI.SetMainAndPlayerUIVisibility(true, UI.MainUIPanel, UI.PlayerUIPanel);
             VisualsUI.ShowRollDiceUI(UI.MainUIPanel);
             UI.MainUIPanel.DevelopmentCardsButton.gameObject.SetActive(true);
         }
 
-        private void OnLogMessageReceived(LogMessageEvent signal)
-        {
-            Debug.Log($"{signal.Type}: {signal.Message}");
-        }
-
         public override void OnExit()
         {
             _binder.Unbind();
-
-            EventBus.Unsubscribe<LogMessageEvent>(OnLogMessageReceived);
         }
     }
 }

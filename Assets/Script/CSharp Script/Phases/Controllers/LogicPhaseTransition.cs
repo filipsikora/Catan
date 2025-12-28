@@ -17,8 +17,6 @@ namespace Catan.Core.Phases.Controllers
 
         public void ChangePhase(IPhaseLogic next, EnumGamePhases phase)
         {
-            Debug.Log($"[LOGIC] Entering phase: {phase}");
-
             Current?.Exit();
             Current = next;
             Current.Enter();

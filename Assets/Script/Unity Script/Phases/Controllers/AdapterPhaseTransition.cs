@@ -9,8 +9,6 @@ namespace Catan.Unity.Phases.Controllers
 
         public void TransitionTo(BasePhaseAdapter newPhase)
         {
-            Debug.Log($"[LOGIC] Entering phase: {newPhase.GetType().Name}");
-
             CurrentPhase?.OnExit();
 
             CurrentPhase = newPhase;

@@ -17,6 +17,7 @@ namespace Catan.Unity.Panels
         public BankTradeUI BankTradePanel;
         public DevelopmentCardsUI DevelopmentCardsPanel;
         public CardSelectorUI CardSelectorPanel;
+        public LogsUI LogsPanel;
 
         public void UpdateTurnCounter(int turn) => MainUIPanel.UpdateTurnCounter(turn);
         public void UpdateRolledDice(int lastRoll) => MainUIPanel.UpdateRolledDice(lastRoll);

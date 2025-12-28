@@ -3,7 +3,6 @@ using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
 using Catan.Shared.Data;
-using static Catan.Shared.Communication.Events.ResourcesAvailabilityEvent;
 
 namespace Catan.Core.Phases.Handlers
 {
@@ -59,7 +58,7 @@ namespace Catan.Core.Phases.Handlers
                 if (r.Amount < 1)
                     continue;
 
-                Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, $"{r.PlayerId} steals {r.Amount} {r.Type} from {r.VictimId}"));
+                Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, $"Player{r.PlayerId} steals {r.Amount} {r.Type} from {r.VictimId}"));
             }
 
             Bus.Publish(new ReturnToNormalRoundEvent());

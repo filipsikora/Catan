@@ -6,10 +6,12 @@ namespace Catan.Shared.Communication.Events
     {
         public EnumLogTypes Type { get; }
         public string Message { get; }
-        public LogMessageEvent(EnumLogTypes type, string message)
+        public int Time { get; }
+        public LogMessageEvent(EnumLogTypes type, string message, int time = 2)
         {
             Type = type;
             Message = message;
+            Time = time;
         }
     }
 }

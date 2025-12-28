@@ -37,6 +37,7 @@ namespace Catan.Unity
         public AdapterPhaseTransition? AdapterPhaseTransition;
         public AdapterGameFlow AdapterGameFlow;
         public ControllerResourceCardsUI ControllerResourceCardsUI { get; private set; }
+        public ControllerLogMessagesUI ControllerLogMessagesUI { get; private set; }
 
 
         public float Size = 1f;
@@ -77,6 +78,7 @@ namespace Catan.Unity
             AdapterGameFlow = new AdapterGameFlow(EventBus, AdapterPhaseTransition);
 
             ControllerResourceCardsUI = new ControllerResourceCardsUI(EventBus);
+            ControllerLogMessagesUI = new ControllerLogMessagesUI(EventBus, UIManager.LogsPanel);
 
             EventBus.Subscribe<StartGameRequestedEvent>(OnStartGameRequested);
         }
@@ -143,11 +145,9 @@ namespace Catan.Unity
 
         refaktor unity
 
-        1. exceptions + log controller 
-
         dodatkowy złodziej
 
-        auto register auto binder auto subscribe
+        5. auto register auto binder auto subscribe
 
         nullable cleanup
 
@@ -159,7 +159,15 @@ namespace Catan.Unity
 
         4. board controller
 
+        6. merge unity
+
+        7. branch backend
+
+        8. split gamestate, add dtos and snapshots
+
         dev cards internal event
+
+        9. end game check
         */
     }
 }

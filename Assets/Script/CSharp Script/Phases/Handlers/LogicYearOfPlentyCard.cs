@@ -74,7 +74,7 @@ namespace Catan.Core.Phases.Handlers
                 if (r.Granted <= 0)
                     continue;
 
-                Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, $"{r.PlayerId} received {r.Requested} {r.Type} from Year Of Plenty card"));
+                Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, $"Player{r.PlayerId} received {r.Requested} {r.Type} from Year Of Plenty card"));
             }
 
             Bus.Publish(new ReturnToNormalRoundEvent());

@@ -3,6 +3,7 @@ using Catan.Core.Models;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
+using Catan.Shared.Data;
 
 namespace Catan.Core.Phases.Handlers
 {
@@ -13,7 +14,10 @@ namespace Catan.Core.Phases.Handlers
 
         public LogicFirstRoundsBuilding(GameState game, EventBus bus) : base(game, bus) { }
 
-        public override void Enter() { }
+        public override void Enter()
+        {
+            Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, "Select a vertex to build your free village, then select an edge to build a free road", 4));
+        }
 
         public override void Exit() { }
 
@@ -108,7 +112,7 @@ namespace Catan.Core.Phases.Handlers
 
             if (!edge.IsNextToVertex(Game.LastPlacedVillagePosition))
             {
-                Bus.Publish(new LogMessageEvent(Shared.Data.EnumLogTypes.Error, "Need to place this road next to a village placed in this turn"));
+                Bus.Publish(new LogMessageEvent(EnumLogTypes.Error, "Need to place this road next to a village placed in this turn"));
                 return;
             }
 
