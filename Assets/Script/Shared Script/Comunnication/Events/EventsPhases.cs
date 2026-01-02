@@ -1,6 +1,5 @@
 ﻿using Catan.Core.Models;
 using Catan.Shared.Data;
-using Unity.VisualScripting;
 
 namespace Catan.Shared.Communication.Events
 {
@@ -70,6 +69,8 @@ namespace Catan.Shared.Communication.Events
             AfterRoll = afterRoll;
         }
     }
+
+    public class ProceedToDevelopmentCardsEvent { }
 
     public class DevelopmentCardsToRoadBuildingEvent { }
 

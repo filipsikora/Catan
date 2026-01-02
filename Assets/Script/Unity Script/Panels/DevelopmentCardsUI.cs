@@ -1,5 +1,4 @@
-using Catan.Shared.Data;
-using Catan.Core.Models;
+using Catan.Application.Snapshots;
 using Catan.Unity.Helpers;
 using Catan.Unity.Data;
 using Catan.Unity.Visuals;
@@ -21,35 +20,18 @@ namespace Catan.Unity.Panels
             RegisterButton(EnumDevelopmentCardsUIButtons.CancelDevelopmentCards, CancelDevelopmentCardsButton);
         }
 
-        public void Show(List<int> playerCardsById, bool afterRoll)
+        public void Show(IReadOnlyList<DevelopmentCardSnapshot> cards)
         {
             CancelDevelopmentCardsButton.gameObject.SetActive(true);
             gameObject.SetActive(true);
 
             VisualsUI.ClearContainer(CardsContainer);
 
-            if (afterRoll)
+            foreach (var card in cards)
             {
-                foreach (var id in playerCardsById)
-                {
-                    DevelopmentCard card = ManagerGame.Instance.Game.DevelopmentCardsDeckAll.Find(c => c.ID == id);
-
                     DevelopmentCardFactory.DrawDevelopmentCard(card, CardsContainer);
-                }
-            }
-
-            else
-            {
-                foreach (var id in playerCardsById)
-                {
-                    DevelopmentCard card = ManagerGame.Instance.Game.DevelopmentCardsDeckAll.Find(c => c.ID == id);
-
-                    if (card.Type == EnumDevelopmentCardTypes.Knight)
-                    {
-                        DevelopmentCardFactory.DrawDevelopmentCard(card, CardsContainer);
-                    }
-                }
-            }
+                
+            }    
         }
     }
 }

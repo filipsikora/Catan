@@ -9,9 +9,12 @@
         TooCloseToSettlement,
         NoBuildingsAvailable,
         NotOwner,
-        NoPosition,
+        DoesNotExist,
         NoDevelopmentCardsLeft,
         NoResourceCardsLeft,
-        NotRolledYet
+        NotRolledYet,
+        CardIsNew,
+        NotKnightOrAfterRoll,
+        AlreadyUsed
     }
 }

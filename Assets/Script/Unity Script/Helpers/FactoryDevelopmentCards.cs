@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
-using Catan.Core.Models;
 using Catan.Unity.Visuals.Models;
+using Catan.Application.Snapshots;
 
 namespace Catan.Unity.Helpers
 {
@@ -8,12 +8,12 @@ namespace Catan.Unity.Helpers
     {
         public GameObject DevelopmentCardPrefab;
 
-        public GameObject DrawDevelopmentCard(DevelopmentCard card, Transform parent)
+        public GameObject DrawDevelopmentCard(DevelopmentCardSnapshot snapshot, Transform parent)
         {
             GameObject cardObject = Instantiate(DevelopmentCardPrefab, parent);
 
             var visual = cardObject.GetComponent<VisualDevelopmentCard>();
-            visual.Initialize(card);
+            visual.Initialize(snapshot);
 
             return cardObject;
         }

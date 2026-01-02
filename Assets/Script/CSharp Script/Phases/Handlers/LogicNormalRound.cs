@@ -63,12 +63,13 @@ namespace Catan.Core.Phases.Handlers
                     HandleDevelopmentCardsBuyRequested(c);
                     break;
 
-                case ShowDevelopmentCardsCommand c:
-                    Bus.Publish(new ProceedToDevelopmentCardsEvent(Game.GetCurrentPlayerDevelopmentCardIds(), _afterRoll));
-                    break;
-
                 case RequestRolledNumberCommand c:
                     Bus.Publish(new DiceRolledEvent(Game.GetRolledNumber()));
+                    break;
+
+
+                case ShowDevelopmentCardsCommand c:
+                    Bus.Publish(new ProceedToDevelopmentCardsEvent());
                     break;
             }
         }

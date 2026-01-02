@@ -1,6 +1,8 @@
 ﻿#nullable enable
 using Catan.Shared.Communication;
 using Catan.Shared.Data;
+using Catan.Application.Queries;
+using Catan.Application.Queries.InMemory;
 using Catan.Core.Engine;
 using Catan.Core.Phases.Controllers;
 using Catan.Unity.Phases.Controllers;
@@ -38,6 +40,8 @@ namespace Catan.Unity
         public AdapterGameFlow AdapterGameFlow;
         public ControllerResourceCardsUI ControllerResourceCardsUI { get; private set; }
         public ControllerLogMessagesUI ControllerLogMessagesUI { get; private set; }
+
+        public IGameQueryService QueryService { get; private set; }
 
 
         public float Size = 1f;
@@ -128,6 +132,8 @@ namespace Catan.Unity
 
             LogicGameFlow = new LogicGameFlow(Game, LogicPhaseTransition, EventBus);
 
+            QueryService = new InMemoryGameQueryService(Game);
+
             BuildMap();
         }
 
@@ -170,6 +176,8 @@ namespace Catan.Unity
         9. end game check
 
         log for current player, aggregate
+
+        remove publish from visualdevcard
         */
     }
 }

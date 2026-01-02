@@ -15,7 +15,7 @@ namespace Catan.Core.Helpers
 
             if (position == null)
             {
-                return ResultCondition.Fail(ConditionFailureReason.NoPosition);
+                return ResultCondition.Fail(ConditionFailureReason.DoesNotExist);
             }
             return ResultCondition.Ok();
         }
@@ -82,6 +82,36 @@ namespace Catan.Core.Helpers
             }
 
             return ResultCondition.Fail(ConditionFailureReason.NoAccess);
+        }
+
+        public static ResultCondition CanPlayDevCard(Player player, DevelopmentCard card, bool afterRoll)
+        {
+            if (card == null)
+            {
+                return ResultCondition.Fail(ConditionFailureReason.DoesNotExist);
+            }
+
+            if (card.Owner != player)
+            {
+                return ResultCondition.Fail(ConditionFailureReason.NotOwner);
+            }
+
+            if (card.IsNew)
+            {
+                return ResultCondition.Fail(ConditionFailureReason.CardIsNew);
+            }
+
+            if (!(card.Type == EnumDevelopmentCardTypes.Knight || afterRoll))
+            {
+                return ResultCondition.Fail(ConditionFailureReason.NotKnightOrAfterRoll);
+            }
+
+            if (card.IsUsed)
+            {
+                return ResultCondition.Fail(ConditionFailureReason.AlreadyUsed);
+            }
+
+            return ResultCondition.Ok();
         }
     }
 }

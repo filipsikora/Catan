@@ -35,7 +35,7 @@ namespace Catan.Core.Phases.Handlers
                     break;
 
                 case ShowDevelopmentCardsCommand c:
-                    Bus.Publish(new ProceedToDevelopmentCardsEvent(Game.GetCurrentPlayerDevelopmentCardIds(), Game.GetAfterRoll()));
+                    Bus.Publish(new ProceedToDevelopmentCardsEvent());
                     break;
             }
         }

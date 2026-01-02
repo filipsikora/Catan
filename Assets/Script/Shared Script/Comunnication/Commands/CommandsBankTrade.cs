@@ -1,6 +1,5 @@
 ﻿using Catan.Shared.Data;
 using Catan.Shared.Interfaces;
-using System.Collections.Generic;
 
 namespace Catan.Shared.Communication.Commands
 {

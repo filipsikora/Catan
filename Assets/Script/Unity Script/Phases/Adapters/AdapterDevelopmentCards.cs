@@ -1,6 +1,4 @@
-﻿using Catan.Shared.Communication.Commands;
-using Catan.Shared.Communication.Events;
-using Catan.Unity.Phases.Binders;
+﻿using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
 
 namespace Catan.Unity.Phases.Adapters
@@ -18,14 +16,9 @@ namespace Catan.Unity.Phases.Adapters
 
             VisualsUI.SetMainAndPlayerUIVisibility(false, UI.MainUIPanel, UI.PlayerUIPanel);
 
-            EventBus.Subscribe<DevelopmentCardsShownEvent>(OnDevelopmentCardsShown);
+            var currentPlayerDevCardsSnapshots = Manager.QueryService.GetCurrentPlayerDevelopmentCards();
 
-            EventBus.Publish(new RequestDevelopmentCardsViewCommand());
-        }
-
-        private void OnDevelopmentCardsShown(DevelopmentCardsShownEvent signal)
-        {
-            UI.DevelopmentCardsPanel.Show(signal.PlayerCardsByID, signal.AfterRoll);
+            UI.DevelopmentCardsPanel.Show(currentPlayerDevCardsSnapshots);
         }
 
         public override void OnExit()
@@ -34,8 +27,6 @@ namespace Catan.Unity.Phases.Adapters
 
             UI.DevelopmentCardsPanel.gameObject.SetActive(false);
             VisualsUI.SetMainAndPlayerUIVisibility(true, UI.MainUIPanel, UI.PlayerUIPanel);
-
-            EventBus.Unsubscribe<DevelopmentCardsShownEvent>(OnDevelopmentCardsShown);
         }
     }
 }

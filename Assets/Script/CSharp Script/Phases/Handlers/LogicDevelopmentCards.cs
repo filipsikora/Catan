@@ -1,21 +1,16 @@
 ﻿using Catan.Core.Engine;
+using Catan.Core.Helpers;
 using Catan.Core.Models;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
 using Catan.Shared.Data;
-using System.Collections.Generic;
 
 namespace Catan.Core.Phases.Handlers
 {
     public class LogicDevelopmentCards : BasePhaseLogic
     {
-        private List<int> _playerCardsById;
-
-        public LogicDevelopmentCards(GameState game, EventBus bus, List<int> playerCardsById) : base(game, bus)
-        {
-            _playerCardsById = playerCardsById;
-        }
+        public LogicDevelopmentCards(GameState game, EventBus bus) : base(game, bus) { }
 
         public override void Enter() { }
 
@@ -32,10 +27,6 @@ namespace Catan.Core.Phases.Handlers
                 case DevelopmentCardsCanceledCommand c:
                     HandleDevCardsCanceled(c);
                     break;
-
-                case RequestDevelopmentCardsViewCommand c:
-                    HandleDevCardsViewRequested(c);
-                    break;
             }
         }
 
@@ -43,10 +34,7 @@ namespace Catan.Core.Phases.Handlers
         {
             DevelopmentCard cardModel = Game.DevelopmentCardsDeckAll.Find(d => d.ID == signal.DevelopmentCardId);
 
-            if (!cardModel.IsNew)
-            {
-                UseCard(cardModel);
-            }
+            UseCard(cardModel);
         }
 
         public void HandleDevCardsCanceled(DevelopmentCardsCanceledCommand signal)
@@ -56,14 +44,20 @@ namespace Catan.Core.Phases.Handlers
             Bus.Publish(new DevelopmentCardsCompletedEvent(afterRoll));
         }
 
-        public void HandleDevCardsViewRequested(RequestDevelopmentCardsViewCommand signal)
-        {
-            Bus.Publish(new DevelopmentCardsShownEvent(_playerCardsById, Game.GetAfterRoll()));
-        }
-
         private void UseCard(DevelopmentCard card)
         {
-            card.IsUsed = true;
+            bool afterRoll = Game.GetAfterRoll();
+            Player player = Game.GetCurrentPlayer();
+
+            var result = Conditions.CanPlayDevCard(player, card, Game.GetAfterRoll());
+
+            if (!result.Success)
+            {
+                Bus.Publish(new ActionRejectedEvent(player.ID, result.Reason));
+
+                return;
+            }
+
             Game.CurrentPlayer?.DevelopmentCardsByID.Remove(card.ID);
 
             switch (card.Type)
