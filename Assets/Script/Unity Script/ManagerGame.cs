@@ -168,6 +168,8 @@ namespace Catan.Unity
         dev cards internal event
 
         9. end game check
+
+        log for current player, aggregate
         */
     }
 }

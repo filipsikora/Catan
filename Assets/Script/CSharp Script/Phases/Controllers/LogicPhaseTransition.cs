@@ -9,7 +9,7 @@ namespace Catan.Core.Phases.Controllers
     public sealed class LogicPhaseTransition
     {
         private readonly EventBus _bus;
-        public IPhaseLogic? Current { get; private set; }
+        public IPhaseLogic Current { get; private set; }
         public LogicPhaseTransition(EventBus bus)
         {
             _bus = bus;
