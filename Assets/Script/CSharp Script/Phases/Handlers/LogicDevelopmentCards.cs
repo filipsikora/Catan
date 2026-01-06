@@ -1,6 +1,5 @@
-﻿using Catan.Core.Engine;
-using Catan.Core.Helpers;
-using Catan.Core.Models;
+﻿using Catan.Application.CommandHandlers;
+using Catan.Core.Engine;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
@@ -10,7 +9,11 @@ namespace Catan.Core.Phases.Handlers
 {
     public class LogicDevelopmentCards : BasePhaseLogic
     {
-        public LogicDevelopmentCards(GameState game, EventBus bus) : base(game, bus) { }
+        PlayDevCardHandler _handler;
+        public LogicDevelopmentCards(GameState game, EventBus bus) : base(game, bus)
+        {
+            _handler = new PlayDevCardHandler(game);
+        }
 
         public override void Enter() { }
 
@@ -21,7 +24,7 @@ namespace Catan.Core.Phases.Handlers
             switch (command)
             {
                 case DevelopmentCardClickedCommand c:
-                    HandleDevCardClicked(c);
+                    HandlePlayDevCard(c);
                     break;
 
                 case DevelopmentCardsCanceledCommand c:
@@ -30,26 +33,10 @@ namespace Catan.Core.Phases.Handlers
             }
         }
 
-        public void HandleDevCardClicked(DevelopmentCardClickedCommand signal)
+        private void HandlePlayDevCard(DevelopmentCardClickedCommand signal)
         {
-            DevelopmentCard cardModel = Game.DevelopmentCardsDeckAll.Find(d => d.ID == signal.DevelopmentCardId);
-
-            UseCard(cardModel);
-        }
-
-        public void HandleDevCardsCanceled(DevelopmentCardsCanceledCommand signal)
-        {
-            bool afterRoll = Game.GetAfterRoll();
-
-            Bus.Publish(new DevelopmentCardsCompletedEvent(afterRoll));
-        }
-
-        private void UseCard(DevelopmentCard card)
-        {
-            bool afterRoll = Game.GetAfterRoll();
-            Player player = Game.GetCurrentPlayer();
-
-            var result = Conditions.CanPlayDevCard(player, card, Game.GetAfterRoll());
+            var (result, card) = _handler.Handle(signal.DevelopmentCardId);
+            var player = Game.GetCurrentPlayer();
 
             if (!result.Success)
             {
@@ -57,8 +44,6 @@ namespace Catan.Core.Phases.Handlers
 
                 return;
             }
-
-            Game.CurrentPlayer?.DevelopmentCardsByID.Remove(card.ID);
 
             switch (card.Type)
             {
@@ -84,6 +69,13 @@ namespace Catan.Core.Phases.Handlers
                     Bus.Publish(new DevelopmentCardsToYearOfPlentyUsedEvent());
                     break;
             }
+        }
+
+        public void HandleDevCardsCanceled(DevelopmentCardsCanceledCommand signal)
+        {
+            bool afterRoll = Game.GetAfterRoll();
+
+            Bus.Publish(new DevelopmentCardsCompletedEvent(afterRoll));
         }
     }
 }

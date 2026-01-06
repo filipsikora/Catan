@@ -1,6 +1,6 @@
 ﻿using Catan.Shared.Data;
 
-namespace Catan.Shared.Results
+namespace Catan.Core.Results
 {
     public sealed class Result<T>
     {

@@ -16,8 +16,8 @@ namespace Catan.Shared.Communication.Commands
 
     public class BankTradeDesiredResourceSelected : ICommand
     {
-        public EnumResourceTypes Type;
-        public BankTradeDesiredResourceSelected(EnumResourceTypes type)
+        public EnumResourceTypes? Type;
+        public BankTradeDesiredResourceSelected(EnumResourceTypes? type)
         {
             Type = type;
         }

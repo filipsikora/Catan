@@ -1,8 +1,8 @@
 ﻿#nullable enable
 using Catan.Shared.Communication;
 using Catan.Shared.Data;
-using Catan.Application.Queries;
-using Catan.Application.Queries.InMemory;
+using Catan.Application.Queries.DevCards;
+using Catan.Application.Queries.Resources;
 using Catan.Core.Engine;
 using Catan.Core.Phases.Controllers;
 using Catan.Unity.Phases.Controllers;
@@ -41,7 +41,8 @@ namespace Catan.Unity
         public ControllerResourceCardsUI ControllerResourceCardsUI { get; private set; }
         public ControllerLogMessagesUI ControllerLogMessagesUI { get; private set; }
 
-        public IGameQueryService QueryService { get; private set; }
+        public IDevCardsQueryService DevCardsQueryService { get; private set; }
+        public IResourcesQueryService ResourcesQueryService { get; private set; }
 
 
         public float Size = 1f;
@@ -132,7 +133,9 @@ namespace Catan.Unity
 
             LogicGameFlow = new LogicGameFlow(Game, LogicPhaseTransition, EventBus);
 
-            QueryService = new InMemoryGameQueryService(Game);
+            DevCardsQueryService = new InMemoryDevCardQueryService(Game);
+            ResourcesQueryService = new InMemoryResourcesQueryService(Game);
+            
 
             BuildMap();
         }
@@ -178,6 +181,10 @@ namespace Catan.Unity
         log for current player, aggregate
 
         remove publish from visualdevcard
+
+        expand results ok/fail
+
+        remove eventbus from core
         */
     }
 }

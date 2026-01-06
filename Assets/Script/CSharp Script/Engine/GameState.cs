@@ -5,7 +5,8 @@ using Catan.Core.Models;
 using Vertex = Catan.Core.Models.Vertex;
 using Edge = Catan.Core.Models.Edge;
 using Catan.Shared.Data;
-using Catan.Shared.Results;
+using Catan.Core.Results;
+using Catan.Core.Conditions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -600,6 +601,25 @@ namespace Catan.Core.Engine
             return Result<DevelopmentCard>.Ok(card);
         }
 
+        // mutators //
+
+        public DevelopmentCard PlayDevCard(Player player, DevelopmentCard card)
+        {
+            card.IsUsed = true;
+            player.DevelopmentCardsByID.Remove(card.ID);
+
+            return card;
+        }
+
+        public void ExecuteBankTrade(Player player, EnumResourceTypes offered, EnumResourceTypes desired, int ratio)
+        {
+            player.Resources.SubtractExactAmount(offered, ratio);
+            player.Resources.AddExactAmount(desired, 1);
+
+            Bank.SubtractExactAmount(desired, 1);
+            Bank.AddExactAmount(offered, ratio);
+        }
+
         public void UseKnight(Player player)
         {
             player.KnightsUsed++;
@@ -713,6 +733,11 @@ namespace Catan.Core.Engine
         public Player GetPlayerById(int id)
         {
             return PlayerList.Find(p => p.ID == id);
+        }
+
+        public DevelopmentCard GetDevCardById(int id)
+        {
+            return DevelopmentCardsDeckAll.Find(c => c.ID == id);
         }
 
         public bool GetAfterRoll()

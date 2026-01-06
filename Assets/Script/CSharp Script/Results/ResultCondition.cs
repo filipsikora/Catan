@@ -1,6 +1,6 @@
 ﻿using Catan.Shared.Data;
 
-namespace Catan.Shared.Results
+namespace Catan.Core.Results
 {
     public sealed class ResultCondition
     {
@@ -21,6 +21,17 @@ namespace Catan.Shared.Results
         public static ResultCondition Fail(ConditionFailureReason reason)
         {
             return new(false, reason);
+        }
+
+        public static ResultCondition Combine(params ResultCondition[] conditions)
+        {
+            foreach (var condition in conditions)
+            {
+                if (!condition.Success)
+                    return condition;
+            }
+
+            return Ok();
         }
     }
 }

@@ -16,7 +16,7 @@ namespace Catan.Unity.Phases.Adapters
 
             VisualsUI.SetMainAndPlayerUIVisibility(false, UI.MainUIPanel, UI.PlayerUIPanel);
 
-            var currentPlayerDevCardsSnapshots = Manager.QueryService.GetCurrentPlayerDevelopmentCards();
+            var currentPlayerDevCardsSnapshots = Manager.DevCardsQueryService.GetCurrentPlayerDevCards();
 
             UI.DevelopmentCardsPanel.Show(currentPlayerDevCardsSnapshots);
         }

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Catan.Shared.Results
+namespace Catan.Core.Results
 {
     public sealed class ResultDiceRoll
     {

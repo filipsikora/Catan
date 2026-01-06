@@ -6,7 +6,6 @@ using Catan.Unity.Communication.InternalUICommands;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
 using Unity.VisualScripting;
-using UnityEngine;
 
 namespace Catan.Unity.Phases.Adapters
 {
@@ -16,24 +15,19 @@ namespace Catan.Unity.Phases.Adapters
 
         public override void OnEnter()
         {
-            UI.BankTradePanel.gameObject.SetActive(true);
-
             _binder = new BinderBankTrade(UI, EventBus);
             _binder.Bind();
 
+            UI.BankTradePanel.gameObject.SetActive(true);
             VisualsUI.SetMainAndPlayerUIVisibility(false, UI.MainUIPanel, UI.PlayerUIPanel);
 
             EventBus.Subscribe<BankTradeRatioChangedEvent>(OnRatioChanged);
-            EventBus.Subscribe<ResourcesAvailabilityEvent>(OnResourcesAvailabilityReceived);
 
             EventBus.Subscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
 
-            EventBus.Publish(new RequestBankTradeAvailabilityCommand());
-        }
+            var resourcesAvailabilitySnapshot = Manager.ResourcesQueryService.GetResourcesAvailability();
 
-        private void OnResourcesAvailabilityReceived(ResourcesAvailabilityEvent signal)
-        {
-            UI.BankTradePanel.Show(signal.ResourcesAvailability);
+            UI.BankTradePanel.Show(resourcesAvailabilitySnapshot);
         }
 
         private void OnRatioChanged(BankTradeRatioChangedEvent signal)
@@ -68,7 +62,6 @@ namespace Catan.Unity.Phases.Adapters
             _binder.Unbind();
 
             EventBus.Unsubscribe<BankTradeRatioChangedEvent>(OnRatioChanged);
-            EventBus.Unsubscribe<ResourcesAvailabilityEvent>(OnResourcesAvailabilityReceived);
 
             EventBus.Unsubscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
 
