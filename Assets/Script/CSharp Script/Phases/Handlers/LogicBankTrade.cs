@@ -50,7 +50,7 @@ namespace Catan.Core.Phases.Handlers
             var player = Game.GetCurrentPlayer();
 
             _offered = signal.Type;
-            _ratio = Game.FindTradeRatio(signal.Type);
+            _ratio = Game.GetTradeRatio(signal.Type);
 
             int amount = player.Resources.ResourceDictionary[signal.Type];
             bool possibleForPlayer = amount >= _ratio;
@@ -70,7 +70,7 @@ namespace Catan.Core.Phases.Handlers
 
             if (!result.Success)
             {
-                Bus.Publish(new ActionRejectedEvent(player.ID, result.FailureReason.Value));
+                Bus.Publish(new ActionRejectedEvent(player.ID, result.Reason.Value));
             }
 
             Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, $"player{player.ID} trade {result.Ratio} {result.Offered} for 1 {result.Desired}"));

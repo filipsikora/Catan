@@ -17,7 +17,7 @@ namespace Catan.Application.CommandHandlers
         public ResultBankTrade Handle(EnumResourceTypes offered, EnumResourceTypes desired)
         {
             var player = _game.GetCurrentPlayer();
-            var ratio = _game.FindTradeRatio(offered);
+            var ratio = _game.GetTradeRatio(offered);
 
             var isAllowed = RulesTrade.CanTradeWithBank(player, _game.Bank, offered, desired, ratio);
 
@@ -26,7 +26,7 @@ namespace Catan.Application.CommandHandlers
                 return ResultBankTrade.Fail(player.ID, isAllowed.Reason);
             }
 
-            _game.ExecuteBankTrade(player, offered, desired, ratio);
+            _game.BankTradeDoneMutation(player, offered, desired, ratio);
 
             return ResultBankTrade.Ok(player.ID, offered, desired, ratio);
         }

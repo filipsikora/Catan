@@ -15,6 +15,7 @@
         NotRolledYet,
         CardIsNew,
         NotKnightOrAfterRoll,
-        AlreadyUsed
+        AlreadyUsed,
+        InvalidSelection
     }
 }

@@ -3,6 +3,7 @@ using Catan.Shared.Communication;
 using Catan.Shared.Data;
 using Catan.Application.Queries.DevCards;
 using Catan.Application.Queries.Resources;
+using Catan.Application.Queries.Players;
 using Catan.Core.Engine;
 using Catan.Core.Phases.Controllers;
 using Catan.Unity.Phases.Controllers;
@@ -16,6 +17,7 @@ using Catan.Core.Routing;
 using Catan.Shared.Communication.Events;
 using Catan.Unity.Phases.Adapters;
 using Catan.Unity.Panels;
+using Vatan.Unity.Visuals.Controllers;
 
 namespace Catan.Unity
 {
@@ -40,9 +42,11 @@ namespace Catan.Unity
         public AdapterGameFlow AdapterGameFlow;
         public ControllerResourceCardsUI ControllerResourceCardsUI { get; private set; }
         public ControllerLogMessagesUI ControllerLogMessagesUI { get; private set; }
+        public ControllerPlayerUI ControllerPlayerUI { get; private set; }
 
         public IDevCardsQueryService DevCardsQueryService { get; private set; }
         public IResourcesQueryService ResourcesQueryService { get; private set; }
+        public IPlayersQueryService PlayersQueryService { get; private set; }
 
 
         public float Size = 1f;
@@ -84,6 +88,7 @@ namespace Catan.Unity
 
             ControllerResourceCardsUI = new ControllerResourceCardsUI(EventBus);
             ControllerLogMessagesUI = new ControllerLogMessagesUI(EventBus, UIManager.LogsPanel);
+            ControllerPlayerUI = new ControllerPlayerUI(PlayersQueryService, UIManager.PlayerUIPanel, EventBus);
 
             EventBus.Subscribe<StartGameRequestedEvent>(OnStartGameRequested);
         }
@@ -135,6 +140,7 @@ namespace Catan.Unity
 
             DevCardsQueryService = new InMemoryDevCardQueryService(Game);
             ResourcesQueryService = new InMemoryResourcesQueryService(Game);
+            PlayersQueryService = new InMemoryPlayersQueryService(Game);
             
 
             BuildMap();
@@ -185,6 +191,12 @@ namespace Catan.Unity
         expand results ok/fail
 
         remove eventbus from core
+
+        split rollandserve
+
+        generic vs type - buildingregistry + Type
+
+        make game private and initialized
         */
     }
 }

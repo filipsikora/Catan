@@ -1,7 +1,5 @@
-﻿using Catan.Shared.Communication.Events;
-using Catan.Unity.Phases.Binders;
+﻿using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
-using UnityEngine;
 
 namespace Catan.Unity.Phases.Adapters
 {
@@ -13,8 +11,6 @@ namespace Catan.Unity.Phases.Adapters
         {
             _binder = new BinderBeforeRoll(UI, Manager.EventBus);
             _binder.Bind();
-
-            UI.UpdatePlayerInfo(Manager.Game.GetCurrentPlayer());
 
             VisualsUI.SetMainAndPlayerUIVisibility(true, UI.MainUIPanel, UI.PlayerUIPanel);
             VisualsUI.ShowRollDiceUI(UI.MainUIPanel);

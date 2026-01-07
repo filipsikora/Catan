@@ -1,9 +1,9 @@
 using Catan.Unity.Helpers;
 using Catan.Unity.Visuals;
 using Catan.Shared.Data;
-using Catan.Core.Models;
 using TMPro;
 using UnityEngine;
+using Catan.Application.Snapshots;
 
 namespace Catan.Unity.Panels
 {
@@ -13,13 +13,13 @@ namespace Catan.Unity.Panels
         public FactoryResourceCards CardFactory;
         public TextMeshProUGUI TitleText;
 
-        public void Show(ResourceCostOrStock victimCards)
+        public void Show(PlayerResourcesSnapshot resourcesSnapshot)
         {
             gameObject.SetActive(true);
 
             VisualsUI.ClearContainer(CardsContainer);
 
-            foreach (var entry in victimCards.ResourceDictionary)
+            foreach (var entry in resourcesSnapshot.PlayerResources)
             {
                 EnumResourceTypes type = entry.Key;
                 int count = entry.Value;

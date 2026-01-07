@@ -26,7 +26,7 @@ namespace Catan.Application.CommandHandlers
                 return (result, null);
             }
 
-            var playedCard = _game.PlayDevCard(player, card);
+            var playedCard = _game.DevCardPlayedMutation(player, card);
 
             return (ResultCondition.Ok(), playedCard);
         }

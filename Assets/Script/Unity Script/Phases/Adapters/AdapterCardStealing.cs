@@ -7,7 +7,6 @@ namespace Catan.Unity.Phases.Controllers
 {
     public class AdapterCardStealing : BasePhaseAdapter
     {
-        private int _victimId;
         public override void OnEnter()
         {
             Manager.EventBus.Subscribe<VictimSelectedEvent>(OnVictimSelected);
@@ -19,8 +18,8 @@ namespace Catan.Unity.Phases.Controllers
 
         public void OnVictimSelected(VictimSelectedEvent signal)
         {
-            UI.CardTheftPanel.Show(signal.VictimsCards);
-            _victimId = signal.VictimId;
+            var playerResources = Manager.PlayersQueryService.GetPlayersCards(signal.VictimId);
+            UI.CardTheftPanel.Show(playerResources);
         }
 
         private void OnResourceCardClicked(ResourceCardClickedUIEvent signal)
@@ -36,12 +35,6 @@ namespace Catan.Unity.Phases.Controllers
             Manager.EventBus.Unsubscribe<VictimSelectedEvent>(OnVictimSelected);
 
             Manager.EventBus.Unsubscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
-
-            var thief = Manager.Game.GetCurrentPlayer();
-            var victim = Manager.Game.GetPlayerById(_victimId);
-
-            UI.UpdatePlayerInfo(thief);
-            UI.UpdatePlayerInfo(victim);
 
             UI.CardTheftPanel.gameObject.SetActive(false);
         }

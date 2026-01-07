@@ -5,16 +5,16 @@ namespace Catan.Core.Results
     public sealed class ResultBankTrade
     {
         public bool Success { get; }
-        public ConditionFailureReason? FailureReason { get; }
+        public ConditionFailureReason? Reason { get; }
         public int PlayerId;
         public EnumResourceTypes? Offered;
         public EnumResourceTypes? Desired;
         public int Ratio;
 
-        public ResultBankTrade(bool success, ConditionFailureReason? failureReason, int playerId, EnumResourceTypes? offered, EnumResourceTypes? desired, int ratio)
+        public ResultBankTrade(bool success, ConditionFailureReason? reason, int playerId, EnumResourceTypes? offered, EnumResourceTypes? desired, int ratio)
         {
             Success = success;
-            FailureReason = failureReason;
+            Reason = reason;
 
             PlayerId = playerId;
             Offered = offered;

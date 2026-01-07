@@ -518,22 +518,7 @@ namespace Catan.Core.Engine
             return Result<BuildingTown>.Ok(town);
         }
 
-        public int FindTradeRatio(EnumResourceTypes type)
-        {
-            if (CurrentPlayer.Ports.Count != 0)
-            {
-                Port rightPort = Map.PortList.Find(port => port.Type == type);
-                bool hasThreeToOnePort = CurrentPlayer.Ports.Any(port => port.Type == null);
 
-                if (CurrentPlayer.Ports.Contains(rightPort))
-                    return 2;
-
-                if (hasThreeToOnePort)
-                    return 3;
-            }
-
-            return 4;
-        }
 
         public (bool village, bool road, bool town) CheckBuildOptions(IPositionData position)
         {
@@ -601,24 +586,7 @@ namespace Catan.Core.Engine
             return Result<DevelopmentCard>.Ok(card);
         }
 
-        // mutators //
 
-        public DevelopmentCard PlayDevCard(Player player, DevelopmentCard card)
-        {
-            card.IsUsed = true;
-            player.DevelopmentCardsByID.Remove(card.ID);
-
-            return card;
-        }
-
-        public void ExecuteBankTrade(Player player, EnumResourceTypes offered, EnumResourceTypes desired, int ratio)
-        {
-            player.Resources.SubtractExactAmount(offered, ratio);
-            player.Resources.AddExactAmount(desired, 1);
-
-            Bank.SubtractExactAmount(desired, 1);
-            Bank.AddExactAmount(offered, ratio);
-        }
 
         public void UseKnight(Player player)
         {
@@ -672,30 +640,6 @@ namespace Catan.Core.Engine
             return results;
         }
 
-        public Result<ResultBankTrade> PerformBankTrade(EnumResourceTypes offered, EnumResourceTypes desired)
-        {
-            var player = CurrentPlayer;
-            int ratio = FindTradeRatio(offered);
-
-            if (player.Resources.Get(offered) < ratio)
-            {
-                return Result<ResultBankTrade>.Fail(ConditionFailureReason.CannotAfford);
-            }
-
-            if (Bank.Get(desired) < 1)
-            {
-                return Result<ResultBankTrade>.Fail(ConditionFailureReason.NoResourceCardsLeft);
-            }
-
-            player.Resources.SubtractExactAmount(offered, ratio);
-            Bank.AddExactAmount(offered, ratio);
-
-            player.Resources.AddExactAmount(desired, 1);
-            Bank.SubtractExactAmount(desired, 1);
-
-            return Result<ResultBankTrade>.Ok(new ResultBankTrade(player.ID, offered, desired, ratio));
-        }
-
         public void WinCheck()
         {
             Player player = CurrentPlayer;
@@ -718,6 +662,48 @@ namespace Catan.Core.Engine
             var result = new ResultEndGame(playerScoresToIds, winner.ID);
 
             return result;
+        }
+
+
+
+
+        public Dictionary<EnumResourceTypes, bool> CheckResourcesAvailabilityAfterChange(ResourceCostOrStock cardsAlreadySelected)
+        {
+            var availability = new Dictionary<EnumResourceTypes, bool>();
+
+            foreach (var (type, amount) in Bank.ResourceDictionary)
+            {
+                int alreadySelected = cardsAlreadySelected.Get(type);
+                availability[type] = amount - alreadySelected > 0;
+            }
+
+            return availability;
+        }
+
+        // getters //
+
+        public int GetTradeRatio(EnumResourceTypes type)
+        {
+            if (CurrentPlayer.Ports.Count != 0)
+            {
+                Port rightPort = Map.PortList.Find(port => port.Type == type);
+                bool hasThreeToOnePort = CurrentPlayer.Ports.Any(port => port.Type == null);
+
+                if (CurrentPlayer.Ports.Contains(rightPort))
+                    return 2;
+
+                if (hasThreeToOnePort)
+                    return 3;
+            }
+
+            return 4;
+        }
+
+        public Queue<Player> GetCardsDiscardingPlayers()
+        {
+            var playersToDiscard = new Queue<Player>(PlayerList.Where(p => p.Resources.ResourceDictionary.Values.Sum() > 7));
+
+            return playersToDiscard;
         }
 
         public List<int> GetCurrentPlayerDevelopmentCardIds()
@@ -750,42 +736,46 @@ namespace Catan.Core.Engine
             return LastRoll;
         }
 
-        public Queue<Player> GetCardsDiscardingPlayers()
-        {
-            var playersToDiscard = new Queue<Player>(PlayerList.Where(p => p.Resources.ResourceDictionary.Values.Sum() > 7));
-
-            return playersToDiscard;
-        }
-
-        public Dictionary<EnumResourceTypes, bool> CheckResourcesAvailabilityAfterChange(ResourceCostOrStock cardsAlreadySelected)
-        {
-            var availability = new Dictionary<EnumResourceTypes, bool>();
-
-            foreach (var (type, amount) in Bank.ResourceDictionary)
-            {
-                int alreadySelected = cardsAlreadySelected.Get(type);
-                availability[type] = amount - alreadySelected > 0;
-            }
-
-            return availability;
-        }
-
-        public Dictionary<EnumResourceTypes, bool> CheckResourcesAvailability()
-        {
-            var availability = new Dictionary<EnumResourceTypes, bool>();
-
-            foreach (var (type, amount) in Bank.ResourceDictionary)
-            {
-                bool available = amount > 0;
-                availability[type] = available;
-            }
-
-            return availability;
-        }
+        // setters //
 
         public void SetAfterRollTo(bool afterRoll)
         {
             AfterRoll = afterRoll;
         }
+
+        // mutators //
+
+        public DevelopmentCard DevCardPlayedMutation(Player player, DevelopmentCard card)
+        {
+            card.IsUsed = true;
+            player.DevelopmentCardsByID.Remove(card.ID);
+
+            return card;
+        }
+
+        public void BankTradeDoneMutation(Player player, EnumResourceTypes offered, EnumResourceTypes desired, int ratio)
+        {
+            player.Resources.SubtractExactAmount(offered, ratio);
+            player.Resources.AddExactAmount(desired, 1);
+
+            Bank.SubtractExactAmount(desired, 1);
+            Bank.AddExactAmount(offered, ratio);
+        }
+
+        public void CardsDiscardedMutation(Player player, ResourceCostOrStock selectedCards)
+        {
+            player.Resources.SubtractExact(selectedCards);
+            Bank.AddExact(selectedCards);
+        }
+
+        public void CardStolenMutaton(Player victim, EnumResourceTypes resource)
+        {
+            var thief = CurrentPlayer;
+
+            thief.Resources.AddExactAmount(resource, 1);
+            victim.Resources.SubtractExactAmount(resource, 1);
+        }
+
+        // end //
     }
 }

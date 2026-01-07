@@ -1,12 +1,12 @@
 using Catan.Unity.Data;
 using Catan.Unity.Visuals;
 using Catan.Unity.Visuals.Models;
-using Catan.Core.Models;
 using Catan.Shared.Data;
 using Catan.Unity.Helpers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Catan.Application.Snapshots;
 
 namespace Catan.Unity.Panels
 {
@@ -30,12 +30,12 @@ namespace Catan.Unity.Panels
             gameObject.SetActive(true);
         }
 
-        public void ShowForPlayer(Player player)
+        public void ShowForPlayer(PlayerResourcesSnapshot playerResources)
         {
             VisualsUI.ClearContainer(CardsContainer);
             ConfirmDiscardButton.gameObject.SetActive(false);
 
-            foreach (var entry in player.Resources.ResourceDictionary)
+            foreach (var entry in playerResources.PlayerResources)
             {
                 var type = entry.Key;
                 var amount = entry.Value;

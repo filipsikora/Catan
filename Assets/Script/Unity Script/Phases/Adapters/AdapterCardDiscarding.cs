@@ -56,8 +56,8 @@ namespace Catan.Unity.Phases.Adapters
 
         private void OnPlayerChosen(PlayerSelectedToDiscardEvent signal)
         {
-            var player = Manager.Game.GetPlayerById(signal.PlayerId);
-            UI.CardDiscardPanel.ShowForPlayer(player);
+            var currentPlayerResources = Manager.PlayersQueryService.GetPlayersCards(signal.PlayerId);
+            UI.CardDiscardPanel.ShowForPlayer(currentPlayerResources);
         }
 
         private void OnAcceptedDiscardVisibilityChanged(SelectionChangedEvent signal)

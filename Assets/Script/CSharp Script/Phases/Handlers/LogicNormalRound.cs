@@ -3,7 +3,6 @@ using Catan.Core.Models;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
-using Catan.Shared.Results;
 using System.Linq;
 
 namespace Catan.Core.Phases.Handlers

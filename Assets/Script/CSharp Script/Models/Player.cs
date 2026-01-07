@@ -1,4 +1,6 @@
 ﻿#nullable enable
+using Catan.Shared.Data;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -41,6 +43,11 @@ namespace Catan.Core.Models
             where T : Building
         {
             return Buildings.Count(b => b is T);
+        }
+
+        public int BuildingCount(Type buildingType)
+        {
+            return Buildings.Count(b => b.GetType() == buildingType);
         }
 
         public int CountPoints()

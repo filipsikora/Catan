@@ -9,7 +9,7 @@ namespace Catan.Core.Phases.Handlers
 {
     public class LogicDevelopmentCards : BasePhaseLogic
     {
-        PlayDevCardHandler _handler;
+        private PlayDevCardHandler _handler;
         public LogicDevelopmentCards(GameState game, EventBus bus) : base(game, bus)
         {
             _handler = new PlayDevCardHandler(game);
@@ -44,6 +44,8 @@ namespace Catan.Core.Phases.Handlers
 
                 return;
             }
+
+            Bus.Publish(new PlayerStateChangedEvent(player.ID));
 
             switch (card.Type)
             {

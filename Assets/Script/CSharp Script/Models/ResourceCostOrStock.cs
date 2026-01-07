@@ -130,5 +130,17 @@ namespace Catan.Core.Models
         {
             return ResourceDictionary.Values.Sum();
         }
+
+        public Dictionary<EnumResourceTypes, int> ToDictionary()
+        {
+            var toDictionary = new Dictionary<EnumResourceTypes, int>();
+
+            foreach (var (key, value) in ResourceDictionary)
+            {
+                toDictionary.Add(key, value);
+            }
+
+            return toDictionary;
+        }
     }
 }
