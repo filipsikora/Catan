@@ -1,6 +1,7 @@
 ﻿using Catan.Core.Models;
 using Catan.Shared.Data;
 using Catan.Core.Results;
+using System.Linq;
 
 namespace Catan.Core.Conditions
 {
@@ -12,6 +13,36 @@ namespace Catan.Core.Conditions
                 return ResultCondition.Fail(ConditionFailureReason.CannotAfford);
 
             return ResultCondition.Ok();
+        }
+
+        public static ResultCondition HasAnyResources(Player player)
+        {
+            if (player.Resources.ResourceDictionary.Values.Sum() == 0)
+            {
+                return ResultCondition.Fail(ConditionFailureReason.NoResourceCardsLeft);
+            }
+
+            return ResultCondition.Ok();
+        }
+
+        public static ResultCondition HasSpecificResource(Player player, EnumResourceTypes type)
+        {
+            if (player.Resources.Get(type) == 0)
+            {
+                return ResultCondition.Fail(ConditionFailureReason.ResourceNotOwned);
+            }
+
+            return ResultCondition.Ok();
+        }
+
+        public static ResultCondition HasExactResourcesNumber(ResourceCostOrStock cards, int required)
+        {
+            if (cards.ResourceDictionary.Values.Sum() == required)
+            {
+                return ResultCondition.Ok();
+            }
+
+            return ResultCondition.Fail(ConditionFailureReason.InvalidSelection);
         }
     }
 }

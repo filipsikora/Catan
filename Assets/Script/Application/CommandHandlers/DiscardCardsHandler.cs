@@ -16,23 +16,16 @@ namespace Catan.Application.CommandHandlers
 
         public ResultCondition Handle(Player player, ResourceCostOrStock selectedCards)
         {
-            int required = RulesCardDiscard.RequiredDiscardCount(player);
+            var canDiscard = RulesCardDiscard.CanDiscard(player, selectedCards);
 
-            if (!RulesCardDiscard.IsValidSelection(selectedCards, required))
+            if (!canDiscard.Success)
             {
-                return ResultCondition.Fail(Shared.Data.ConditionFailureReason.InvalidSelection);
+                return canDiscard;
             }
 
             _game.CardsDiscardedMutation(player, selectedCards);
 
             return ResultCondition.Ok();
-        }
-
-        public bool CanDiscard (Player player, ResourceCostOrStock selectedCards)
-        {
-            int required = RulesCardDiscard.RequiredDiscardCount(player);
-
-            return RulesCardDiscard.IsValidSelection(selectedCards, required);
         }
     }
 }

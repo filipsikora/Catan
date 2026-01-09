@@ -1,4 +1,6 @@
-﻿using Catan.Core.Models;
+﻿using Catan.Core.Conditions;
+using Catan.Core.Models;
+using Catan.Core.Results;
 using System;
 using System.Linq;
 
@@ -14,11 +16,11 @@ namespace Catan.Core.Rules
             return required;
         }
 
-        public static bool IsValidSelection(ResourceCostOrStock cards, int required)
+        public static ResultCondition CanDiscard(Player player, ResourceCostOrStock selectedCards)
         {
-            int selectedCount = cards.ResourceDictionary.Values.Sum();
+            int required = RequiredDiscardCount(player);
 
-            return required == selectedCount;
+            return ResultCondition.Combine(ConditionsResources.HasExactResourcesNumber(selectedCards, required));
         }
     }
 }

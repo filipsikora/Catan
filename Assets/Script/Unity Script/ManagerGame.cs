@@ -18,6 +18,7 @@ using Catan.Shared.Communication.Events;
 using Catan.Unity.Phases.Adapters;
 using Catan.Unity.Panels;
 using Vatan.Unity.Visuals.Controllers;
+using Catan.Application.Queries.Turns;
 
 namespace Catan.Unity
 {
@@ -47,6 +48,7 @@ namespace Catan.Unity
         public IDevCardsQueryService DevCardsQueryService { get; private set; }
         public IResourcesQueryService ResourcesQueryService { get; private set; }
         public IPlayersQueryService PlayersQueryService { get; private set; }
+        public ITurnsQueryService TurnsQueryService { get; private set; }
 
 
         public float Size = 1f;
@@ -141,6 +143,7 @@ namespace Catan.Unity
             DevCardsQueryService = new InMemoryDevCardQueryService(Game);
             ResourcesQueryService = new InMemoryResourcesQueryService(Game);
             PlayersQueryService = new InMemoryPlayersQueryService(Game);
+            TurnsQueryService = new InMemoryTurnsQueryService(Game);
             
 
             BuildMap();
@@ -196,7 +199,15 @@ namespace Catan.Unity
 
         generic vs type - buildingregistry + Type
 
+        move rejection/logs to mapper with switch based on result in adapter
+
         make game private and initialized
+
+        add none to enums
+
+        remove models from logic rounds
+
+        iscurrentplayercheck
         */
     }
 }

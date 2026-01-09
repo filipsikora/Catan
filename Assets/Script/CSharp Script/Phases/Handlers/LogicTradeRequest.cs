@@ -3,8 +3,6 @@ using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
 using Catan.Core.Engine;
 using Catan.Core.Models;
-using Catan.Core.Helpers;
-using Catan.Shared.Results;
 
 namespace Catan.Core.Phases.Handlers
 {

@@ -1,12 +1,12 @@
 ﻿using Catan.Application.CommandHandlers;
 using Catan.Core.Engine;
 using Catan.Core.Models;
+using Catan.Core.Rules;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
+using Catan.Unity.Communication.InternalUIEvents;
 using System.Collections.Generic;
-using System.Linq;
-using TMPro;
 
 namespace Catan.Core.Phases.Handlers
 {
@@ -74,7 +74,7 @@ namespace Catan.Core.Phases.Handlers
                 _resourcesSelected.SubtractExactAmount(signal.Type, 1);
             }
 
-            bool canDiscard = _handler.CanDiscard(_currentPlayer, _resourcesSelected);
+            bool canDiscard = RulesCardDiscard.CanDiscard(_currentPlayer, _resourcesSelected).Success;
 
             Bus.Publish(new SelectionChangedEvent(canDiscard));
         }
@@ -90,7 +90,7 @@ namespace Catan.Core.Phases.Handlers
                 return;
             }
 
-            Bus.Publish(new PlayerStateChangedEvent(_currentPlayer.ID));
+            Bus.Publish(new PlayerStateChangedUIEvent(_currentPlayer.ID));
 
             ProceedToNextPlayer();
         }

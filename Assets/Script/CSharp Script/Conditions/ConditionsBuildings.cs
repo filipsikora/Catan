@@ -75,6 +75,16 @@ namespace Catan.Core.Conditions
 
             return ResultCondition.Fail(ConditionFailureReason.NoAccess);
         }
+
+        public static ResultCondition AdjacentToLastVillage(Edge edge, Vertex vertex)
+        {
+            if (edge.VertexA == vertex || edge.VertexB == vertex)
+            {
+                return ResultCondition.Ok();
+            }
+
+            return ResultCondition.Fail(ConditionFailureReason.NotNextToLastVillage);
+        }
     }
 }
  

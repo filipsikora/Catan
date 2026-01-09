@@ -14,20 +14,22 @@ namespace Catan.Application.CommandHandlers
             _game = game;
         }
 
-        public ResultResourceTheft Handle(int victimId, EnumResourceTypes resource)
+        public ResultStealResource Handle(int victimId, EnumResourceTypes resource)
         {
             var thiefId = _game.CurrentPlayer.ID;
             var thief = _game.GetPlayerById(thiefId);
             var victim = _game.GetPlayerById(victimId);
 
-            if (!RulesCardTheft.CanSteal(victim))
+            var result = RulesCardTheft.CanSteal(victim);
+
+            if (!result.Success)
             {
-                return ResultResourceTheft.Fail(thiefId, victimId, ConditionFailureReason.NoResourceCardsLeft);
+                return ResultStealResource.Fail(thiefId, victimId, result.Reason);
             }
 
-            _game.CardStolenMutaton(victim, resource);
+            _game.CardStolenMutation(victim, resource);
 
-            return ResultResourceTheft.Ok(thiefId, victimId, resource);
+            return ResultStealResource.Ok(thiefId, victimId, resource);
         }
     }
 }

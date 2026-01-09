@@ -16,6 +16,8 @@
         CardIsNew,
         NotKnightOrAfterRoll,
         AlreadyUsed,
-        InvalidSelection
+        InvalidSelection,
+        ResourceNotOwned,
+        NotNextToLastVillage
     }
 }

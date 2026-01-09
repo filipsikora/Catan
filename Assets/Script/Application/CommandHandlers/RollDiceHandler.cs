@@ -12,10 +12,10 @@ namespace Catan.Application.CommandHandlers
             _game = game;
         }
 
-        public ResultDiceRoll Handle()
+        public ResultRollDice Handle()
         {
             var result = _game.RollAndServePlayers();
-            _game.SetAfterRollTo(true);
+            _game.DiceRolledMutation();
 
             return result;
         }

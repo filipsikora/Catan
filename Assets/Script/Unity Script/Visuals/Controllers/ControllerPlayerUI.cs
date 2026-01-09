@@ -1,6 +1,6 @@
 ﻿using Catan.Application.Queries.Players;
-using Catan.Shared.Communication.Events;
 using Catan.Shared.Communication;
+using Catan.Unity.Communication.InternalUIEvents;
 using Catan.Unity.Panels;
 
 namespace Vatan.Unity.Visuals.Controllers
@@ -15,10 +15,10 @@ namespace Vatan.Unity.Visuals.Controllers
             _playersQuery = playersQuery;
             _playerUI = playerUI;
 
-            bus.Subscribe<PlayerStateChangedEvent>(UpdatePlayerUI);
+            bus.Subscribe<PlayerStateChangedUIEvent>(UpdatePlayerUI);
         }
 
-        public void UpdatePlayerUI(PlayerStateChangedEvent signal)
+        public void UpdatePlayerUI(PlayerStateChangedUIEvent signal)
         {
             var data = _playersQuery.GetPlayersData(signal.PlayerId);
             var resources = _playersQuery.GetPlayersCards(signal.PlayerId);

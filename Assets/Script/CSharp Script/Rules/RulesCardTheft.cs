@@ -1,13 +1,14 @@
-﻿using Catan.Core.Models;
-using System.Linq;
+﻿using Catan.Core.Conditions;
+using Catan.Core.Models;
+using Catan.Core.Results;
 
 namespace Catan.Core.Rules
 {
     public static class RulesCardTheft
     {
-        public static bool CanSteal(Player victim)
+        public static ResultCondition CanSteal(Player victim)
         {
-            return victim.Resources.ResourceDictionary.Values.Sum() > 0;
+            return ConditionsResources.HasAnyResources(victim);
         }
     }
 }
