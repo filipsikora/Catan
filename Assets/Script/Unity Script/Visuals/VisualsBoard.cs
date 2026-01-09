@@ -2,6 +2,7 @@
 using Catan.Core.Models;
 using Catan.Core.Engine;
 using Catan.Shared.Data;
+using System.Collections.Specialized;
 
 namespace Catan.Unity.Visuals
 {
@@ -17,8 +18,6 @@ namespace Catan.Unity.Visuals
             _builder = builder;
             IdleGridMaterial = idleMat;
             Game = game;
-
-            PlaceRobberObject();
         }
 
         public void SetVertexVisual(GameObject vertexObject, Color color)
@@ -72,6 +71,7 @@ namespace Catan.Unity.Visuals
         {
             position.y += 0.1f;
             GameObject obj = Instantiate(prefab, position, rotation ?? Quaternion.identity, parent);
+
             if (color.HasValue)
             {
                 var renderer = obj.GetComponent<Renderer>();
@@ -86,36 +86,12 @@ namespace Catan.Unity.Visuals
             obj.transform.position = position;
         }
 
-        public void PlaceRobberObject()
-        {
-            HexTile desertHex = Game.Map.HexList.Find(h => h.FieldType == EnumFieldTypes.Desert);
-            if (desertHex == null) return;
+        public GameObject? GetVertexObject(int id) => _builder.GetVertexObjectById(id);
 
-            GameObject desertTile = GetHexObject(desertHex.Id);
+        public GameObject? GetEdgeObject(int id) => _builder.GetEdgeObjectById(id);
 
-            Vector3 pos = desertTile.gameObject.transform.position;
+        public GameObject? GetHexObject(int id) => _builder.GetHexObjectById(id);
 
-            _robberInstance = PlaceObject(ManagerGame.Instance.CubeRobberPrefab, pos, null, null, ManagerGame.Instance.Board);
-        }
-
-        public void MoveRobberObject(HexTile hex)
-        {
-            if (_robberInstance == null) return;
-
-            GameObject hexObj = GetHexObject(hex.Id);
-            if (hexObj == null) return;
-
-            MoveObject(_robberInstance, hexObj.transform.position);
-        }
-
-        public GameObject? GetVertexObject(int id) => _builder.FindVertexObjectById(id);
-
-        public GameObject? GetEdgeObject(int id) => _builder.FindEdgeObjectById(id);
-
-        public GameObject? GetHexObject(int id) => _builder.FindHexObjectById(id);
-
-        public Quaternion GetEdgeRotation(Edge edge) => _builder.GetEdgeRotation(edge);
-
-        public (Vector3 start, Vector3 end, Vector3 mid) GetEdgePositions(Edge edge) => _builder.GetEdgePositions(edge);
+        public (Vector3 start, Vector3 mid, Vector3 end, Vector3 dir, Quaternion rotation) GetEdgeVisualData(int edgeId) => _builder.GetEdgeVisualData(edgeId);
     }
 }

@@ -1,11 +1,11 @@
-﻿using Catan.Shared.Communication;
+﻿using Catan.Application.Snapshots;
+using Catan.Shared.Communication;
 using Catan.Shared.Communication.Events;
-using Catan.Unity.Data;
+using Catan.Unity.Communication.InternalUIEvents;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
-using Catan.Unity.Communication.InternalUIEvents;
+using Core.Unity.Communication.InternalUIEvents;
 using UnityEngine;
-using Catan.Application.Snapshots;
 
 namespace Catan.Unity.Phases.Adapters
 {
@@ -56,30 +56,19 @@ namespace Catan.Unity.Phases.Adapters
 
         private void OnVillagePlaced(VillagePlacedEvent signal)
         {
-            var vertexObject = Manager.BoardVisuals.GetVertexObject(signal.VertexId);
-            Vector3 pos = vertexObject.transform.position;
-            var playerColor = RegistryPlayerColor.GetColor(turnDataSnapshot.PlayerId);
-
-            var villageObject = Manager.BoardVisuals.PlaceObject(Manager.CubeVillagePrefab, pos, null, playerColor, Manager.Board);
-
             Manager.BoardVisuals.ResetMarkedPositions();
 
+            EventBus.Publish(new VillagePlacedUIEvent(signal.VertexId, turnDataSnapshot.PlayerId));
             EventBus.Publish(new PlayerStateChangedUIEvent(turnDataSnapshot.PlayerId));
         }
 
         private void OnRoadPlaced(RoadPlacedEvent signal)
         {
-            var edge = Manager.Game.Map.GetEdgeById(signal.EdgeId);
-            var (_, _, mid) = Manager.BoardVisuals.GetEdgePositions(edge);
-            var rotation = Manager.BoardVisuals.GetEdgeRotation(edge);
-            var playerColor = RegistryPlayerColor.GetColor(turnDataSnapshot.PlayerId);
-
-            Manager.BoardVisuals.PlaceObject(Manager.CubeRoadPrefab, mid, rotation, playerColor, Manager.Board);
-
             UI.MainUIPanel.NextTurnButton.gameObject.SetActive(true);
             Manager.BoardVisuals.ResetMarkedPositions();
 
             EventBus.Publish(new PlayerStateChangedUIEvent(turnDataSnapshot.PlayerId));
+            EventBus.Publish(new RoadPlacedUIEvent(signal.EdgeId, turnDataSnapshot.PlayerId));
         }
 
         public override void OnExit()

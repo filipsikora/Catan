@@ -5,11 +5,11 @@ using System.Collections.Generic;
 
 namespace Catan.Application.Queries.Players
 {
-    public sealed class InMemoryPlayersQueryService : IPlayersQueryService
+    public sealed class InMemoryPlayersQueryServices : IPlayersQueryService
     {
         private readonly GameState _game;
 
-        public InMemoryPlayersQueryService(GameState game)
+        public InMemoryPlayersQueryServices(GameState game)
         {
             _game = game;
         }

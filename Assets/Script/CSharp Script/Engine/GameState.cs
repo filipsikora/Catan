@@ -32,6 +32,8 @@ namespace Catan.Core.Engine
 
         public int Turn { get; set; } = 1;
 
+        public int? BlockedHexId { get; set; }
+
         public HexMap? Map { get; set; } = null;
 
         public List<int> FieldNumbersList { get; set; } = new List<int> { 5, 2, 6, 3, 8, 10, 9, 12, 11, 4, 8, 10, 9, 4, 5, 6, 3, 11, 12 };
@@ -70,6 +72,17 @@ namespace Catan.Core.Engine
         public GameState(HexMap map)
         {
             Map = map;
+        }
+
+        public void InitializeNewGame(int playerCount, float mapSize)
+        {
+            Map.GenerateFullMap(mapSize);
+
+            ReadyPlayer(playerCount);
+            ReadyBoard();
+            ReadyFieldList();
+            GiveHexesData(Map.HexList);
+            PrepareDevelopmentDeck();
         }
 
         public void ReadyFieldList()
@@ -642,6 +655,11 @@ namespace Catan.Core.Engine
         public int GetRolledNumber()
         {
             return LastRoll;
+        }
+
+        public int GetBlockedHexId()
+        {
+            return Map.HexList.Find(h => h.isBlocked).Id;
         }
 
         // setters //

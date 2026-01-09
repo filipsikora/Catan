@@ -305,5 +305,18 @@ namespace Catan.Core.Engine
                 CreatePort(i);
             }
         }
+
+        public void GenerateFullMap(float size)
+        {
+            GenerateHexesInAxial();
+            ConvertHexToPixel(size);
+            GenerateVerticesInPixel(size);
+            AddVerticesToHex(size);
+            SortAndIDVertices();
+            GenerateEdgesInPixels(size);
+            SortAndIDEdges();
+            GetPortsEdges();
+            SetPorts();
+        }
     }
 }
