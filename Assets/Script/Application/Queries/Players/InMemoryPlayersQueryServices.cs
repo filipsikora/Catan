@@ -37,5 +37,12 @@ namespace Catan.Application.Queries.Players
 
             return new PlayerDataSnapshot(player.Name, playerBuildingsLeft, player.Points, player.KnightsUsed, player.VictoryPointsCardsUsed, player.ExtraPoints);
         }
+
+        public CurrentPlayerIdSnapshot GetCurrentPlayerId()
+        {
+            var currentPlayerId = _game.GetCurrentPlayer().ID;
+
+            return new CurrentPlayerIdSnapshot(currentPlayerId);
+        }
     }
 }

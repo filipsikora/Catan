@@ -3,6 +3,7 @@ using Catan.Core.Engine;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
+using Catan.Unity.Communication.InternalUIEvents;
 
 namespace Catan.Core.Phases.Handlers
 {
@@ -68,8 +69,8 @@ namespace Catan.Core.Phases.Handlers
                 Bus.Publish(new ActionRejectedEvent(_victimId, result.Reason));
             }
 
-            Bus.Publish(new PlayerStateChangedEvent(_thiefId));
-            Bus.Publish(new PlayerStateChangedEvent(_victimId));
+            Bus.Publish(new PlayerStateChangedUIEvent(_thiefId));
+            Bus.Publish(new PlayerStateChangedUIEvent(_victimId));
 
             FinishPhase();
         }

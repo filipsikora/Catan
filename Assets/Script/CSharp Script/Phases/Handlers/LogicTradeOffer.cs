@@ -52,7 +52,7 @@ namespace Catan.Core.Phases.Handlers
                 _cardsDesired.SubtractExactAmount(signal.Type, 1);
             }
 
-            bool hasDesired = _cardsDesired.ResourceDictionary.Values.Sum() > 0;
+            bool hasDesired = _cardsDesired.Total() > 0;
 
             Bus.Publish(new DesiredCardsChangedEvent(hasDesired));
         }

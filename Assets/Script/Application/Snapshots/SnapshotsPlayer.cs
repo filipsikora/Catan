@@ -33,4 +33,14 @@ namespace Catan.Application.Snapshots
             ExtraPoints = extraPoints;
         }
     }
+
+    public sealed class CurrentPlayerIdSnapshot
+    {
+        public int CurrentPlayerId;
+
+        public CurrentPlayerIdSnapshot(int currentPlayerId)
+        {
+            CurrentPlayerId = currentPlayerId;
+        }
+    }
 }

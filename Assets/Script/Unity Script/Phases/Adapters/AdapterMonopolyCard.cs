@@ -1,9 +1,11 @@
 ﻿using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
+using Catan.Shared.Data;
 using Catan.Unity.Communication.InternalUIEvents;
 using Catan.Unity.Communication.InternalUICommands;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
+using Catan.Unity.Data;
 
 namespace Catan.Unity.Phases.Adapters
 {
@@ -27,11 +29,11 @@ namespace Catan.Unity.Phases.Adapters
 
         private void OnResourceSelected(ResourceSelectedEvent signal)
         {
-            EventBus.Publish(new MultipleResourceCardVisualStateResetUICommand(Shared.Data.EnumResourceCardLocation.DesiredTrade));
+            EventBus.Publish(new MultipleResourceCardVisualStateResetUICommand(EnumResourceCardLocation.DesiredTrade));
 
             if (signal.Type != null)
             {
-                EventBus.Publish(new ResourceCardTypeVisualStateChangedUICommand(signal.Type, Data.EnumResourceCardVisualState.Highlighted));
+                EventBus.Publish(new ResourceCardTypeVisualStateChangedUICommand(signal.Type, EnumResourceCardVisualState.Highlighted));
             }
 
             UI.CardSelectorPanel.AcceptCardsButton.gameObject.SetActive(signal.Selected);
@@ -56,7 +58,6 @@ namespace Catan.Unity.Phases.Adapters
             VisualsUI.SetMainAndPlayerUIVisibility(true, UI.MainUIPanel, UI.PlayerUIPanel);
             UI.CardSelectorPanel.AcceptCardsButton.gameObject.SetActive(false);
             UI.CardSelectorPanel.gameObject.SetActive(false);
-            UI.PlayerUIPanel.UpdatePlayerInfo(ManagerGame.Instance.Game.GetCurrentPlayer());
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using Catan.Unity.Phases.Binders;
+﻿using Catan.Core.Models;
+using Catan.Unity.Communication.InternalUIEvents;
+using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
 
 namespace Catan.Unity.Phases.Adapters
@@ -27,6 +29,10 @@ namespace Catan.Unity.Phases.Adapters
 
             UI.DevelopmentCardsPanel.gameObject.SetActive(false);
             VisualsUI.SetMainAndPlayerUIVisibility(true, UI.MainUIPanel, UI.PlayerUIPanel);
+
+            var currentPlayerIdSnapshot = Manager.PlayersQueryService.GetCurrentPlayerId();
+
+            EventBus.Publish(new PlayerStateChangedUIEvent(currentPlayerIdSnapshot.CurrentPlayerId));
         }
     }
 }

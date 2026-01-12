@@ -1,6 +1,7 @@
 ﻿using Catan.Core.Conditions;
 using Catan.Core.Models;
 using Catan.Core.Results;
+using System.Collections.Generic;
 
 namespace Catan.Core.Rules
 {
@@ -14,6 +15,15 @@ namespace Catan.Core.Rules
                 ConditionsDevCards.IsNotUsed(card),
                 ConditionsDevCards.IsOwner(card, player),
                 ConditionsDevCards.CanBePlayedNow(card, afterRoll));
+        }
+
+        public static ResultCondition CanBuyDevCard(Player player, DevelopmentCard? card, List<DevelopmentCard> devCardsLeft)
+        {
+            return ResultCondition.Combine(
+                ConditionsDevCards.DevCardsLeft(devCardsLeft.Count),
+                ConditionsDevCards.DevCardExists(card),
+                ConditionsDevCards.IsNotOwned(card),
+                ConditionsResources.CanAfford(player.Resources, DevelopmentCard.Cost));
         }
     }
 }

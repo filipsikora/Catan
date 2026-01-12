@@ -1,6 +1,8 @@
 ﻿using Catan.Core.Models;
 using Catan.Shared.Data;
 using Catan.Core.Results;
+using NUnit.Framework;
+using System.Collections.Generic;
 
 namespace Catan.Core.Conditions
 {
@@ -51,6 +53,26 @@ namespace Catan.Core.Conditions
             if (card.IsNew)
             {
                 return ResultCondition.Fail(ConditionFailureReason.CardIsNew);
+            }
+
+            return ResultCondition.Ok();
+        }
+
+        public static ResultCondition IsNotOwned(DevelopmentCard card)
+        {
+            if (card.Owner == null)
+            {
+                return ResultCondition.Fail(ConditionFailureReason.IsAlreadyOwned);
+            }
+
+            return ResultCondition.Ok();
+        }
+
+        public static ResultCondition DevCardsLeft(int devCardsLeft)
+        {
+            if (devCardsLeft <= 0)
+            {
+                return ResultCondition.Fail(ConditionFailureReason.NoDevelopmentCardsLeft);
             }
 
             return ResultCondition.Ok();

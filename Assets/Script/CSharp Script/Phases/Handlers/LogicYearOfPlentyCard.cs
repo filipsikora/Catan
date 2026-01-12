@@ -60,7 +60,7 @@ namespace Catan.Core.Phases.Handlers
                 }
             }
 
-            bool canAccept = _cardsDesired.ResourceDictionary.Values.Sum() == _cardsToReceive;
+            bool canAccept = _cardsDesired.Total() == _cardsToReceive;
 
             Bus.Publish(new SelectionChangedEvent(canAccept));
         }

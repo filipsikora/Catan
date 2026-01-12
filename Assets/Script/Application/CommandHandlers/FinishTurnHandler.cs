@@ -1,7 +1,6 @@
 ﻿using Catan.Core.Engine;
 using Catan.Core.Models;
 using Catan.Core.Results;
-using System.Runtime.ExceptionServices;
 
 namespace Catan.Application.CommandHandlers
 {
@@ -40,7 +39,7 @@ namespace Catan.Application.CommandHandlers
             _game.AdvanceToNextPlayerMutation(nextIndex);
             _game.WinCheck();
 
-                return new ResultFinishTurn(_game.CurrentPlayer.ID, initialRoundsRemaining);
+            return new ResultFinishTurn(_game.CurrentPlayer.ID, initialRoundsRemaining);
         }
     }
 }

@@ -4,7 +4,6 @@ using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
 using Catan.Shared.Data;
-using TMPro.EditorUtilities;
 
 namespace Catan.Core.Phases.Handlers
 {
@@ -54,7 +53,6 @@ namespace Catan.Core.Phases.Handlers
                 case EndTurnCommand c:
                     HandleTurnEnded(c);
                     break;
-
             }
         }
 

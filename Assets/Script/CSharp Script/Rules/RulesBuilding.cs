@@ -2,7 +2,6 @@
 using Catan.Core.Engine;
 using Catan.Core.Models;
 using Catan.Core.Results;
-using Catan.Shared.Data;
 
 namespace Catan.Core.Rules
 {
@@ -31,7 +30,7 @@ namespace Catan.Core.Rules
         {
             return ResultCondition.Combine(
                 ConditionsBuildings.PositionExists(vertex.Id, id => game.Map.GetVertexById(id)),
-                ConditionsResources.CanAfford(player.Resources, BuildingDataRegistry.Cost[typeof(BuildingVillage)]),
+                ConditionsResources.CanAfford(player.Resources, BuildingVillage.Cost),
                 ConditionsBuildings.HasAvailable<BuildingVillage>(player),
                 ConditionsBuildings.IsNotOwned(vertex),
                 ConditionsBuildings.NoSettlementsInRange(vertex),
@@ -42,7 +41,7 @@ namespace Catan.Core.Rules
         {
             return ResultCondition.Combine(
                 ConditionsBuildings.PositionExists(edge.Id, id => game.Map.GetEdgeById(id)),
-                ConditionsResources.CanAfford(player.Resources, BuildingDataRegistry.Cost[typeof(BuildingRoad)]),
+                ConditionsResources.CanAfford(player.Resources, BuildingRoad.Cost),
                 ConditionsBuildings.HasAvailable<BuildingRoad>(player),
                 ConditionsBuildings.IsNotOwned(edge),
                 ConditionsBuildings.HasAccessToPosition(player, edge));
@@ -52,6 +51,7 @@ namespace Catan.Core.Rules
         {
             return ResultCondition.Combine(
                 ConditionsBuildings.PositionExists(vertex.Id, id => game.Map.GetVertexById(id)),
+                ConditionsResources.CanAfford(player.Resources, BuildingTown.Cost),
                 ConditionsBuildings.HasAvailable<BuildingTown>(player),
                 ConditionsBuildings.HasVillage(player, vertex));
         }

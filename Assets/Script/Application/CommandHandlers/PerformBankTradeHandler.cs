@@ -19,11 +19,11 @@ namespace Catan.Application.CommandHandlers
             var player = _game.GetCurrentPlayer();
             var ratio = _game.GetTradeRatio(offered);
 
-            var isAllowed = RulesTrade.CanTradeWithBank(player, _game.Bank, offered, desired, ratio);
+            var result = RulesTrade.CanTradeWithBank(player, _game.Bank, offered, desired, ratio);
 
-            if (!isAllowed.Success)
+            if (!result.Success)
             {
-                return ResultBankTrade.Fail(player.ID, isAllowed.Reason);
+                return ResultBankTrade.Fail(player.ID, result.Reason);
             }
 
             _game.BankTradeDoneMutation(player, offered, desired, ratio);

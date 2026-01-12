@@ -18,6 +18,8 @@
         AlreadyUsed,
         InvalidSelection,
         ResourceNotOwned,
-        NotNextToLastVillage
+        NotNextToLastVillage,
+        IsAlreadyOwned,
+        InvalidResourceCost
     }
 }

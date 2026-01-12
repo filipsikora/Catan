@@ -27,7 +27,7 @@ namespace Catan.Unity.Visuals.Controllers
 
         public void OnRoadPlaced(RoadPlacedUIEvent signal)
         {
-            var (a, b, mid, rotation) = _board.GetEdgeVisualData(signal.EdgeId);
+            var (a, b, mid, direction, rotation) = _board.GetEdgeVisualData(signal.EdgeId);
             var playerColor = RegistryPlayerColor.GetColor(signal.OwnerId);
 
             _board.PlaceObject(ManagerGame.Instance.CubeRoadPrefab, mid, rotation, playerColor, ManagerGame.Instance.Board);

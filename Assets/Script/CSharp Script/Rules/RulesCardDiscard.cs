@@ -10,7 +10,7 @@ namespace Catan.Core.Rules
     {
         public static int RequiredDiscardCount(Player player)
         {
-            int total = player.Resources.ResourceDictionary.Values.Sum();
+            int total = player.Resources.Total();
             int required = (int)Math.Ceiling(total / 2.0);
 
             return required;
@@ -20,7 +20,7 @@ namespace Catan.Core.Rules
         {
             int required = RequiredDiscardCount(player);
 
-            return ResultCondition.Combine(ConditionsResources.HasExactResourcesNumber(selectedCards, required));
+            return ConditionsResources.HasExactResourcesNumber(selectedCards, required);
         }
     }
 }

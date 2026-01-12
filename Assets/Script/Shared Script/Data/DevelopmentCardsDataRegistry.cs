@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Catan.Core.Models;
+using System.Collections.Generic;
 
 namespace Catan.Shared.Data
 {
@@ -12,5 +13,7 @@ namespace Catan.Shared.Data
             { EnumDevelopmentCardTypes.RoadBuilding, 2 },
             { EnumDevelopmentCardTypes.YearOfPlenty, 2 }
         };
+
+        public static readonly ResourceCostOrStock Cost = new(1,0, 1, 1, 0);
     }
 }

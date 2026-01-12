@@ -76,7 +76,6 @@ namespace Catan.Unity.Phases.Adapters
             _binder.Unbind();
 
             Manager.BoardVisuals.ResetMarkedPositions();
-            UI.UpdateTurnCounter(Manager.Game.Turn);
 
             EventBus.Unsubscribe<VertexHighlightedEvent>(OnVertexClicked);
             EventBus.Unsubscribe<EdgeHighlightedEvent>(OnEdgeClicked);

@@ -7,5 +7,7 @@ namespace Catan.Application.Queries.Players
         PlayerResourcesSnapshot GetPlayersCards(int playerId);
 
         PlayerDataSnapshot GetPlayersData(int playerId);
+
+        CurrentPlayerIdSnapshot GetCurrentPlayerId();
     }
 }

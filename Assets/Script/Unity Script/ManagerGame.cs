@@ -153,7 +153,7 @@ namespace Catan.Unity
             ControllerResourceCardsUI = new ControllerResourceCardsUI(EventBus);
             ControllerLogMessagesUI = new ControllerLogMessagesUI(EventBus, UIManager.LogsPanel);
             ControllerPlayerUI = new ControllerPlayerUI(PlayersQueryService, UIManager.PlayerUIPanel, EventBus);
-            ControllerPlacingBuildings = new ControllerPlacingBuildings(EventBus);
+            ControllerPlacingBuildings = new ControllerPlacingBuildings(EventBus, BoardVisuals);
             ControllerPlacingRobber = new ControllerPlacingRobber(EventBus, BoardVisuals);
         }
 
@@ -167,12 +167,6 @@ namespace Catan.Unity
 
         wybor imienia i koloru
 
-        rozmiar kart na panelach
-
-        refaktor unity
-
-        dodatkowy złodziej
-
         5. auto register auto binder auto subscribe
 
         nullable cleanup
@@ -182,8 +176,6 @@ namespace Catan.Unity
         2. normal round onexit resetselection check
 
         3. make safeguards into core not ui check
-
-        4. board controller
 
         6. merge unity
 
@@ -216,6 +208,16 @@ namespace Catan.Unity
         remove models from logic rounds
 
         iscurrentplayercheck
+
+        remove data from shared, add queries
+
+        controllers discarding
+
+        remove models from data
+
+        dev cards lists in game -> dev cards id lists in game
+
+        determine random and extract it from game
         */
     }
 }

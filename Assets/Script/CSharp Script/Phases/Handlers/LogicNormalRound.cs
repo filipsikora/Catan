@@ -1,18 +1,30 @@
-﻿using Catan.Core.Engine;
+﻿using Catan.Application.CommandHandlers;
+using Catan.Core.Engine;
 using Catan.Core.Models;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
-using System.Linq;
 
 namespace Catan.Core.Phases.Handlers
 {
     public class LogicNormalRound : BaseBuildPhaseLogic
     {
         private readonly ResourceCostOrStock _selected = new();
-        private bool _afterRoll = true;
 
-        public LogicNormalRound(GameState game, EventBus bus) : base(game, bus) { }
+        private BuildVillageHandler _handlerVillage;
+        private BuildRoadHandler _handlerRoad;
+        private UpgradeVillageHandler _handlerTown;
+        private BuyDevCardHandler _handlerBuyDevCard;
+        private FinishTurnHandler _handlerTurn;
+
+        public LogicNormalRound(GameState game, EventBus bus) : base(game, bus)
+        {
+            _handlerVillage = new BuildVillageHandler(game);
+            _handlerRoad = new BuildRoadHandler(game);
+            _handlerTown = new UpgradeVillageHandler(game);
+            _handlerBuyDevCard = new BuyDevCardHandler(game);
+            _handlerTurn = new FinishTurnHandler(game);
+        }
 
         public override void Enter() { }
 
@@ -62,10 +74,6 @@ namespace Catan.Core.Phases.Handlers
                     HandleDevelopmentCardsBuyRequested(c);
                     break;
 
-                case RequestRolledNumberCommand c:
-                    Bus.Publish(new DiceRolledEvent(Game.GetRolledNumber()));
-                    break;
-
 
                 case ShowDevelopmentCardsCommand c:
                     Bus.Publish(new ProceedToDevelopmentCardsEvent());
@@ -85,7 +93,7 @@ namespace Catan.Core.Phases.Handlers
                 _selected.SubtractExactAmount(signal.Type, 1);
             }
 
-            bool canTrade = _selected.ResourceDictionary.Values.Sum() > 0;
+            bool canTrade = _selected.Total() > 0;
 
             Bus.Publish(new SelectionChangedEvent(canTrade));
         }
@@ -116,9 +124,10 @@ namespace Catan.Core.Phases.Handlers
 
         private void HandleVillageRequested(BuildVillageCommand signal)
         {
+            int playerId = Game.GetCurrentPlayer().ID;
             int id = SelectedVertexId.Value;
             var vertex = Game.Map.GetVertexById(id);
-            var result = Game.BuildVillage(Game.CurrentPlayer, vertex);
+            var result = _handlerVillage.Handle(playerId, vertex);
 
             ResetSelection();
 
@@ -133,9 +142,10 @@ namespace Catan.Core.Phases.Handlers
 
         private void HandleRoadRequested(BuildRoadCommand signal)
         {
+            int playerId = Game.GetCurrentPlayer().ID;
             int id = SelectedEdgeId.Value;
             var edge = Game.Map.GetEdgeById(id);
-            var result = Game.BuildRoad(Game.CurrentPlayer, edge);
+            var result = _handlerRoad.Handle(playerId, edge);
 
             ResetSelection();
 
@@ -150,9 +160,10 @@ namespace Catan.Core.Phases.Handlers
 
         private void HandleTownRequested(UpgradeVillageCommand signal)
         {
+            int playerId = Game.GetCurrentPlayer().ID;
             int id = SelectedVertexId.Value;
             var vertex = Game.Map.GetVertexById(id);
-            var result = Game.UpgradeVillage(Game.CurrentPlayer, vertex);
+            var result = _handlerTown.Handle(playerId, vertex);
 
             ResetSelection();
 
@@ -167,7 +178,7 @@ namespace Catan.Core.Phases.Handlers
 
         private void HandleTradeRequested(OfferTradeCommand signal)
         {
-            if (_selected.ResourceDictionary.Values.Sum() == 0)
+            if (_selected.Total() == 0)
                 return;
 
             Bus.Publish(new NormalRoundToOfferTradeEvent(_selected));
@@ -175,30 +186,23 @@ namespace Catan.Core.Phases.Handlers
 
         private void HandleEndTurnRequested(EndTurnCommand signal)
         {
-            Game.EndTurn();
-            Game.SetAfterRollTo(false);
-
-            foreach (int id in Game.CurrentPlayer.DevelopmentCardsByID)
-            {
-                DevelopmentCard card = Game.DevelopmentCardsDeckAll.Find(c => c.ID == id);
-                card.IsNew = false;
-            }
+            var result = _handlerTurn.Handle(Game.GetCurrentPlayer());
 
             Bus.Publish(new NormalRoundToBeforeRollEvent());
         }
 
         private void HandleDevelopmentCardsBuyRequested(BuyDevelopmentCardCommand signal)
         {
-            var result = Game.BuyDevelopmentCard(Game.CurrentPlayer);
+            var playerId = Game.GetCurrentPlayer().ID;
+            var result = _handlerBuyDevCard.Handle(playerId, Game.DevelopmentCardsDeckAvailable);
 
             if (!result.Success)
             {
-                Bus.Publish(new ActionRejectedEvent(Game.CurrentPlayer.ID, result.Reason));
+                Bus.Publish(new ActionRejectedEvent(playerId, result.Reason));
                 return;
             }
 
-            var card = result.Value;
-            Bus.Publish(new DevelopmentCardBoughtEvent(card.ID));
+            Bus.Publish(new DevelopmentCardBoughtEvent(result.DevCardId));
         }
     }
 }

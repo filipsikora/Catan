@@ -1,4 +1,0 @@
-﻿namespace Catan.Application.Snapshots
-{
-    
-}

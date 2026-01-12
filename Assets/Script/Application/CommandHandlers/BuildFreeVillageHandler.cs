@@ -29,11 +29,6 @@ namespace Catan.Application.CommandHandlers
 
             _game.VillageBuiltMutation(player, vertex, secondVillage);
 
-            if (secondVillage)
-            {
-                _game.GiveResourcesForSecondVillageMutation(player, vertex);
-            }
-
             return ResultBuildFreeVillage.Ok(playerId, vertex);
         }
     }

@@ -45,8 +45,6 @@ namespace Catan.Core.Phases.Handlers
                 return;
             }
 
-            Bus.Publish(new PlayerStateChangedEvent(player.ID));
-
             switch (card.Type)
             {
                 case EnumDevelopmentCardTypes.Knight:

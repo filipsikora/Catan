@@ -1,4 +1,5 @@
-﻿using Catan.Shared.Communication;
+﻿using Catan.Application.Snapshots;
+using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
 using Catan.Unity.Communication.InternalUICommands;
@@ -7,23 +8,21 @@ using Catan.Unity.Data;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
 using UnityEngine;
-using static Catan.Shared.Communication.Events.ResourcesAvailabilityEvent;
+using Core.Unity.Communication.InternalUIEvents;
 
 namespace Catan.Unity.Phases.Adapters
 {
     public class AdapterNormalRound : BasePhaseAdapter
     {
         private BinderNormalRound _binder;
+        private TurnDataSnapshot _turnDataSnapshot;
 
         public override void OnEnter()
         {
             _binder = new BinderNormalRound(UI, EventBus);
             _binder.Bind();
 
-            VisualsUI.SetMainAndPlayerUIVisibility(true, UI.MainUIPanel, UI.PlayerUIPanel);
-            UI.UpdatePlayerInfo(Manager.Game.GetCurrentPlayer());
-            VisualsUI.ShowNextTurnUI(UI.MainUIPanel);
-            
+            _turnDataSnapshot = Manager.TurnsQueryService.GetTurnData();            
 
             EventBus.Subscribe<SelectionChangedEvent>(OnTradePossible);
 
@@ -38,17 +37,15 @@ namespace Catan.Unity.Phases.Adapters
             EventBus.Subscribe<DevelopmentCardBoughtEvent>(OnDevelopmentCardBought);
 
             EventBus.Subscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
-            EventBus.Subscribe<DiceRolledEvent>(OnDiceRolled);
 
             UI.HideTradeOfferButton();
             VisualsUI.ResetResourceCardsInParent(UI.PlayerUIPanel.ResourceCardsPanel);
 
-            EventBus.Publish(new RequestRolledNumberCommand());
-        }
+            VisualsUI.SetMainAndPlayerUIVisibility(true, UI.MainUIPanel, UI.PlayerUIPanel);
+            VisualsUI.ShowNextTurnUI(UI.MainUIPanel);
+            UI.MainUIPanel.UpdateRolledDice(_turnDataSnapshot.TurnNumber);
 
-        private void OnDiceRolled(DiceRolledEvent signal)
-        {
-            UI.MainUIPanel.UpdateRolledDice(signal.RolledNumber);
+            EventBus.Publish(new PlayerStateChangedUIEvent(_turnDataSnapshot.PlayerId));
         }
 
         private void OnTradePossible(SelectionChangedEvent signal)
@@ -88,44 +85,31 @@ namespace Catan.Unity.Phases.Adapters
 
         private void OnVillagePlaced(VillagePlacedEvent signal)
         {
-            var vertexObject = Manager.BoardVisuals.GetVertexObject(signal.VertexId);
-            Vector3 pos = vertexObject.transform.position;
-            var playerColor = RegistryPlayerColor.GetColor(Manager.Game.CurrentPlayer.ID);
-
-            var villageObject = Manager.BoardVisuals.PlaceObject(Manager.CubeVillagePrefab, pos, null, playerColor, Manager.Board);
-
             Manager.BoardVisuals.ResetMarkedPositions();
-            UI.UpdatePlayerInfo(Manager.Game.CurrentPlayer);
+
+            EventBus.Publish(new VillagePlacedUIEvent(signal.VertexId, _turnDataSnapshot.PlayerId));
+            EventBus.Publish(new PlayerStateChangedUIEvent(_turnDataSnapshot.PlayerId));
         }
 
         private void OnRoadPlaced(RoadPlacedEvent signal)
         {
-            var edge = Manager.Game.Map.GetEdgeById(signal.EdgeId);
-            var (_, _, mid) = Manager.BoardVisuals.GetEdgePositions(edge);
-            var rotation = Manager.BoardVisuals.GetEdgeRotation(edge);
-            var playerColor = RegistryPlayerColor.GetColor(Manager.Game.CurrentPlayer.ID);
-
-            Manager.BoardVisuals.PlaceObject(Manager.CubeRoadPrefab, mid, rotation, playerColor, Manager.Board);
-
             Manager.BoardVisuals.ResetMarkedPositions();
-            UI.UpdatePlayerInfo(Manager.Game.CurrentPlayer);
+
+            EventBus.Publish(new RoadPlacedUIEvent(signal.EdgeId, _turnDataSnapshot.PlayerId));
+            EventBus.Publish(new PlayerStateChangedUIEvent(_turnDataSnapshot.PlayerId));
         }
 
         private void OnTownPlaced(TownPlacedEvent signal)
         {
-            var vertexObject = Manager.BoardVisuals.GetVertexObject(signal.VertexId);
-            Vector3 pos = vertexObject.transform.position;
-            var playerColor = RegistryPlayerColor.GetColor(Manager.Game.CurrentPlayer.ID);
-
-            var villageObject = Manager.BoardVisuals.PlaceObject(Manager.CubeTownPrefab, pos, null, playerColor, Manager.Board);
-
             Manager.BoardVisuals.ResetMarkedPositions();
-            UI.UpdatePlayerInfo(Manager.Game.CurrentPlayer);
+
+            EventBus.Publish(new TownPlacedUIEvent(signal.VertexId, _turnDataSnapshot.PlayerId));
+            EventBus.Publish(new PlayerStateChangedUIEvent(_turnDataSnapshot.PlayerId));
         }
 
         private void OnDevelopmentCardBought(DevelopmentCardBoughtEvent signal)
         {
-            UI.UpdatePlayerInfo(Manager.Game.CurrentPlayer);
+            EventBus.Publish(new PlayerStateChangedUIEvent(_turnDataSnapshot.PlayerId));
         }
 
         private void OnResourceCardClicked(ResourceCardClickedUIEvent signal)
@@ -159,8 +143,7 @@ namespace Catan.Unity.Phases.Adapters
 
             Manager.BoardVisuals.ResetMarkedPositions();
             UI.HideTradeOfferButton();
-            UI.UpdatePlayerInfo(Manager.Game.CurrentPlayer);
-            UI.UpdateTurnCounter(Manager.Game.Turn);
+            UI.UpdateTurnCounter(_turnDataSnapshot.TurnNumber);
 
             EventBus.Unsubscribe<SelectionChangedEvent>(OnTradePossible);
 

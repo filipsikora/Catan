@@ -126,49 +126,6 @@ namespace Catan.Core.Engine
             LastRoll = diceOne + diceTwo;
         }
 
-        public ResultRollDice RollAndServePlayers()
-        {
-            var resultList = new List<ResultDistributeResources>();
-
-            RollDice();
-
-            if (Map == null)
-                return new ResultRollDice(LastRoll, resultList);
-
-            foreach (HexTile hex in Map.HexList)
-            {
-                if (hex.FieldType == EnumFieldTypes.Desert)
-                    continue;
-
-                if (hex.isBlocked)
-                    continue;
-
-                if (hex.FieldNumber == LastRoll)
-                {
-                    foreach (Vertex vertex in hex.AdjacentVertices)
-                    {
-                        if (!vertex.IsOwned)
-                            continue;
-
-                        else
-                        {
-                            int requested = vertex.HasVillage ? 1 : 2;
-                            Player owner = vertex.Owner;
-                            EnumResourceTypes type = hex.GetResourceType().GetValueOrDefault();
-
-                            int granted = Bank.SubtractUpTo(type, requested);
-                            owner.Resources.AddExactAmount(type, granted);
-
-                            var result = new ResultDistributeResources(owner.ID, type, requested, granted);
-                            resultList.Add(result);
-                        }
-                    }
-                }
-            }
-
-            return new ResultRollDice(LastRoll, resultList);
-        }
-
         public void ReadyPlayer(int playerNumber)
         {
             for (int i = 1; i <= playerNumber; i++)
@@ -243,102 +200,6 @@ namespace Catan.Core.Engine
             }
         }
 
-        public void PayCost<T>(Player player)
-            where T : Building, IBuildingData
-        {
-            var cost = BuildingDataRegistry.Cost[typeof(T)];
-
-            foreach (var resource in cost.ResourceDictionary.Keys)
-            {
-                player.Resources.ResourceDictionary[resource] -= cost.ResourceDictionary[resource];
-                Bank.ResourceDictionary[resource] += cost.ResourceDictionary[resource];
-            }
-        }
-
-        public Result<BuildingVillage> BuildVillage(Player player, Vertex vertex)
-        {
-            ResultCondition result;
-
-            result = Conditions.PositionExists(vertex.Id, id => Map.GetVertexById(id));
-            if (!result.Success)
-                return Result<BuildingVillage>.Fail(result.Reason);
-
-            result = Conditions.HasAccessToPosition(player, vertex);
-            if (!result.Success)
-                return Result<BuildingVillage>.Fail(result.Reason);
-
-            result = Conditions.IsNotOwned(vertex);
-            if (!result.Success)
-                return Result<BuildingVillage>.Fail(result.Reason);
-
-            result = Conditions.NoSettlementsInRange(vertex);
-            if (!result.Success)
-                return Result<BuildingVillage>.Fail(result.Reason);
-
-            result = Conditions.HasAvailable<BuildingVillage>(player);
-            if (!result.Success)
-                return Result<BuildingVillage>.Fail(result.Reason);
-
-            result = Conditions.CanAfford(player.Resources, BuildingDataRegistry.Cost[typeof(BuildingVillage)]);
-            if (!result.Success)
-                return Result<BuildingVillage>.Fail(result.Reason);
-
-            PayCost<BuildingVillage>(player);
-
-            var village = new BuildingVillage(player, vertex.X, vertex.Y, vertex);
-            player.Buildings.Add(village);
-
-            vertex.HasVillage = true;
-            vertex.Owner = player;
-
-            if (vertex.HasPort)
-            {
-                player.Ports.Add(vertex.Port);
-            }
-
-            player.CountPoints();
-
-            UpdateRoadChampion();
-
-            return Result<BuildingVillage>.Ok(village);
-        }
-
-        public Result<BuildingRoad> BuildRoad(Player player, Edge edge)
-        {
-            ResultCondition result;
-
-            result = Conditions.PositionExists(edge.Id, id => Map.GetEdgeById(id));
-            if (!result.Success)
-                return Result<BuildingRoad>.Fail(result.Reason);
-
-            result = Conditions.HasAccessToPosition(player, edge);
-            if (!result.Success)
-                return Result<BuildingRoad>.Fail(result.Reason);
-
-            result = Conditions.IsNotOwned(edge);
-            if (!result.Success)
-                return Result<BuildingRoad>.Fail(result.Reason);
-
-            result = Conditions.HasAvailable<BuildingVillage>(player);
-            if (!result.Success)
-                return Result<BuildingRoad>.Fail(result.Reason);
-
-            result = Conditions.CanAfford(player.Resources, BuildingDataRegistry.Cost[typeof(BuildingRoad)]);
-            if (!result.Success)
-                return Result<BuildingRoad>.Fail(result.Reason);
-
-            PayCost<BuildingRoad>(player);
-
-            var road = new BuildingRoad(player, edge.X, edge.Y, edge);
-            player.Buildings.Add(road);
-
-            edge.Owner = player;
-
-            UpdateRoadChampion();
-
-            return Result<BuildingRoad>.Ok(road);
-        }
-
         public void CheckChampionship(Player player, ref int currentMax, int playerMax, int required, ref Player? currentChampion)
         {
             if (playerMax >= required && playerMax > currentMax)
@@ -407,43 +268,6 @@ namespace Catan.Core.Engine
             LongestRoad = maxLength;
         }
 
-        public Result<BuildingTown> UpgradeVillage(Player player, Vertex vertex)
-        {
-            ResultCondition result;
-
-            result = Conditions.PositionExists(vertex.Id, id => Map.GetVertexById(id));
-            if (!result.Success)
-                return Result<BuildingTown>.Fail(result.Reason);
-
-            result = Conditions.HasAvailable<BuildingVillage>(player);
-            if (!result.Success)
-                return Result<BuildingTown>.Fail(result.Reason);
-
-            result = Conditions.CanAfford(player.Resources, BuildingDataRegistry.Cost[typeof(BuildingTown)]);
-            if (!result.Success)
-                return Result<BuildingTown>.Fail(result.Reason);
-
-            result = Conditions.HasVillage(player, vertex);
-            if (!result.Success)
-                return Result<BuildingTown>.Fail(result.Reason);
-
-            PayCost<BuildingTown>(player);
-
-            var town = new BuildingTown(player, vertex.X, vertex.Y, vertex);
-            var village = player.Buildings.FirstOrDefault(b => b is BuildingVillage v && v.Vertex == vertex);
-            player.Buildings.Remove(village);
-            player.Buildings.Add(town);
-
-            vertex.HasVillage = false;
-            vertex.HasTown = true;
-
-            player.CountPoints();
-
-            return Result<BuildingTown>.Ok(town);
-        }
-
-
-
         public (bool village, bool road, bool town) CheckBuildOptions(IPositionData position)
         {
             if (position is Vertex)
@@ -479,39 +303,6 @@ namespace Catan.Core.Engine
             DevelopmentCardsDeckAvailable = DevelopmentCardsDeckAvailable.OrderBy(_ => Random.Next()).ToList();
         }
 
-        public Result<DevelopmentCard> BuyDevelopmentCard(Player player)
-        {
-            var cost = new ResourceCostOrStock(Wheat: 1, Stone: 1, Wool: 1);
-
-            ResultCondition result;
-
-            result = Conditions.CanAfford(player.Resources, cost);
-            if (!result.Success)
-                return Result<DevelopmentCard>.Fail(result.Reason);
-
-            if (DevelopmentCardsDeckAvailable.Count == 0)
-            {
-                return Result<DevelopmentCard>.Fail(ConditionFailureReason.NoDevelopmentCardsLeft);
-            }
-
-            foreach (var type in cost.ResourceDictionary.Keys)
-            {
-                player.Resources.ResourceDictionary[type] -= cost.ResourceDictionary[type];
-                Bank.ResourceDictionary[type] += cost.ResourceDictionary[type];
-            }
-
-            var card = DevelopmentCardsDeckAvailable[0];
-            DevelopmentCardsDeckAvailable.RemoveAt(0);
-            player.DevelopmentCardsByID.Add(card.ID);
-
-            card.Owner = player;
-            card.IsNew = true;
-
-            return Result<DevelopmentCard>.Ok(card);
-        }
-
-
-
         public void UseKnight(Player player)
         {
             player.KnightsUsed++;
@@ -523,26 +314,6 @@ namespace Catan.Core.Engine
         {
             player.VictoryPointsCardsUsed++;
             player.CountPoints();
-        }
-
-        public List<ResultStealCards> UseMonopoly(EnumResourceTypes type)
-        {
-            var resultMonopolyCard = new List<ResultStealCards>();
-            var player = CurrentPlayer;
-
-            foreach (Player victim in PlayerList)
-            {
-                if (victim == player) continue;
-
-                int amount = victim.Resources.ResourceDictionary[type];
-                player.Resources.AddExactAmount(type, amount);
-                victim.Resources.SubtractExactAmount(type, amount);
-
-                var cardsStolen = new ResultStealCards(player.ID, victim.ID, type, amount);
-                resultMonopolyCard.Add(cardsStolen);
-            }
-
-            return resultMonopolyCard;
         }
 
         public IReadOnlyList<ResultDistributeResources> UseYearOfPlenty(ResourceCostOrStock cardsDesired)
@@ -671,9 +442,11 @@ namespace Catan.Core.Engine
 
         // mutators //
 
-        public void DiceRolledMutation()
+        public int DiceRolledMutation()
         {
             AfterRoll = true;
+
+            return LastRoll;
         }
 
         public void MarkDevCardsAsOldMutation(Player player)
@@ -712,8 +485,7 @@ namespace Catan.Core.Engine
 
         public void CardsDiscardedMutation(Player player, ResourceCostOrStock selectedCards)
         {
-            player.Resources.SubtractExact(selectedCards);
-            Bank.AddExact(selectedCards);
+            PayCostMutation(player, selectedCards);
         }
 
         public void CardStolenMutation(Player victim, EnumResourceTypes resource)
@@ -724,9 +496,10 @@ namespace Catan.Core.Engine
             victim.Resources.SubtractExactAmount(resource, 1);
         }
 
-        public void VillageBuiltMutation(Player player, Vertex vertex, bool secondVillage)
+        public void VillageBuiltMutation(Player player, Vertex vertex, bool secondVillage = false)
         {
             var village = new BuildingVillage(player, vertex.X, vertex.Y, vertex);
+
             player.Buildings.Add(village);
 
             vertex.HasVillage = true;
@@ -739,7 +512,7 @@ namespace Catan.Core.Engine
 
             if (secondVillage)
             {
-               
+                GiveResourcesForSecondVillageMutation(player, vertex);
             }
 
             player.CountPoints();
@@ -757,6 +530,38 @@ namespace Catan.Core.Engine
             UpdateRoadChampion();
         }
 
+        public void TownBuiltMutation(Player player, Vertex vertex)
+        {
+            var town = new BuildingTown(player, vertex.X, vertex.Y, vertex);
+            var village = player.Buildings.FirstOrDefault(b => b is BuildingVillage v && v.Vertex == vertex);
+
+            player.Buildings.Remove(village);
+            player.Buildings.Add(town);
+
+            vertex.HasVillage = false;
+            vertex.HasTown = true;
+
+            player.CountPoints();
+        }
+
+        public void VillagePaidAndBuiltMutation(Player player, Vertex vertex)
+        {
+            PayCostMutation(player, BuildingVillage.Cost);
+            VillageBuiltMutation(player, vertex);
+        }
+
+        public void RoadPaidAndBuiltMutation(Player player, Edge edge)
+        {
+            PayCostMutation(player, BuildingRoad.Cost);
+            RoadBuiltMutation(player, edge);
+        }
+
+        public void TownPaidAndBuiltMutation(Player player, Vertex vertex)
+        {
+            PayCostMutation(player, BuildingTown.Cost);
+            TownBuiltMutation(player, vertex);
+        }
+
         public void GiveResourcesForSecondVillageMutation(Player player, Vertex vertex)
         {
             foreach (HexTile hex in vertex.AdjacentHexTiles)
@@ -769,6 +574,87 @@ namespace Catan.Core.Engine
                     Bank.SubtractExactAmount(resourceType.Value, 1);
                 }
             }
+        }
+
+        public void PayCostMutation(Player player, ResourceCostOrStock cost)
+        {
+            foreach (var resource in cost.ResourceDictionary.Keys)
+            {
+                player.Resources.ResourceDictionary[resource] -= cost.ResourceDictionary[resource];
+                Bank.ResourceDictionary[resource] += cost.ResourceDictionary[resource];
+            }
+        }
+
+        public void BuyDevCardMutation(Player player, DevelopmentCard devCard)
+        {
+            PayCostMutation(player, DevelopmentCard.Cost);
+
+            DevelopmentCardsDeckAvailable.Remove(devCard);
+            player.DevelopmentCardsByID.Add(devCard.ID);
+
+            devCard.Owner = player;
+            devCard.IsNew = true;
+        }
+
+        public Dictionary<int, int> UseMonopolyMutation(EnumResourceTypes resource)
+        {
+            var victimsIdsAndAmounts = new Dictionary<int, int>();
+            var currentPlayer = GetCurrentPlayer();
+            var playerListCopy = PlayerList;
+
+            playerListCopy.Remove(currentPlayer);
+
+            foreach (var player in playerListCopy)
+            {
+                var amount = player.Resources.ResourceDictionary[resource];
+
+                currentPlayer.Resources.AddExactAmount(resource, amount);
+                player.Resources.SubtractExactAmount(resource, amount);
+                victimsIdsAndAmounts.Add(player.ID, amount);
+            }
+
+            return victimsIdsAndAmounts;
+        }
+
+        public List<ResultDistributeResources> ServePlayersMutation()
+        {
+            var resultList = new List<ResultDistributeResources>();
+
+            if (Map == null)
+                return resultList;
+
+            foreach (HexTile hex in Map.HexList)
+            {
+                if (hex.FieldType == EnumFieldTypes.Desert)
+                    continue;
+
+                if (hex.isBlocked)
+                    continue;
+
+                if (hex.FieldNumber == LastRoll)
+                {
+                    foreach (Vertex vertex in hex.AdjacentVertices)
+                    {
+                        if (!vertex.IsOwned)
+                            continue;
+
+                        else
+                        {
+                            int requested = vertex.HasVillage ? 1 : 2;
+                            Player owner = vertex.Owner;
+                            EnumResourceTypes type = hex.GetResourceType().GetValueOrDefault();
+
+                            int granted = Bank.SubtractUpTo(type, requested);
+                            owner.Resources.AddExactAmount(type, granted);
+
+                            var result = new ResultDistributeResources(owner.ID, type, requested, granted);
+                            resultList.Add(result);
+                        }
+                    }
+                }
+            }
+
+            return resultList;
         }
 
         // end //

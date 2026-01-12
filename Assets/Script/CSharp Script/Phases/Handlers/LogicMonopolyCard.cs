@@ -1,4 +1,5 @@
-﻿using Catan.Core.Engine;
+﻿using Catan.Application.CommandHandlers;
+using Catan.Core.Engine;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
@@ -9,8 +10,12 @@ namespace Catan.Core.Phases.Handlers
     public class LogicMonopolyCard : BasePhaseLogic
     {
         private EnumResourceTypes? _type;
+        private UseMonopolyHandler _handler;
 
-        public LogicMonopolyCard(GameState game, EventBus bus) : base(game, bus) { }
+        public LogicMonopolyCard(GameState game, EventBus bus) : base(game, bus)
+        {
+            _handler = new UseMonopolyHandler(game);
+        }
 
         public override void Enter() { }
 
@@ -48,17 +53,12 @@ namespace Catan.Core.Phases.Handlers
 
         private void HandleResourceAccepted(CardSelectionAcceptedCommand signal)
         {
-            if (_type == null)
-                return;
+            var result = _handler.Handle(_type.Value);
 
-            var resultMonopolyCard = Game.UseMonopoly(_type.Value);
-
-            foreach (var r in resultMonopolyCard)
+            if (!result.Success)
             {
-                if (r.Amount < 1)
-                    continue;
-
-                Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, $"Player{r.PlayerId} steals {r.Amount} {r.Type} from {r.VictimId}"));
+                Bus.Publish(new ActionRejectedEvent(Game.CurrentPlayer.ID, result.Reason));
+                return;
             }
 
             Bus.Publish(new ReturnToNormalRoundEvent());

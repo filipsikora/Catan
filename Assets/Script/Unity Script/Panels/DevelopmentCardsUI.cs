@@ -29,9 +29,8 @@ namespace Catan.Unity.Panels
 
             foreach (var card in cards)
             {
-                    DevelopmentCardFactory.DrawDevelopmentCard(card, CardsContainer);
-                
-            }    
+                DevelopmentCardFactory.DrawDevelopmentCard(card, CardsContainer);
+            }
         }
     }
 }
