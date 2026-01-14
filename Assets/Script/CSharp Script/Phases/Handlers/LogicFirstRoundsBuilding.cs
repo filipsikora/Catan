@@ -9,8 +9,8 @@ namespace Catan.Core.Phases.Handlers
 {
     public class LogicFirstRoundsBuilding : BaseBuildPhaseLogic
     {
-        BuildFreeVillageHandler _handlerVillage;
-        BuildFreeRoadHandler _handlerRoad;
+        BuildInitialVillageHandler _handlerVillage;
+        BuildInitialRoadHandler _handlerRoad;
         FinishTurnHandler _handlerTurn;
 
         private bool villagePlaced = false;
@@ -18,8 +18,8 @@ namespace Catan.Core.Phases.Handlers
 
         public LogicFirstRoundsBuilding(GameState game, EventBus bus) : base(game, bus)
         {
-            _handlerVillage = new BuildFreeVillageHandler(game);
-            _handlerRoad = new BuildFreeRoadHandler(game);
+            _handlerVillage = new BuildInitialVillageHandler(game);
+            _handlerRoad = new BuildInitialRoadHandler(game);
             _handlerTurn = new FinishTurnHandler(game);
         }
 

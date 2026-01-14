@@ -45,7 +45,7 @@ namespace Catan.Core.Phases.Handlers
 
             _thiefId = player.ID;
 
-            if (!Rules.RulesCardTheft.CanSteal(victim).Success)
+            if (!Rules.RulesRobber.CanSteal(victim).Success)
             {
                 Bus.Publish(new LogMessageEvent(Shared.Data.EnumLogTypes.Info, "Nothing to steal from this player"));
 

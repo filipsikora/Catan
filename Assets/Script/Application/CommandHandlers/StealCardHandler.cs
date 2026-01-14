@@ -20,7 +20,7 @@ namespace Catan.Application.CommandHandlers
             var thief = _game.GetPlayerById(thiefId);
             var victim = _game.GetPlayerById(victimId);
 
-            var result = RulesCardTheft.CanSteal(victim);
+            var result = RulesRobber.CanSteal(victim);
 
             if (!result.Success)
             {

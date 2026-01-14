@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Catan.Shared.Communication.Commands;
-using Catan.Core.Models;
+using Catan.Application.Snapshots;
 
 namespace Catan.Unity.Panels
 {
@@ -13,7 +13,7 @@ namespace Catan.Unity.Panels
         public Transform ButtonsContainer;
         public GameObject ButtonPlayerOptionPrefab;
 
-        public void Show(List<Player> potentialVictims)
+        public void Show(List<PlayerNameSnapshot> potentialVictimsData)
         {
             gameObject.SetActive(true);
 
@@ -22,16 +22,14 @@ namespace Catan.Unity.Panels
                 Destroy(child.gameObject);
             }
 
-            foreach (var player in potentialVictims)
+            foreach (var victimData in potentialVictimsData)
             {
                 var buttonObj = Instantiate(ButtonPlayerOptionPrefab, ButtonsContainer);
-                buttonObj.GetComponentInChildren<TextMeshProUGUI>().text = player.Name;
+                buttonObj.GetComponentInChildren<TextMeshProUGUI>().text = victimData.Name;
 
                 buttonObj.GetComponent<Button>().onClick.AddListener(() =>
                 {
-                    int victimId = player.ID;
-
-                    ManagerGame.Instance.EventBus.Publish(new VictimChosenCommand(victimId));
+                    ManagerGame.Instance.EventBus.Publish(new VictimChosenCommand(victimData.Id));
                     gameObject.SetActive(false);
                 });
             }

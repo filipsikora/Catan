@@ -3,7 +3,7 @@ using Catan.Shared.Data;
 
 namespace Catan.Core.Results
 {
-    public sealed class ResultBuildFreeVillage
+    public sealed class ResultBuildInitialVillage
     {
         public bool Success { get; }
         public ConditionFailureReason Reason { get; }
@@ -12,7 +12,7 @@ namespace Catan.Core.Results
         public Vertex Vertex { get; }
         public bool SecondVillage { get; }
 
-        public ResultBuildFreeVillage(bool success, ConditionFailureReason reason, int playerId, Vertex vertex)
+        public ResultBuildInitialVillage(bool success, ConditionFailureReason reason, int playerId, Vertex vertex)
         {
             Success = success;
             Reason = reason;
@@ -20,18 +20,18 @@ namespace Catan.Core.Results
             Vertex = vertex;
         }
 
-        public static ResultBuildFreeVillage Ok(int playerId, Vertex vertex)
+        public static ResultBuildInitialVillage Ok(int playerId, Vertex vertex)
         {
-            return new ResultBuildFreeVillage(true, ConditionFailureReason.None, playerId, vertex);
+            return new ResultBuildInitialVillage(true, ConditionFailureReason.None, playerId, vertex);
         }
 
-        public static ResultBuildFreeVillage Fail(ConditionFailureReason reason, int playerId, Vertex vertex)
+        public static ResultBuildInitialVillage Fail(ConditionFailureReason reason, int playerId, Vertex vertex)
         {
-            return new ResultBuildFreeVillage(false, reason, playerId, vertex);
+            return new ResultBuildInitialVillage(false, reason, playerId, vertex);
         }
     }
 
-    public sealed class ResultBuildFreeRoad
+    public sealed class ResultBuildInitialRoad
     {
         public bool Success { get; }
         public ConditionFailureReason Reason { get; }
@@ -39,7 +39,7 @@ namespace Catan.Core.Results
         public int PlayerId { get; }
         public Edge Edge { get; }
 
-        public ResultBuildFreeRoad(bool success, ConditionFailureReason reason, int playerId, Edge edge)
+        public ResultBuildInitialRoad(bool success, ConditionFailureReason reason, int playerId, Edge edge)
         {
             Success = success;
             Reason = reason;
@@ -47,14 +47,14 @@ namespace Catan.Core.Results
             Edge = edge;
         }
 
-        public static ResultBuildFreeRoad Ok(int playerId, Edge edge)
+        public static ResultBuildInitialRoad Ok(int playerId, Edge edge)
         {
-            return new ResultBuildFreeRoad(true, ConditionFailureReason.None, playerId, edge);
+            return new ResultBuildInitialRoad(true, ConditionFailureReason.None, playerId, edge);
         }
 
-        public static ResultBuildFreeRoad Fail(ConditionFailureReason reason, int playerId, Edge edge)
+        public static ResultBuildInitialRoad Fail(ConditionFailureReason reason, int playerId, Edge edge)
         {
-            return new ResultBuildFreeRoad(false, reason, playerId, edge);
+            return new ResultBuildInitialRoad(false, reason, playerId, edge);
         }
     }
 
@@ -136,6 +136,33 @@ namespace Catan.Core.Results
         public static ResultUpgradeVillage Fail(ConditionFailureReason reason, int playerId, Vertex vertex)
         {
             return new ResultUpgradeVillage(false, reason, playerId, vertex);
+        }
+    }
+
+    public sealed class ResultBuildFreeRoad
+    {
+        public bool Success { get; }
+        public ConditionFailureReason Reason { get; }
+
+        public int PlayerId { get; }
+        public Edge Edge { get; }
+
+        public ResultBuildFreeRoad(bool success, ConditionFailureReason reason, int playerId, Edge edge)
+        {
+            Success = success;
+            Reason = reason;
+            PlayerId = playerId;
+            Edge = edge;
+        }
+
+        public static ResultBuildFreeRoad Ok(int playerId, Edge edge)
+        {
+            return new ResultBuildFreeRoad(true, ConditionFailureReason.None, playerId, edge);
+        }
+
+        public static ResultBuildFreeRoad Fail(ConditionFailureReason reason, int playerId, Edge edge)
+        {
+            return new ResultBuildFreeRoad(false, reason, playerId, edge);
         }
     }
 }

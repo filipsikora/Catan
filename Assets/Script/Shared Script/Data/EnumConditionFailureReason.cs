@@ -20,6 +20,8 @@
         ResourceNotOwned,
         NotNextToLastVillage,
         IsAlreadyOwned,
-        InvalidResourceCost
+        InvalidResourceCost,
+        HexAlreadyBlocked,
+        SamePlayer
     }
 }

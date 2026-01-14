@@ -1,4 +1,5 @@
 ﻿using Catan.Application.Snapshots;
+using System.Collections.Generic;
 
 namespace Catan.Application.Queries.Players
 {
@@ -9,5 +10,11 @@ namespace Catan.Application.Queries.Players
         PlayerDataSnapshot GetPlayersData(int playerId);
 
         CurrentPlayerIdSnapshot GetCurrentPlayerId();
+
+        List<PlayerNameSnapshot> GetAllPlayersNames();
+
+        List<PlayerNameSnapshot> GetSomePlayersNames(List<int> potentialVictimsIds);
+
+        List<PlayerNameSnapshot> GetNotCurrentPlayersNames();
     }
 }

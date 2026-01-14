@@ -13,5 +13,25 @@ namespace Catan.Core.Rules
                 ConditionsTrade.PlayerHasEnoughResources(player, offered, ratio),
                 ConditionsTrade.BankHasEnoughResources(bank, desired));
         }
+
+        public static ResultCondition CanOfferTrade(Player seller, Player buyer, ResourceCostOrStock offered, ResourceCostOrStock desired)
+        {
+            return ResultCondition.Combine(
+                ConditionsTrade.CostIsValid(offered),
+                ConditionsTrade.CostIsValid(desired),
+                ConditionsResources.CanAfford(seller.Resources, offered),
+                ConditionsPlayer.PlayerExists(buyer),
+                ConditionsTrade.NotSamePLayer(seller.ID, buyer.ID));
+        }
+
+        public static ResultCondition CanAcceptTrade(Player seller, Player buyer, ResourceCostOrStock offered, ResourceCostOrStock desired)
+        {
+            return ResultCondition.Combine(
+                ConditionsTrade.CostIsValid(offered),
+                ConditionsTrade.CostIsValid(desired),
+                ConditionsResources.CanAfford(buyer.Resources, desired),
+                ConditionsPlayer.PlayerExists(seller),
+                ConditionsTrade.NotSamePLayer(seller.ID, buyer.ID));
+        }
     }
 }

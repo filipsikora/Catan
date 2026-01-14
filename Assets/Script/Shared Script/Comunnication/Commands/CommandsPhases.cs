@@ -8,7 +8,7 @@ namespace Catan.Shared.Communication.Commands
 
     public class RequestCardStealingStartCommand : ICommand { }
 
-    public class RequestTradeRequestValidatedCommand : ICommand { }
+    public class AcceptTradeRequestCommand : ICommand { }
 
     public class RequestRolledNumberCommand : ICommand { }
 }

@@ -9,17 +9,6 @@ namespace Catan.Core.Conditions
 {
     public static class ConditionsBuildings
     {
-        public static ResultCondition PositionExists(int id, Func<int, IPositionData?> getPositionFunc)
-        {
-            var position = getPositionFunc(id);
-
-            if (position == null)
-            {
-                return ResultCondition.Fail(ConditionFailureReason.DoesNotExist);
-            }
-            return ResultCondition.Ok();
-        }
-
         public static ResultCondition NoSettlementsInRange(Vertex vertex)
         {
             foreach (var position in vertex.NeighbourVertices)
@@ -54,26 +43,6 @@ namespace Catan.Core.Conditions
             }
 
             return ResultCondition.Fail(ConditionFailureReason.NoBuildingsAvailable);
-        }
-
-        public static ResultCondition IsNotOwned(IPositionData position)
-        {
-            if (position.Owner != null)
-            {
-                return ResultCondition.Fail(ConditionFailureReason.PositionOccupied);
-            }
-
-            return ResultCondition.Ok();
-        }
-
-        public static ResultCondition HasAccessToPosition(Player player, IPositionData position)
-        {
-            if (position.AccessibleByPlayer(player))
-            {
-                return ResultCondition.Ok();
-            }
-
-            return ResultCondition.Fail(ConditionFailureReason.NoAccess);
         }
 
         public static ResultCondition AdjacentToLastVillage(Edge edge, Vertex vertex)

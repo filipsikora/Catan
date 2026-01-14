@@ -44,5 +44,51 @@ namespace Catan.Application.Queries.Players
 
             return new CurrentPlayerIdSnapshot(currentPlayerId);
         }
+
+        public List<PlayerNameSnapshot> GetAllPlayersNames()
+        {
+            var allPlayersNamesList = new List<PlayerNameSnapshot>();
+
+            foreach (var player in _game.PlayerList)
+            {
+                var playerNameData = new PlayerNameSnapshot(player.ID, player.Name);
+
+                allPlayersNamesList.Add(playerNameData);
+            }
+
+            return allPlayersNamesList;
+        }
+
+        public List<PlayerNameSnapshot> GetSomePlayersNames(List<int> playersIds)
+        {
+            var playersData = new List<PlayerNameSnapshot>();
+
+            foreach (var playerId in playersIds)
+            {
+                var player = _game.GetPlayerById(playerId);
+                var playerNameData = new PlayerNameSnapshot(player.ID, player.Name);
+
+                playersData.Add(playerNameData);
+            }
+
+            return playersData;
+        }
+
+        public List<PlayerNameSnapshot> GetNotCurrentPlayersNames()
+        {
+            var playersData = new List<PlayerNameSnapshot>();
+            var currentPlayer = _game.GetCurrentPlayer();
+
+            foreach (var player in _game.PlayerList)
+            {
+                if (player == currentPlayer)
+                    continue;
+
+                var playerData = new PlayerNameSnapshot(player.ID, player.Name);
+                playersData.Add(playerData);
+            }
+
+            return playersData;
+        }
     }
 }

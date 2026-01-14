@@ -5,20 +5,20 @@ using Catan.Core.Rules;
 
 namespace Catan.Application.CommandHandlers
 {
-    public sealed class BuildFreeRoadHandler
+    public sealed class BuildInitialRoadHandler
     {
         private GameState _game;
 
-        public BuildFreeRoadHandler(GameState game)
+        public BuildInitialRoadHandler(GameState game)
         {
             _game = game;
         }
 
-        public ResultBuildInitialRoad Handle(int playerId, Edge edge)
+        public ResultBuildInitialRoad Handle(int playerId, Edge edge, Vertex vertex)
         {
             var player = _game.GetPlayerById(playerId);
 
-            var result = RulesBuilding.CanBuildFreeRoad(player, edge, _game);
+            var result = RulesBuilding.CanBuildInitialRoad(player, edge, vertex, _game);
 
             if (!result.Success)
             {

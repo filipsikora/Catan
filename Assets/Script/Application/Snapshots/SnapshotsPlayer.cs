@@ -43,4 +43,16 @@ namespace Catan.Application.Snapshots
             CurrentPlayerId = currentPlayerId;
         }
     }
+
+    public sealed class PlayerNameSnapshot
+    {
+        public int Id;
+        public string Name;
+
+        public PlayerNameSnapshot(int id, string name)
+        {
+            Id = id;
+            Name = name;
+        }
+    }
 }

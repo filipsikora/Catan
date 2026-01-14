@@ -5,31 +5,31 @@ using Catan.Core.Rules;
 
 namespace Catan.Application.CommandHandlers
 {
-    public sealed class BuildFreeVillageHandler
+    public sealed class BuildInitialVillageHandler
     {
         private GameState _game;
 
-        public BuildFreeVillageHandler(GameState game)
+        public BuildInitialVillageHandler(GameState game)
         {
             _game = game;
         }
 
-        public ResultBuildFreeVillage Handle(int playerId, Vertex vertex)
+        public ResultBuildInitialVillage Handle(int playerId, Vertex vertex)
         {
             var player = _game.GetPlayerById(playerId);
 
-            var result = RulesBuilding.CanBuildFreeVillage(player, vertex, _game);
+            var result = RulesBuilding.CanBuildInitialVillage(player, vertex, _game);
 
             if (!result.Success)
             {
-                return ResultBuildFreeVillage.Fail(result.Reason, playerId, vertex);
+                return ResultBuildInitialVillage.Fail(result.Reason, playerId, vertex);
             }
 
             var secondVillage = player.Points == 2;
 
             _game.VillageBuiltMutation(player, vertex, secondVillage);
 
-            return ResultBuildFreeVillage.Ok(playerId, vertex);
+            return ResultBuildInitialVillage.Ok(playerId, vertex);
         }
     }
 }

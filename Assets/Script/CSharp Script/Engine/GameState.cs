@@ -57,6 +57,8 @@ namespace Catan.Core.Engine
         public int PointsReward = 2;
         public int RequiredPoints = 10;
 
+        public PlayerTradeContext? LastPlayerTradeOffered { get; private set; }
+
         public Dictionary<EnumFieldTypes, int> FieldTypesAmount { get; set; } = new Dictionary<EnumFieldTypes, int>
             {
                 { EnumFieldTypes.Wheat, 4 },
@@ -178,18 +180,6 @@ namespace Catan.Core.Engine
             return adjacentPlayers;
         }
 
-        public void BlockHex(HexTile hex)
-        {
-            HexTile previouslyBlocked = Map.HexList.Find(h => h.isBlocked);
-
-            if (previouslyBlocked != null)
-            {
-                previouslyBlocked.isBlocked = false;
-            }
-
-            hex.isBlocked = true;
-        }
-
         public void ReadyBoard()
         {
             ReadyFieldList();
@@ -303,14 +293,14 @@ namespace Catan.Core.Engine
             DevelopmentCardsDeckAvailable = DevelopmentCardsDeckAvailable.OrderBy(_ => Random.Next()).ToList();
         }
 
-        public void UseKnight(Player player)
+        public void UseKnight(Player player) // ważne //
         {
             player.KnightsUsed++;
 
             CheckChampionship(player, ref MostKnightsUsed, player.KnightsUsed, RequiredKnights, ref KnightChampion);
         }
 
-        public void UseVictoryPoint(Player player)
+        public void UseVictoryPoint(Player player) // ważne //
         {
             player.VictoryPointsCardsUsed++;
             player.CountPoints();
@@ -481,6 +471,20 @@ namespace Catan.Core.Engine
 
             Bank.SubtractExactAmount(desired, 1);
             Bank.AddExactAmount(offered, ratio);
+        }
+
+        public void PlayerTradeDoneMutation(Player seller, Player buyer, ResourceCostOrStock offered, ResourceCostOrStock desired)
+        {
+            seller.Resources.AddExact(desired);
+            seller.Resources.SubtractExact(offered);
+
+            buyer.Resources.AddExact(offered);
+            buyer.Resources.SubtractExact(desired);
+        }
+
+        public void PlayerTradeOfferedContextMutation(int sellerId, int buyerId, string sellerName, string buyerName, ResourceCostOrStock offered, ResourceCostOrStock desired)
+        {
+            LastPlayerTradeOffered = new PlayerTradeContext(sellerId, buyerId, sellerName, buyerName, offered, desired);
         }
 
         public void CardsDiscardedMutation(Player player, ResourceCostOrStock selectedCards)
@@ -655,6 +659,11 @@ namespace Catan.Core.Engine
             }
 
             return resultList;
+        }
+
+        public void BlockHexMutation(HexTile hex)
+        {
+            hex.isBlocked = true;
         }
 
         // end //

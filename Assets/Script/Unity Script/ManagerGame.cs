@@ -54,6 +54,7 @@ namespace Catan.Unity
         public IPlayersQueryService PlayersQueryService { get; private set; }
         public ITurnsQueryService TurnsQueryService { get; private set; }
         public IBoardQueryService BoardsQueryService { get; private set; }
+        public ITradeQueryService TradeQueryService { get; private set; }
 
         public float Size = 1f;
         public Material WaterMaterial;
@@ -149,6 +150,7 @@ namespace Catan.Unity
             PlayersQueryService = new InMemoryPlayersQueryServices(Game);
             TurnsQueryService = new InMemoryTurnsQueryService(Game);
             BoardsQueryService = new InMemoryBoardQueryServices(Game);
+            TradeQueryService = new InMemoryTradeQueryServices(Game);
 
             ControllerResourceCardsUI = new ControllerResourceCardsUI(EventBus);
             ControllerLogMessagesUI = new ControllerLogMessagesUI(EventBus, UIManager.LogsPanel);
@@ -213,11 +215,17 @@ namespace Catan.Unity
 
         controllers discarding
 
+        controller highlighting
+
         remove models from data
 
         dev cards lists in game -> dev cards id lists in game
 
         determine random and extract it from game
+
+        location burdel
+
+        phasecontext gamestate
         */
     }
 }

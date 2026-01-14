@@ -9,6 +9,8 @@ using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
 using UnityEngine;
 using Core.Unity.Communication.InternalUIEvents;
+using NUnit.Framework;
+using System.Collections.Generic;
 
 namespace Catan.Unity.Phases.Adapters
 {
@@ -45,7 +47,12 @@ namespace Catan.Unity.Phases.Adapters
             VisualsUI.ShowNextTurnUI(UI.MainUIPanel);
             UI.MainUIPanel.UpdateRolledDice(_turnDataSnapshot.TurnNumber);
 
-            EventBus.Publish(new PlayerStateChangedUIEvent(_turnDataSnapshot.PlayerId));
+            var allPlayersData = Manager.PlayersQueryService.GetAllPlayersNames();
+
+            foreach (var player in allPlayersData)
+            {
+                EventBus.Publish(new PlayerStateChangedUIEvent(player.Id));
+            }
         }
 
         private void OnTradePossible(SelectionChangedEvent signal)
