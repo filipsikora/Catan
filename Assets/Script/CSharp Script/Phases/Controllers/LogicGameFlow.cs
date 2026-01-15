@@ -1,7 +1,6 @@
 ﻿using Catan.Core.Engine;
 using Catan.Core.Phases.Handlers;
 using Catan.Shared.Communication;
-using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
 using Catan.Shared.Data;
 

@@ -6,7 +6,6 @@ using Catan.Application.Queries.Resources;
 using Catan.Application.Queries.Turns;
 using Catan.Core.Engine;
 using Catan.Core.Phases.Controllers;
-using Catan.Core.Routing;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Events;
 using Catan.Shared.Data;

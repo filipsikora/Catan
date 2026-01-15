@@ -5,7 +5,6 @@ using Catan.Core.Rules;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
-using Catan.Unity.Communication.InternalUIEvents;
 using System.Collections.Generic;
 
 namespace Catan.Core.Phases.Handlers
@@ -89,8 +88,6 @@ namespace Catan.Core.Phases.Handlers
 
                 return;
             }
-
-            Bus.Publish(new PlayerStateChangedUIEvent(_currentPlayer.ID));
 
             ProceedToNextPlayer();
         }

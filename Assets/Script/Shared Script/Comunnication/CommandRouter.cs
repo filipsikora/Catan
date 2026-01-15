@@ -1,9 +1,8 @@
-﻿using Catan.Shared.Communication;
-using Catan.Shared.Interfaces;
+﻿using Catan.Shared.Interfaces;
 using Catan.Core.Phases.Controllers;
 using UnityEngine;
 
-namespace Catan.Core.Routing
+namespace Catan.Shared.Communication
 {
     public sealed class CommandRouter
     {

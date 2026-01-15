@@ -71,9 +71,6 @@ namespace Catan.Core.Phases.Handlers
                 return;
             }
 
-            Bus.Publish(new PlayerStateChangedUIEvent(_thiefId));
-            Bus.Publish(new PlayerStateChangedUIEvent(_victimId));
-
             FinishPhase();
         }
 

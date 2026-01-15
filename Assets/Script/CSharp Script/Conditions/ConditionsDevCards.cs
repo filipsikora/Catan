@@ -1,8 +1,6 @@
 ﻿using Catan.Core.Models;
 using Catan.Shared.Data;
 using Catan.Core.Results;
-using NUnit.Framework;
-using System.Collections.Generic;
 
 namespace Catan.Core.Conditions
 {
