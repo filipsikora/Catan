@@ -53,11 +53,11 @@ namespace Catan.Core.Phases.Handlers
             if (!result.Success)
                 return;
 
+            Bus.Publish(new RobberPlacedEvent(hex.Id));
+
             HandleVictimsAfterBlocking(hex, thief);
 
             clickableHexes = false;
-
-            Bus.Publish(new RobberPlacedEvent(hex.Id));
         }
 
         private void HandleVictimsAfterBlocking(HexTile hex, Player thief)

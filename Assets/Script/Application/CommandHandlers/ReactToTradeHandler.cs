@@ -23,12 +23,12 @@ namespace Catan.Application.CommandHandlers
 
             if (!result.Success)
             {
-                return new ResultPlayerTrade(false, result.Reason, sellerId, buyerId, offered, desired);
+                return ResultPlayerTrade.Fail(result.Reason, sellerId, buyerId);
             }
 
             _game.PlayerTradeDoneMutation(seller, buyer, offered, desired);
 
-            return new ResultPlayerTrade(true, Shared.Data.ConditionFailureReason.None, sellerId, buyerId, offered, desired);
+            return ResultPlayerTrade.Ok(sellerId, buyerId, offered, desired);
         }
     }
 }

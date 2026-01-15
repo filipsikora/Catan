@@ -8,7 +8,9 @@ namespace Catan.Core.Rules
     {
         public static ResultCondition CanSteal(Player victim)
         {
-            return ConditionsResources.HasAnyResources(victim);
+            return ResultCondition.Combine(
+                ConditionsResources.HasAnyResources(victim),
+                ConditionsPlayer.PlayerExists(victim));
         }
 
         public static ResultCondition CanBlock(HexTile hex)

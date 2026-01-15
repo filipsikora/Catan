@@ -51,6 +51,8 @@ namespace Catan.Core.Phases.Handlers
             if (!result.Success)
             {
                 Bus.Publish(new ActionRejectedEvent(_buyerId, result.Reason));
+
+                return;
             }
 
             Bus.Publish(new LogMessageEvent(Shared.Data.EnumLogTypes.Info, "Trade accepted"));

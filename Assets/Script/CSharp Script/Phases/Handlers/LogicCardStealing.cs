@@ -3,6 +3,7 @@ using Catan.Core.Engine;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
+using Catan.Shared.Data;
 using Catan.Unity.Communication.InternalUIEvents;
 
 namespace Catan.Core.Phases.Handlers
@@ -40,14 +41,14 @@ namespace Catan.Core.Phases.Handlers
 
         private void HandleCardStealingStarted(RequestCardStealingStartCommand signal)
         {
-            var player = Game.GetCurrentPlayer();
+            var thief = Game.GetCurrentPlayer();
             var victim = Game.GetPlayerById(_victimId);
 
-            _thiefId = player.ID;
+            _thiefId = thief.ID;
 
             if (!Rules.RulesRobber.CanSteal(victim).Success)
             {
-                Bus.Publish(new LogMessageEvent(Shared.Data.EnumLogTypes.Info, "Nothing to steal from this player"));
+                Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, "Nothing to steal from this player"));
 
                 FinishPhase();
 
@@ -67,6 +68,7 @@ namespace Catan.Core.Phases.Handlers
             if (!result.Success)
             {
                 Bus.Publish(new ActionRejectedEvent(_victimId, result.Reason));
+                return;
             }
 
             Bus.Publish(new PlayerStateChangedUIEvent(_thiefId));

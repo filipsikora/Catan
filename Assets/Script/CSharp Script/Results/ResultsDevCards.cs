@@ -1,4 +1,6 @@
-﻿using Catan.Shared.Data;
+﻿using Catan.Core.Models;
+using Catan.Shared.Data;
+using NUnit.Framework.Constraints;
 using System.Collections.Generic;
 
 namespace Catan.Core.Results
@@ -56,6 +58,31 @@ namespace Catan.Core.Results
         public static ResultMonopolyCard Ok(int thiefId, Dictionary<int, int> victimsIdsAndAmounts, EnumResourceTypes resource)
         {
             return new ResultMonopolyCard(true, ConditionFailureReason.None, thiefId, victimsIdsAndAmounts, resource);
+        }
+    }
+
+    public sealed class ResultYearOfPlenty
+    {
+        public bool Success;
+        public ConditionFailureReason Reason;
+
+        public ResourceCostOrStock Requested;
+
+        public ResultYearOfPlenty(bool success, ConditionFailureReason reason, ResourceCostOrStock requested)
+        {
+            Success = success;
+            Reason = reason;
+            Requested = requested;
+        }
+
+        public static ResultYearOfPlenty Fail(ConditionFailureReason reason)
+        {
+            return new ResultYearOfPlenty(false, reason, default);
+        }
+
+        public static ResultYearOfPlenty Ok(ResourceCostOrStock requested)
+        {
+            return new ResultYearOfPlenty(true, ConditionFailureReason.None, requested);
         }
     }
 }

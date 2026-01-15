@@ -14,7 +14,7 @@ namespace Catan.Application.CommandHandlers
             _game = game;
         }
 
-        public (ResultCondition, DevelopmentCard) Handle(int cardId)
+        public Result<DevelopmentCard> Handle(int cardId)
         {
             var player = _game.GetCurrentPlayer();
             var card = _game.GetDevCardById(cardId);
@@ -23,12 +23,12 @@ namespace Catan.Application.CommandHandlers
 
             if (!result.Success)
             {
-                return (result, null);
+                return Result<DevelopmentCard>.Fail(result.Reason);
             }
 
             var playedCard = _game.DevCardPlayedMutation(player, card);
 
-            return (ResultCondition.Ok(), playedCard);
+            return Result<DevelopmentCard>.Ok(card);
         }
     }
 }

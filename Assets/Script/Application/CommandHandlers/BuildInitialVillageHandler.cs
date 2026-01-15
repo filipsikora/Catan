@@ -25,7 +25,7 @@ namespace Catan.Application.CommandHandlers
                 return ResultBuildInitialVillage.Fail(result.Reason, playerId, vertex);
             }
 
-            var secondVillage = player.Points == 2;
+            var secondVillage = player.Points == 1;
 
             _game.VillageBuiltMutation(player, vertex, secondVillage);
 

@@ -25,5 +25,13 @@ namespace Catan.Core.Rules
                 ConditionsDevCards.IsNotOwned(card),
                 ConditionsResources.CanAfford(player.Resources, DevelopmentCard.Cost));
         }
+
+        public static ResultCondition YearOfPlentyPlayedRight(ResourceCostOrStock bank, ResourceCostOrStock requested)
+        {
+            return ResultCondition.Combine(
+                ConditionsResources.CanAfford(bank, requested),
+                ConditionsResources.HasExactResourcesNumber(requested, 2),
+                ConditionsTrade.CostIsValid(requested));
+        }
     }
 }

@@ -71,6 +71,7 @@ namespace Catan.Core.Phases.Handlers
             if (!result.Success)
             {
                 Bus.Publish(new ActionRejectedEvent(player.ID, result.Reason));
+                FinishPhase();
             }
 
             Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, $"player{player.ID} trade {result.Ratio} {result.Offered} for 1 {result.Desired}"));

@@ -153,7 +153,7 @@ namespace Catan.Unity
             {
                 var (_, _, mid, dir, rotation) = GetEdgeVisualData(port.EdgeId);
 
-                var perpendicular = Vector3.Cross(Vector3.up, dir).normalized;
+                var perpendicular = Vector3.Cross(Vector3.down, dir).normalized;
 
                 Vector3 portPos = mid + perpendicular * -0.30f;
 

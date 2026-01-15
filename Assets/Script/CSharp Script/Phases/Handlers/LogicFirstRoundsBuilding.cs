@@ -113,7 +113,7 @@ namespace Catan.Core.Phases.Handlers
             var player = Game.GetCurrentPlayer();
             int id = SelectedEdgeId.Value;
             var edge = Game.Map.GetEdgeById(id);
-            var vertex = Game.GetLastPlacedVillagePosition;
+            var vertex = Game.LastPlacedVillagePosition;
 
             var result = _handlerRoad.Handle(player.ID, edge, vertex);
 

@@ -49,7 +49,7 @@ namespace Catan.Core.Conditions
         {
             if (Enum.IsDefined(typeof(EnumResourceTypes), resource))
             {
-                ResultCondition.Ok();
+                return ResultCondition.Ok();
             }
 
             return ResultCondition.Fail(ConditionFailureReason.DoesNotExist);

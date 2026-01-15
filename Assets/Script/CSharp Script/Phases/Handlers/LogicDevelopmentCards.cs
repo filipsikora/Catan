@@ -28,27 +28,28 @@ namespace Catan.Core.Phases.Handlers
                     break;
 
                 case DevelopmentCardsCanceledCommand c:
-                    HandleDevCardsCanceled(c);
+                    FinishPhase();
                     break;
             }
         }
 
         private void HandlePlayDevCard(DevelopmentCardClickedCommand signal)
         {
-            var (result, card) = _handler.Handle(signal.DevelopmentCardId);
+            var result = _handler.Handle(signal.DevelopmentCardId);
             var player = Game.GetCurrentPlayer();
 
             if (!result.Success)
             {
                 Bus.Publish(new ActionRejectedEvent(player.ID, result.Reason));
 
+                FinishPhase();
+
                 return;
             }
 
-            switch (card.Type)
+            switch (result.Value.Type)
             {
                 case EnumDevelopmentCardTypes.Knight:
-                    Game.UseKnight(Game.CurrentPlayer);
                     Bus.Publish(new ProceedToRobberPlacingEvent());
                     break;
 
@@ -61,7 +62,6 @@ namespace Catan.Core.Phases.Handlers
                     break;
 
                 case EnumDevelopmentCardTypes.VictoryPoint:
-                    Game.UseVictoryPoint(Game.CurrentPlayer);
                     Bus.Publish(new ReturnToNormalRoundEvent());
                     break;
 
@@ -71,11 +71,13 @@ namespace Catan.Core.Phases.Handlers
             }
         }
 
-        public void HandleDevCardsCanceled(DevelopmentCardsCanceledCommand signal)
+        public void FinishPhase()
         {
             bool afterRoll = Game.GetAfterRoll();
 
             Bus.Publish(new DevelopmentCardsCompletedEvent(afterRoll));
         }
+
+
     }
 }

@@ -12,17 +12,18 @@ namespace Catan.Unity.Phases.Adapters
     public class AdapterFirstRoundsBuilding : BasePhaseAdapter
     {
         public BinderFirstRoundBuildings _binder;
-        private TurnDataSnapshot turnDataSnapshot;
+        private TurnDataSnapshot _turnDataSnapshot;
 
         public override void OnEnter()
         {
             _binder = new BinderFirstRoundBuildings(UI, EventBus);
             _binder.Bind();
 
-            turnDataSnapshot = Manager.TurnsQueryService.GetTurnData();
+            _turnDataSnapshot = Manager.TurnsQueryService.GetTurnData();
 
             VisualsUI.MakeAllChildrenVisible(UI.MainUIPanel.ButtonsContainer, false);
-            UI.UpdateTurnCounter(turnDataSnapshot.TurnNumber);
+
+            UI.UpdateTurnCounter(_turnDataSnapshot.TurnNumber);
 
             EventBus.Subscribe<VertexHighlightedEvent>(OnVertexClicked);
             EventBus.Subscribe<EdgeHighlightedEvent>(OnEdgeClicked);
@@ -30,6 +31,8 @@ namespace Catan.Unity.Phases.Adapters
 
             EventBus.Subscribe<VillagePlacedEvent>(OnVillagePlaced);
             EventBus.Subscribe<RoadPlacedEvent>(OnRoadPlaced);
+
+            EventBus.Publish(new PlayerStateChangedUIEvent(_turnDataSnapshot.PlayerId));
         }
 
         private void OnVertexClicked(VertexHighlightedEvent signal)
@@ -58,8 +61,8 @@ namespace Catan.Unity.Phases.Adapters
         {
             Manager.BoardVisuals.ResetMarkedPositions();
 
-            EventBus.Publish(new VillagePlacedUIEvent(signal.VertexId, turnDataSnapshot.PlayerId));
-            EventBus.Publish(new PlayerStateChangedUIEvent(turnDataSnapshot.PlayerId));
+            EventBus.Publish(new VillagePlacedUIEvent(signal.VertexId, _turnDataSnapshot.PlayerId));
+            EventBus.Publish(new PlayerStateChangedUIEvent(_turnDataSnapshot.PlayerId));
         }
 
         private void OnRoadPlaced(RoadPlacedEvent signal)
@@ -67,8 +70,8 @@ namespace Catan.Unity.Phases.Adapters
             UI.MainUIPanel.NextTurnButton.gameObject.SetActive(true);
             Manager.BoardVisuals.ResetMarkedPositions();
 
-            EventBus.Publish(new PlayerStateChangedUIEvent(turnDataSnapshot.PlayerId));
-            EventBus.Publish(new RoadPlacedUIEvent(signal.EdgeId, turnDataSnapshot.PlayerId));
+            EventBus.Publish(new PlayerStateChangedUIEvent(_turnDataSnapshot.PlayerId));
+            EventBus.Publish(new RoadPlacedUIEvent(signal.EdgeId, _turnDataSnapshot.PlayerId));
         }
 
         public override void OnExit()

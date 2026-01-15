@@ -60,7 +60,7 @@ namespace Catan.Core.Conditions
 
         public static ResultCondition IsNotOwned(DevelopmentCard card)
         {
-            if (card.Owner == null)
+            if (card.Owner != null)
             {
                 return ResultCondition.Fail(ConditionFailureReason.IsAlreadyOwned);
             }

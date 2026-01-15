@@ -42,7 +42,7 @@ namespace Catan.Core.Engine
 
         public int CurrentPlayerIndex = 0;
 
-        public Vertex? GetLastPlacedVillagePosition = null;
+        public Vertex? LastPlacedVillagePosition = null;
 
         public int MostKnightsUsed = 0;
 
@@ -85,6 +85,13 @@ namespace Catan.Core.Engine
             ReadyFieldList();
             GiveHexesData(Map.HexList);
             PrepareDevelopmentDeck();
+            InitializeRobber();
+        }
+
+        private void InitializeRobber()
+        {
+            var desertHex = Map.HexList.First(h => h.FieldType == EnumFieldTypes.Desert);
+            BlockHexMutation(desertHex);
         }
 
         public void ReadyFieldList()
@@ -293,38 +300,6 @@ namespace Catan.Core.Engine
             DevelopmentCardsDeckAvailable = DevelopmentCardsDeckAvailable.OrderBy(_ => Random.Next()).ToList();
         }
 
-        public void UseKnight(Player player) // ważne //
-        {
-            player.KnightsUsed++;
-
-            CheckChampionship(player, ref MostKnightsUsed, player.KnightsUsed, RequiredKnights, ref KnightChampion);
-        }
-
-        public void UseVictoryPoint(Player player) // ważne //
-        {
-            player.VictoryPointsCardsUsed++;
-            player.CountPoints();
-        }
-
-        public IReadOnlyList<ResultDistributeResources> UseYearOfPlenty(ResourceCostOrStock cardsDesired)
-        {
-            var player = CurrentPlayer;
-            var results = new List<ResultDistributeResources>();
-
-            foreach (var (type, requested) in cardsDesired.ResourceDictionary)
-            {
-                if (requested <= 0)
-                    continue;
-
-                player.Resources.AddExactAmount(type, requested);
-                Bank.SubtractExactAmount(type, requested);
-
-                results.Add(new ResultDistributeResources(player.ID, type, requested, requested));
-            }
-
-            return results;
-        }
-
         public void WinCheck()
         {
             Player player = CurrentPlayer;
@@ -434,7 +409,7 @@ namespace Catan.Core.Engine
 
         public int DiceRolledMutation()
         {
-            AfterRoll = true;
+            SetAfterRollTo(true);
 
             return LastRoll;
         }
@@ -451,15 +426,28 @@ namespace Catan.Core.Engine
         public void AdvanceToNextPlayerMutation(int nextPlayerIndex)
         {
             CurrentPlayerIndex = nextPlayerIndex;
-            CurrentPlayer = GetPlayerById(CurrentPlayerIndex);
+            CurrentPlayer = PlayerList[nextPlayerIndex];
 
             Turn++;
+
+            SetAfterRollTo(false);
         }
 
         public DevelopmentCard DevCardPlayedMutation(Player player, DevelopmentCard card)
         {
             card.IsUsed = true;
             player.DevelopmentCardsByID.Remove(card.ID);
+
+            switch (card.Type)
+            {
+                case EnumDevelopmentCardTypes.Knight:
+                    UseKnightMutation(player);
+                    break;
+
+                case EnumDevelopmentCardTypes.VictoryPoint:
+                    UseVictoryPointMutation(player);
+                    break;
+            }
 
             return card;
         }
@@ -508,6 +496,7 @@ namespace Catan.Core.Engine
 
             vertex.HasVillage = true;
             vertex.Owner = player;
+            LastPlacedVillagePosition = vertex;
 
             if (vertex.HasPort)
             {
@@ -604,7 +593,7 @@ namespace Catan.Core.Engine
         {
             var victimsIdsAndAmounts = new Dictionary<int, int>();
             var currentPlayer = GetCurrentPlayer();
-            var playerListCopy = PlayerList;
+            var playerListCopy = PlayerList.ToList();
 
             playerListCopy.Remove(currentPlayer);
 
@@ -618,6 +607,30 @@ namespace Catan.Core.Engine
             }
 
             return victimsIdsAndAmounts;
+        }
+
+        public void UseYearOfPlentyMutation(ResourceCostOrStock requested)
+        {
+            var player = GetCurrentPlayer();
+
+            foreach (var (type, amount) in requested.ResourceDictionary)
+            {
+                player.Resources.AddExactAmount(type, amount);
+                Bank.SubtractExactAmount(type, amount);
+            }
+        }
+
+        public void UseKnightMutation(Player player)
+        {
+            player.KnightsUsed++;
+
+            CheckChampionship(player, ref MostKnightsUsed, player.KnightsUsed, RequiredKnights, ref KnightChampion);
+        }
+
+        public void UseVictoryPointMutation(Player player)
+        {
+            player.VictoryPointsCardsUsed++;
+            player.CountPoints();
         }
 
         public List<ResultDistributeResources> ServePlayersMutation()
@@ -663,6 +676,14 @@ namespace Catan.Core.Engine
 
         public void BlockHexMutation(HexTile hex)
         {
+            foreach (var hexTile in Map.HexList)
+            {
+                if (hexTile.isBlocked)
+                {
+                    hexTile.isBlocked = false;
+                }
+            }
+
             hex.isBlocked = true;
         }
 

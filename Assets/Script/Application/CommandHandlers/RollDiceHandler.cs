@@ -16,7 +16,7 @@ namespace Catan.Application.CommandHandlers
         {
             _game.RollDice();
 
-            var resultDistributionList = _game.ServePlayersMutation();
+            var resultDistributionList = _game.ServePlayersMutation(); 
             var resultRoll = _game.DiceRolledMutation();
             var result = new ResultRollDice(resultRoll, resultDistributionList);
 
