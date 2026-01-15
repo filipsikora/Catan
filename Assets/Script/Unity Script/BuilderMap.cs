@@ -230,5 +230,15 @@ namespace Catan.Unity
             Debug.LogWarning($"[MapBuilder] Hex object with ID {id} not found!");
             return null;
         }
+
+        public IEnumerable<int> GetVerticesIds()
+        {
+            return VertexObjects.Keys;
+        }
+
+        public IEnumerable<int> GetEdgesIds()
+        {
+            return EdgeObjects.Keys;
+        }
     }
 }

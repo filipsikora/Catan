@@ -18,16 +18,12 @@ namespace Catan.Core.Models
 
         public int Id { get; set; }
 
-        public bool IsMarked { get; set; } = false;
-
         public List<Edge> ConnectedEdges = new();
 
         public bool IsNextToVertex(Vertex vertex)
         {
             return VertexA == vertex || VertexB == vertex;
         }
-
-
 
         public Edge(Vertex a, Vertex b)
         {

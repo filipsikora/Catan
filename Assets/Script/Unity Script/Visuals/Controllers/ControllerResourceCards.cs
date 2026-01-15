@@ -6,12 +6,12 @@ using System.Collections.Generic;
 
 namespace Catan.Unity.Visuals.Controllers
 {
-    public class ControllerResourceCardsUI
+    public class ControllerResourceCards
     {
         private readonly Dictionary<int, VisualResourceCard> _cards = new();
         private readonly EventBus _bus;
 
-        public ControllerResourceCardsUI(EventBus bus)
+        public ControllerResourceCards(EventBus bus)
         {
             _bus = bus;
             _bus.Subscribe<ResourceCardVisualStateChangedUICommand>(OnResourceCardVisualStateChanged);

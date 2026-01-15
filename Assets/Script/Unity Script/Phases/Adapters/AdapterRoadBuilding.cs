@@ -4,7 +4,6 @@ using Catan.Unity.Communication.InternalUIEvents;
 using Catan.Unity.Data;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
-using Core.Unity.Communication.InternalUIEvents;
 using UnityEngine;
 
 namespace Catan.Unity.Phases.Adapters
@@ -33,7 +32,7 @@ namespace Catan.Unity.Phases.Adapters
 
         private void OnEdgeClicked(EdgeHighlightedEvent signal)
         {
-            Manager.BoardVisuals.ResetMarkedPositions();
+            EventBus.Publish(new PositionsResetUIEvent());
 
             var edgeObj = Manager.BoardVisuals.GetEdgeObject(signal.EdgeId);
             Manager.BoardVisuals.SetEdgeVisual(edgeObj, Color.yellow);
@@ -48,8 +47,7 @@ namespace Catan.Unity.Phases.Adapters
 
         private void OnRoadPlaced(RoadPlacedEvent signal)
         {
-            Manager.BoardVisuals.ResetMarkedPositions();
-
+            EventBus.Publish(new PositionsResetUIEvent());
             EventBus.Publish(new RoadPlacedUIEvent(signal.EdgeId, _turnDataSnapshot.PlayerId));
             EventBus.Publish(new PlayerStateChangedUIEvent(_turnDataSnapshot.PlayerId));
         }

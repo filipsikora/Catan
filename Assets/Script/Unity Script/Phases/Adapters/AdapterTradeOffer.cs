@@ -3,8 +3,6 @@ using Catan.Shared.Communication.Events;
 using Catan.Unity.Communication.InternalUIEvents;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Catan.Unity.Phases.Adapters
 {

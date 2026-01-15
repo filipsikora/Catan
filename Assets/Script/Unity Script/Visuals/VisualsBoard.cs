@@ -1,8 +1,5 @@
-﻿using UnityEngine;
-using Catan.Core.Models;
-using Catan.Core.Engine;
-using Catan.Shared.Data;
-using System.Collections.Specialized;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Catan.Unity.Visuals
 {
@@ -10,14 +7,12 @@ namespace Catan.Unity.Visuals
     {
         private BuilderMap _builder;
         public Material IdleGridMaterial;
-        public GameState Game;
         private GameObject? _robberInstance;
 
-        internal void Initialize(BuilderMap builder, Material idleMat, GameState game)
+        internal void Initialize(BuilderMap builder, Material idleMat)
         {
             _builder = builder;
             IdleGridMaterial = idleMat;
-            Game = game;
         }
 
         public void SetVertexVisual(GameObject vertexObject, Color color)
@@ -42,28 +37,20 @@ namespace Catan.Unity.Visuals
                 lr.material.color = color;
             }
         }
-        public void ResetMarkedPositions()
+
+        public void ResetMarkedVertex(GameObject vertexObject)
         {
-            foreach (var vertex in Game.Map.VertexList)
+            if (vertexObject != null)
             {
-                vertex.IsMarked = false;
-                var obj = GetVertexObject(vertex.Id);
-
-                if (obj != null)
-                {
-                    SetVertexVisual(obj, IdleGridMaterial.color);
-                }
+                SetVertexVisual(vertexObject, IdleGridMaterial.color);
             }
+        }
 
-            foreach (var edge in Game.Map.Edges)
+        public void ResetMarkedEdge(GameObject edgeObject)
+        {
+            if (edgeObject != null)
             {
-                edge.IsMarked = false;
-                var obj = GetEdgeObject(edge.Id);
-
-                if (obj != null)
-                {
-                    SetEdgeVisual(obj, IdleGridMaterial.color, 0.15f);
-                }
+                SetEdgeVisual(edgeObject, IdleGridMaterial.color, 0.15f);
             }
         }
 
@@ -91,6 +78,10 @@ namespace Catan.Unity.Visuals
         public GameObject? GetEdgeObject(int id) => _builder.GetEdgeObjectById(id);
 
         public GameObject? GetHexObject(int id) => _builder.GetHexObjectById(id);
+
+        public IEnumerable<int> GetVerticesIds() => _builder.GetVerticesIds();
+
+        public IEnumerable<int> GetEdgesIds() => _builder.GetEdgesIds();
 
         public (Vector3 start, Vector3 mid, Vector3 end, Vector3 dir, Quaternion rotation) GetEdgeVisualData(int edgeId) => _builder.GetEdgeVisualData(edgeId);
     }

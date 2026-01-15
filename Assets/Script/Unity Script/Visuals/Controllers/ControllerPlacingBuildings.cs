@@ -1,6 +1,6 @@
 ﻿using Catan.Shared.Communication;
 using Catan.Unity.Data;
-using Core.Unity.Communication.InternalUIEvents;
+using Catan.Unity.Communication.InternalUIEvents;
 
 namespace Catan.Unity.Visuals.Controllers
 {

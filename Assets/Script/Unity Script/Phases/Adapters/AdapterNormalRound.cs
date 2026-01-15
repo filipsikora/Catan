@@ -8,7 +8,6 @@ using Catan.Unity.Data;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
 using UnityEngine;
-using Core.Unity.Communication.InternalUIEvents;
 
 namespace Catan.Unity.Phases.Adapters
 {
@@ -62,7 +61,7 @@ namespace Catan.Unity.Phases.Adapters
 
         private void OnVertexClicked(VertexHighlightedEvent signal)
         {
-            Manager.BoardVisuals.ResetMarkedPositions();
+            EventBus.Publish(new PositionsResetUIEvent());
 
             var vertexObject = Manager.BoardVisuals.GetVertexObject(signal.VertexId);
             Manager.BoardVisuals.SetVertexVisual(vertexObject, Color.yellow);
@@ -70,7 +69,7 @@ namespace Catan.Unity.Phases.Adapters
 
         private void OnEdgeClicked(EdgeHighlightedEvent signal)
         {
-            Manager.BoardVisuals.ResetMarkedPositions();
+            EventBus.Publish(new PositionsResetUIEvent());
 
             var edgeObject = Manager.BoardVisuals.GetEdgeObject(signal.EdgeId);
             Manager.BoardVisuals.SetEdgeVisual(edgeObject, Color.yellow);
@@ -85,24 +84,21 @@ namespace Catan.Unity.Phases.Adapters
 
         private void OnVillagePlaced(VillagePlacedEvent signal)
         {
-            Manager.BoardVisuals.ResetMarkedPositions();
-
+            EventBus.Publish(new PositionsResetUIEvent());
             EventBus.Publish(new VillagePlacedUIEvent(signal.VertexId, _turnDataSnapshot.PlayerId));
             EventBus.Publish(new PlayerStateChangedUIEvent(_turnDataSnapshot.PlayerId));
         }
 
         private void OnRoadPlaced(RoadPlacedEvent signal)
         {
-            Manager.BoardVisuals.ResetMarkedPositions();
-
+            EventBus.Publish(new PositionsResetUIEvent());
             EventBus.Publish(new RoadPlacedUIEvent(signal.EdgeId, _turnDataSnapshot.PlayerId));
             EventBus.Publish(new PlayerStateChangedUIEvent(_turnDataSnapshot.PlayerId));
         }
 
         private void OnTownPlaced(TownPlacedEvent signal)
         {
-            Manager.BoardVisuals.ResetMarkedPositions();
-
+            EventBus.Publish(new PositionsResetUIEvent());
             EventBus.Publish(new TownPlacedUIEvent(signal.VertexId, _turnDataSnapshot.PlayerId));
             EventBus.Publish(new PlayerStateChangedUIEvent(_turnDataSnapshot.PlayerId));
         }
@@ -141,7 +137,8 @@ namespace Catan.Unity.Phases.Adapters
         {
             _binder.Unbind();
 
-            Manager.BoardVisuals.ResetMarkedPositions();
+            EventBus.Publish(new PositionsResetUIEvent());
+
             UI.HideTradeOfferButton();
             UI.UpdateTurnCounter(_turnDataSnapshot.TurnNumber);
 

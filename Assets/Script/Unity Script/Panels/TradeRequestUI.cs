@@ -6,7 +6,6 @@ using Catan.Unity.Helpers;
 using Catan.Shared.Data;
 using Catan.Unity.Visuals.Models;
 using Catan.Unity.Visuals;
-using Catan.Core.Models;
 using System.Collections.Generic;
 
 namespace Catan.Unity.Panels

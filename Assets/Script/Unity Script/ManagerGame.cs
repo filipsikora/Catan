@@ -43,11 +43,12 @@ namespace Catan.Unity
 
         public AdapterPhaseTransition? AdapterPhaseTransition;
         public AdapterGameFlow AdapterGameFlow;
-        public ControllerResourceCardsUI ControllerResourceCardsUI { get; private set; }
+        public ControllerResourceCards ControllerResourceCardsUI { get; private set; }
         public ControllerLogMessagesUI ControllerLogMessagesUI { get; private set; }
         public ControllerPlayerUI ControllerPlayerUI { get; private set; }
         public ControllerPlacingBuildings ControllerPlacingBuildings { get; private set; }
         public ControllerPlacingRobber ControllerPlacingRobber { get; private set; }
+        public ControllerBoardVisuals ControllerBoardVisuals { get; private set; }
 
         public IDevCardsQueryService DevCardsQueryService { get; private set; }
         public IResourcesQueryService ResourcesQueryService { get; private set; }
@@ -135,7 +136,7 @@ namespace Catan.Unity
             var boardData = BoardsQueryService.GetBoardData();
             Builder.BuildMap(boardData);
 
-            BoardVisuals.Initialize(Builder, IdleGridMaterial, Game);
+            BoardVisuals.Initialize(Builder, IdleGridMaterial);
 
             var desertHex = Game.Map.HexList.Find(h => h.FieldType == EnumFieldTypes.Desert);
             EventBus.Publish(new RobberMovedUIEvent(desertHex.Id));
@@ -152,11 +153,12 @@ namespace Catan.Unity
             BoardsQueryService = new InMemoryBoardQueryServices(Game);
             TradeQueryService = new InMemoryTradeQueryServices(Game);
 
-            ControllerResourceCardsUI = new ControllerResourceCardsUI(EventBus);
+            ControllerResourceCardsUI = new ControllerResourceCards(EventBus);
             ControllerLogMessagesUI = new ControllerLogMessagesUI(EventBus, UIManager.LogsPanel);
             ControllerPlayerUI = new ControllerPlayerUI(PlayersQueryService, UIManager.PlayerUIPanel, EventBus);
             ControllerPlacingBuildings = new ControllerPlacingBuildings(EventBus, BoardVisuals);
             ControllerPlacingRobber = new ControllerPlacingRobber(EventBus, BoardVisuals);
+            ControllerBoardVisuals = new ControllerBoardVisuals(EventBus, BoardVisuals);
         }
 
         void Update()

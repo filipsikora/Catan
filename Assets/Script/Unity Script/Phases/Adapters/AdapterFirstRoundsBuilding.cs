@@ -4,7 +4,6 @@ using Catan.Shared.Communication.Events;
 using Catan.Unity.Communication.InternalUIEvents;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
-using Core.Unity.Communication.InternalUIEvents;
 using UnityEngine;
 
 namespace Catan.Unity.Phases.Adapters
@@ -37,7 +36,7 @@ namespace Catan.Unity.Phases.Adapters
 
         private void OnVertexClicked(VertexHighlightedEvent signal)
         {
-            Manager.BoardVisuals.ResetMarkedPositions();
+            EventBus.Publish(new PositionsResetUIEvent());
 
             var vertexObj = Manager.BoardVisuals.GetVertexObject(signal.VertexId);
             Manager.BoardVisuals.SetVertexVisual(vertexObj, Color.yellow);
@@ -45,7 +44,7 @@ namespace Catan.Unity.Phases.Adapters
 
         private void OnEdgeClicked(EdgeHighlightedEvent signal)
         {
-            Manager.BoardVisuals.ResetMarkedPositions();
+            EventBus.Publish(new PositionsResetUIEvent());
 
             var edgeObj = Manager.BoardVisuals.GetEdgeObject(signal.EdgeId);
             Manager.BoardVisuals.SetEdgeVisual(edgeObj, Color.yellow);
@@ -59,8 +58,7 @@ namespace Catan.Unity.Phases.Adapters
 
         private void OnVillagePlaced(VillagePlacedEvent signal)
         {
-            Manager.BoardVisuals.ResetMarkedPositions();
-
+            EventBus.Publish(new PositionsResetUIEvent());
             EventBus.Publish(new VillagePlacedUIEvent(signal.VertexId, _turnDataSnapshot.PlayerId));
             EventBus.Publish(new PlayerStateChangedUIEvent(_turnDataSnapshot.PlayerId));
         }
@@ -68,8 +66,8 @@ namespace Catan.Unity.Phases.Adapters
         private void OnRoadPlaced(RoadPlacedEvent signal)
         {
             UI.MainUIPanel.NextTurnButton.gameObject.SetActive(true);
-            Manager.BoardVisuals.ResetMarkedPositions();
 
+            EventBus.Publish(new PositionsResetUIEvent());
             EventBus.Publish(new PlayerStateChangedUIEvent(_turnDataSnapshot.PlayerId));
             EventBus.Publish(new RoadPlacedUIEvent(signal.EdgeId, _turnDataSnapshot.PlayerId));
         }
@@ -78,7 +76,7 @@ namespace Catan.Unity.Phases.Adapters
         {
             _binder.Unbind();
 
-            Manager.BoardVisuals.ResetMarkedPositions();
+            EventBus.Publish(new PositionsResetUIEvent());
 
             EventBus.Unsubscribe<VertexHighlightedEvent>(OnVertexClicked);
             EventBus.Unsubscribe<EdgeHighlightedEvent>(OnEdgeClicked);

@@ -1,5 +1,4 @@
 ﻿using Catan.Unity.Phases.Adapters;
-using UnityEngine;
 
 namespace Catan.Unity.Phases.Controllers
 {

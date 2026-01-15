@@ -1,4 +1,4 @@
-﻿namespace Core.Unity.Communication.InternalUIEvents
+﻿namespace Catan.Unity.Communication.InternalUIEvents
 {
     public class VillagePlacedUIEvent
     {
