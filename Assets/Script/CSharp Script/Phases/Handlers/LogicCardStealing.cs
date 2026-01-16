@@ -4,7 +4,6 @@ using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
 using Catan.Shared.Data;
-using Catan.Unity.Communication.InternalUIEvents;
 
 namespace Catan.Core.Phases.Handlers
 {

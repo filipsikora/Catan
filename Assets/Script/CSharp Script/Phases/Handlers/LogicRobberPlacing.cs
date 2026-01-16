@@ -1,6 +1,5 @@
 ﻿using Catan.Shared.Communication;
 using Catan.Core.Engine;
-using System.Linq;
 using Catan.Shared.Communication.Events;
 using Catan.Shared.Communication.Commands;
 using Catan.Application.CommandHandlers;

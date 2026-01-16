@@ -2,7 +2,6 @@
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Events;
 using Catan.Shared.Data;
-using UnityEngine;
 
 namespace Catan.Core.Phases.Controllers
 {
