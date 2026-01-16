@@ -1,4 +1,5 @@
-﻿using Catan.Shared.Communication.Commands;
+﻿using Catan.Application.Snapshots;
+using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
 using Catan.Unity.Communication.InternalUICommands;
 using Catan.Unity.Communication.InternalUIEvents;
@@ -10,6 +11,7 @@ namespace Catan.Unity.Phases.Adapters
     public class AdapterCardDiscarding : BasePhaseAdapter
     {
         private BinderCardDiscarding _binder;
+        private TurnDataSnapshot _turnData;
 
         public override void OnEnter()
         {
@@ -27,6 +29,8 @@ namespace Catan.Unity.Phases.Adapters
             Manager.EventBus.Subscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
 
             Manager.EventBus.Publish(new RequestCardDiscardingStartCommand());
+
+            _turnData = Manager.TurnsQueryService.GetTurnData();
         }
 
         private void OnResourceCardClicked(ResourceCardClickedUIEvent signal)
@@ -56,8 +60,8 @@ namespace Catan.Unity.Phases.Adapters
 
         private void OnPlayerChosen(PlayerSelectedToDiscardEvent signal)
         {
-            var player = Manager.Game.GetPlayerById(signal.PlayerId);
-            UI.CardDiscardPanel.ShowForPlayer(player);
+            var currentPlayerResources = Manager.PlayersQueryService.GetPlayersCards(signal.PlayerId);
+            UI.CardDiscardPanel.ShowForPlayer(currentPlayerResources);
         }
 
         private void OnAcceptedDiscardVisibilityChanged(SelectionChangedEvent signal)
@@ -68,6 +72,8 @@ namespace Catan.Unity.Phases.Adapters
         public override void OnExit()
         {
             _binder.Unbind();
+
+            Manager.EventBus.Publish(new PlayerStateChangedUIEvent(_turnData.PlayerId));
 
             Manager.EventBus.Unsubscribe<SelectionChangedEvent>(OnAcceptedDiscardVisibilityChanged);
             Manager.EventBus.Unsubscribe<PlayerSelectedToDiscardEvent>(OnPlayerChosen);

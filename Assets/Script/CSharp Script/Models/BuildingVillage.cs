@@ -8,6 +8,8 @@ namespace Catan.Core.Models
 
         public int Worth = 1;
 
+        public static readonly ResourceCostOrStock Cost = new ResourceCostOrStock(1, 1, 1, 0, 1);
+
         public BuildingVillage(Player owner, float x, float y, Vertex vertex)
             : base(x, y, owner)
         {

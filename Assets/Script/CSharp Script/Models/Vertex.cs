@@ -34,10 +34,7 @@ namespace Catan.Core.Models
 
         public int Id { get; set; }
 
-        public bool IsMarked { get; set; } = false;
-
         public Port? Port { get; set; } = null;
-
 
         public Vertex(float x, float y, int quant = 1000)
         {

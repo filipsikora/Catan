@@ -1,5 +1,5 @@
-﻿using Catan.Core.Engine;
-using Catan.Core.Models;
+﻿using Catan.Application.CommandHandlers;
+using Catan.Core.Engine;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
@@ -9,10 +9,19 @@ namespace Catan.Core.Phases.Handlers
 {
     public class LogicFirstRoundsBuilding : BaseBuildPhaseLogic
     {
+        BuildInitialVillageHandler _handlerVillage;
+        BuildInitialRoadHandler _handlerRoad;
+        FinishTurnHandler _handlerTurn;
+
         private bool villagePlaced = false;
         private bool roadPlaced = false;
 
-        public LogicFirstRoundsBuilding(GameState game, EventBus bus) : base(game, bus) { }
+        public LogicFirstRoundsBuilding(GameState game, EventBus bus) : base(game, bus)
+        {
+            _handlerVillage = new BuildInitialVillageHandler(game);
+            _handlerRoad = new BuildInitialRoadHandler(game);
+            _handlerTurn = new FinishTurnHandler(game);
+        }
 
         public override void Enter()
         {
@@ -34,17 +43,16 @@ namespace Catan.Core.Phases.Handlers
                     break;
 
                 case BuildVillageCommand c:
-                    HandleVillageRequested(c);
+                    HandleBuildVillage(c);
                     break;
 
                 case BuildRoadCommand c:
-                    HandleRoadRequested(c);
+                    HandleBuildRoad(c);
                     break;
 
                 case EndTurnCommand c:
                     HandleTurnEnded(c);
                     break;
-
             }
         }
 
@@ -81,12 +89,12 @@ namespace Catan.Core.Phases.Handlers
             Bus.Publish(new BuildOptionsSentEvent(village, road, town));
         }
 
-        private void HandleVillageRequested(BuildVillageCommand signal)
+        private void HandleBuildVillage(BuildVillageCommand signal)
         {
             var player = Game.GetCurrentPlayer();
             int id = SelectedVertexId.Value;
             var vertex = Game.Map.GetVertexById(id);
-            var result = Game.BuildFreeVillage(player, vertex);
+            var result = _handlerVillage.Handle(player.ID, vertex);
 
             ResetSelection();
 
@@ -96,29 +104,20 @@ namespace Catan.Core.Phases.Handlers
                 return;
             }
 
-            if (player.Points == 2)
-            {
-                GiveResourcesForSecondVillage(player, vertex);
-            }
-
             villagePlaced = true;
             Bus.Publish(new VillagePlacedEvent(id));
         }
 
-        private void HandleRoadRequested(BuildRoadCommand signal)
+        private void HandleBuildRoad(BuildRoadCommand signal)
         {
+            var player = Game.GetCurrentPlayer();
             int id = SelectedEdgeId.Value;
             var edge = Game.Map.GetEdgeById(id);
+            var vertex = Game.LastPlacedVillagePosition;
 
-            if (!edge.IsNextToVertex(Game.LastPlacedVillagePosition))
-            {
-                Bus.Publish(new LogMessageEvent(EnumLogTypes.Error, "Need to place this road next to a village placed in this turn"));
-                return;
-            }
+            var result = _handlerRoad.Handle(player.ID, edge, vertex);
 
             ResetSelection();
-
-            var result = Game.BuildFreeRoad(Game.CurrentPlayer, edge);
 
             if (!result.Success)
             {
@@ -130,27 +129,11 @@ namespace Catan.Core.Phases.Handlers
             Bus.Publish(new RoadPlacedEvent(id));
         }
 
-        private void GiveResourcesForSecondVillage(Player player, Vertex vertex)
-        {
-            foreach (HexTile hex in vertex.AdjacentHexTiles)
-            {
-                var resourceType = hex.GetResourceType();
-
-                if (resourceType.HasValue)
-                {
-                    vertex.Owner?.Resources.AddExactAmount(resourceType.Value, 1);
-                    Game.Bank.SubtractExactAmount(resourceType.Value, 1);
-                }
-            }
-        }
-
         private void HandleTurnEnded(EndTurnCommand signal)
         {
-            Game.EndTurn();
+            var result = _handlerTurn.Handle(Game.GetCurrentPlayer());
 
-            bool firstRoundsLeft = Game.FirstRoundsIndices.Count > 0;
-
-            Bus.Publish(new FirstRoundsBuildingCompletedEvent(firstRoundsLeft));
+            Bus.Publish(new FirstRoundsBuildingCompletedEvent(result.InitialRoundsRemaining));
         }
     }
 }

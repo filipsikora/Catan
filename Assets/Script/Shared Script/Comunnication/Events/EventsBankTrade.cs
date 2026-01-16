@@ -1,9 +1,9 @@
-﻿using Catan.Shared.Data;
-using System.Collections.Generic;
+﻿using Catan.Core.Results;
+using Catan.Shared.Data;
 
 namespace Catan.Shared.Communication.Events
 {
-    public class BankTradeRatioChangedEvent
+    public sealed class BankTradeRatioChangedEvent
     {
         public int Ratio { get; }
         public bool PossibleForPlayer { get; }
@@ -14,6 +14,15 @@ namespace Catan.Shared.Communication.Events
             Ratio = ratio;
             PossibleForPlayer = possibleForPlayer;
             Resource = resource;
+        }
+    }
+
+    public sealed class BankTradeExecutedEvent
+    {
+        public ResultBankTrade Result;
+        public BankTradeExecutedEvent(ResultBankTrade result)
+        {
+            Result = result;
         }
     }
 }

@@ -1,19 +1,25 @@
 ﻿#nullable enable
-using Catan.Shared.Communication;
-using Catan.Shared.Data;
+using Catan.Application.Queries.Board;
+using Catan.Application.Queries.DevCards;
+using Catan.Application.Queries.Players;
+using Catan.Application.Queries.Resources;
+using Catan.Application.Queries.Turns;
 using Catan.Core.Engine;
 using Catan.Core.Phases.Controllers;
-using Catan.Unity.Phases.Controllers;
+using Catan.Shared.Communication;
+using Catan.Shared.Communication.Events;
+using Catan.Shared.Data;
+using Catan.Unity.Communication.InternalUIEvents;
 using Catan.Unity.Data;
+using Catan.Unity.Panels;
+using Catan.Unity.Phases.Adapters;
+using Catan.Unity.Phases.Controllers;
 using Catan.Unity.Visuals;
 using Catan.Unity.Visuals.Controllers;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Catan.Core.Routing;
-using Catan.Shared.Communication.Events;
-using Catan.Unity.Phases.Adapters;
-using Catan.Unity.Panels;
+using Vatan.Unity.Visuals.Controllers;
 
 namespace Catan.Unity
 {
@@ -36,9 +42,19 @@ namespace Catan.Unity
 
         public AdapterPhaseTransition? AdapterPhaseTransition;
         public AdapterGameFlow AdapterGameFlow;
-        public ControllerResourceCardsUI ControllerResourceCardsUI { get; private set; }
+        public ControllerResourceCards ControllerResourceCardsUI { get; private set; }
         public ControllerLogMessagesUI ControllerLogMessagesUI { get; private set; }
+        public ControllerPlayerUI ControllerPlayerUI { get; private set; }
+        public ControllerPlacingBuildings ControllerPlacingBuildings { get; private set; }
+        public ControllerPlacingRobber ControllerPlacingRobber { get; private set; }
+        public ControllerBoardVisuals ControllerBoardVisuals { get; private set; }
 
+        public IDevCardsQueryService DevCardsQueryService { get; private set; }
+        public IResourcesQueryService ResourcesQueryService { get; private set; }
+        public IPlayersQueryService PlayersQueryService { get; private set; }
+        public ITurnsQueryService TurnsQueryService { get; private set; }
+        public IBoardQueryService BoardsQueryService { get; private set; }
+        public ITradeQueryService TradeQueryService { get; private set; }
 
         public float Size = 1f;
         public Material WaterMaterial;
@@ -77,9 +93,6 @@ namespace Catan.Unity
             AdapterPhaseTransition = new AdapterPhaseTransition();
             AdapterGameFlow = new AdapterGameFlow(EventBus, AdapterPhaseTransition);
 
-            ControllerResourceCardsUI = new ControllerResourceCardsUI(EventBus);
-            ControllerLogMessagesUI = new ControllerLogMessagesUI(EventBus, UIManager.LogsPanel);
-
             EventBus.Subscribe<StartGameRequestedEvent>(OnStartGameRequested);
         }
 
@@ -90,12 +103,21 @@ namespace Catan.Unity
 
         private void OnStartGameRequested(StartGameRequestedEvent signal)
         {
-            InitializeGame(signal.PlayerCount);
+            StartGame(signal.PlayerCount);
 
             EventBus.Publish(new GameInitializedEvent());
         }
 
-        public void BuildMap()
+        public void StartGame(int playerCount)
+        {
+            Game = new GameState(new HexMap());
+            Game.InitializeNewGame(playerCount, Size);
+
+            InitializeHelpers();
+            InitializeBuilderMap();
+        }
+
+        public void InitializeBuilderMap()
         {
             Builder = new BuilderMap
             {
@@ -104,31 +126,38 @@ namespace Catan.Unity
                 FieldMaterialsList = FieldMaterialsList,
                 IdleGridMaterial = IdleGridMaterial,
                 Size = Size,
-                Game = Game,
                 HexNumberPrefab = HexNumberPrefab,
                 CubeRobberPrefab = CubeRobberPrefab,
                 CubePortPrefab = CubePortPrefab,
-                PortColorLookup = PortColorLookup,
                 WaterMaterial = WaterMaterial
             };
 
-            Builder.BuildMap(Game.Map);
+            var boardData = BoardsQueryService.GetBoardData();
+            Builder.BuildMap(boardData);
 
-            BoardVisuals.Initialize(Builder, IdleGridMaterial, Game);
-            BoardVisuals.PlaceRobberObject();
+            BoardVisuals.Initialize(Builder, IdleGridMaterial);
 
-            Game.PrepareDevelopmentDeck();
+            var desertHex = Game.Map.HexList.Find(h => h.FieldType == EnumFieldTypes.Desert);
+            EventBus.Publish(new RobberMovedUIEvent(desertHex.Id));
         }
 
-        public void InitializeGame(int playerNumber)
+        public void InitializeHelpers()
         {
-            Game = new GameState(new HexMap());
-            Game.ReadyPlayer(playerNumber);
-            Game.ReadyBoard();
-
             LogicGameFlow = new LogicGameFlow(Game, LogicPhaseTransition, EventBus);
 
-            BuildMap();
+            DevCardsQueryService = new InMemoryDevCardQueryService(Game);
+            ResourcesQueryService = new InMemoryResourcesQueryService(Game);
+            PlayersQueryService = new InMemoryPlayersQueryServices(Game);
+            TurnsQueryService = new InMemoryTurnsQueryService(Game);
+            BoardsQueryService = new InMemoryBoardQueryServices(Game);
+            TradeQueryService = new InMemoryTradeQueryServices(Game);
+
+            ControllerResourceCardsUI = new ControllerResourceCards(EventBus);
+            ControllerLogMessagesUI = new ControllerLogMessagesUI(EventBus, UIManager.LogsPanel);
+            ControllerPlayerUI = new ControllerPlayerUI(PlayersQueryService, UIManager.PlayerUIPanel, EventBus);
+            ControllerPlacingBuildings = new ControllerPlacingBuildings(EventBus, BoardVisuals);
+            ControllerPlacingRobber = new ControllerPlacingRobber(EventBus, BoardVisuals);
+            ControllerBoardVisuals = new ControllerBoardVisuals(EventBus, BoardVisuals);
         }
 
         void Update()
@@ -141,12 +170,6 @@ namespace Catan.Unity
 
         wybor imienia i koloru
 
-        rozmiar kart na panelach
-
-        refaktor unity
-
-        dodatkowy złodziej
-
         5. auto register auto binder auto subscribe
 
         nullable cleanup
@@ -157,8 +180,6 @@ namespace Catan.Unity
 
         3. make safeguards into core not ui check
 
-        4. board controller
-
         6. merge unity
 
         7. branch backend
@@ -168,6 +189,44 @@ namespace Catan.Unity
         dev cards internal event
 
         9. end game check
+
+        log for current player, aggregate
+
+        remove publish from visualdevcard
+
+        expand results ok/fail
+
+        remove eventbus from core
+
+        split rollandserve
+
+        generic vs type - buildingregistry + Type
+
+        move rejection/logs to mapper with switch based on result in adapter
+
+        make game private and initialized
+
+        add none to enums
+
+        remove models from logic rounds
+
+        iscurrentplayercheck
+
+        remove data from shared, add queries
+
+        controllers discarding
+
+        controller highlighting
+
+        remove models from data
+
+        dev cards lists in game -> dev cards id lists in game
+
+        determine random and extract it from game
+
+        location burdel
+
+        phasecontext gamestate
         */
     }
 }

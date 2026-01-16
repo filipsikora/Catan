@@ -1,7 +1,6 @@
 ﻿using Catan.Core.Engine;
 using Catan.Core.Phases.Handlers;
 using Catan.Shared.Communication;
-using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
 using Catan.Shared.Data;
 
@@ -60,7 +59,7 @@ namespace Catan.Core.Phases.Controllers
 
         private void OnDevCardsEntered(ProceedToDevelopmentCardsEvent signal)
         {
-            _phasesTransition.ChangePhase(new LogicDevelopmentCards(_game, _bus, signal.PlayerCardsByID), EnumGamePhases.DevelopmentCards);
+            _phasesTransition.ChangePhase(new LogicDevelopmentCards(_game, _bus), EnumGamePhases.DevelopmentCards);
         }
 
         private void OnTradeRequestEntered(TradeOfferToTradeRequestEvent signal)

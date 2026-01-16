@@ -1,4 +1,5 @@
 ﻿#nullable enable
+using Catan.Core.Results;
 using Catan.Shared.Data;
 using System;
 using System.Collections.Generic;
@@ -28,6 +29,16 @@ namespace Catan.Core.Models
         public int Get(EnumResourceTypes type)
         {
             return ResourceDictionary.TryGetValue(type, out var v) ? v : 0;
+        }
+
+        public void Set(EnumResourceTypes resource, int amount)
+        {
+            if (amount < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(amount));
+            }
+
+            ResourceDictionary[resource] = amount;
         }
 
         public int SubtractUpTo(EnumResourceTypes type, int amountWanted)
@@ -129,6 +140,18 @@ namespace Catan.Core.Models
         public int Total()
         {
             return ResourceDictionary.Values.Sum();
+        }
+
+        public Dictionary<EnumResourceTypes, int> ToDictionary()
+        {
+            var toDictionary = new Dictionary<EnumResourceTypes, int>();
+
+            foreach (var (key, value) in ResourceDictionary)
+            {
+                toDictionary.Add(key, value);
+            }
+
+            return toDictionary;
         }
     }
 }

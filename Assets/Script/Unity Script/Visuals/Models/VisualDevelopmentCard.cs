@@ -1,4 +1,4 @@
-﻿using Catan.Core.Models;
+﻿using Catan.Application.Snapshots;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,7 +9,6 @@ namespace Catan.Unity.Visuals.Models
 {
     public class VisualDevelopmentCard : MonoBehaviour
     {
-        public DevelopmentCard LinkedCard { get; private set; }
 
         [SerializeField] private Sprite KnightSprite;
         [SerializeField] private Sprite VictoryPointSprite;
@@ -19,18 +18,21 @@ namespace Catan.Unity.Visuals.Models
         public TextMeshProUGUI Name;
         [SerializeField] public TMPro.TextMeshProUGUI Label;
 
-        public void Initialize(DevelopmentCard card)
+        private int _id { get; set; }
+
+        public void Initialize(DevelopmentCardSnapshot snapshot)
         {
-            LinkedCard = card;
-            SetupVisuals();
+            _id = snapshot.Id;
+
+            SetupVisuals(snapshot.Type, snapshot.IsNew, snapshot.IsPlayable);
         }
 
         public void OnCardClicked()
         {
-            ManagerGame.Instance.EventBus.Publish(new DevelopmentCardClickedCommand(LinkedCard.ID));  
+            ManagerGame.Instance.EventBus.Publish(new DevelopmentCardClickedCommand(_id));  
         }
 
-        public void SetupVisuals()
+        public void SetupVisuals(EnumDevelopmentCardTypes type, bool isNew, bool isPlayable)
         {
             Icon.gameObject.SetActive(false);
             Icon.sprite = null;
@@ -38,7 +40,7 @@ namespace Catan.Unity.Visuals.Models
             Label.text = "";
             CardBackground.color = Color.white;
 
-            switch (LinkedCard.Type)
+            switch (type)
             {
                 case EnumDevelopmentCardTypes.Knight:
                     Icon.sprite = KnightSprite;
@@ -72,8 +74,8 @@ namespace Catan.Unity.Visuals.Models
                     Label.text = "Get two resources from the bank";
                     break;
             }
-
-            if (LinkedCard != null && LinkedCard.IsNew)
+         
+            if (!isPlayable)
             {
                 CardBackground.color = Color.red;
             }

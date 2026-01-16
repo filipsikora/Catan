@@ -1,22 +1,26 @@
-﻿using Catan.Core.Engine;
+﻿using Catan.Application.CommandHandlers;
+using Catan.Core.Engine;
 using Catan.Core.Models;
+using Catan.Core.Rules;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
 
 namespace Catan.Core.Phases.Handlers
 {
     public class LogicCardDiscarding : BasePhaseLogic
     {
+        private DiscardCardsHandler _handler;
+
         private Queue<Player> _playersToDiscard;
         private ResourceCostOrStock _resourcesSelected = new();
         private Player _currentPlayer;
-        private int _requiredResources;
 
-        public LogicCardDiscarding(GameState game, EventBus bus) : base(game, bus) { }
+        public LogicCardDiscarding(GameState game, EventBus bus) : base(game, bus)
+        {
+            _handler = new DiscardCardsHandler(game);
+        }
 
         public override void Enter()
         {
@@ -55,16 +59,6 @@ namespace Catan.Core.Phases.Handlers
             _resourcesSelected = new ResourceCostOrStock();
 
             Bus.Publish(new PlayerSelectedToDiscardEvent(_currentPlayer.ID));
-            UpdateRequiredResources();
-        }
-
-        private bool UpdateRequiredResources()
-        {
-            int total = _currentPlayer.Resources.ResourceDictionary.Values.Sum();
-            _requiredResources = (int)System.Math.Ceiling(total / 2.0);
-            bool canDiscard = _resourcesSelected.ResourceDictionary.Values.Sum() == _requiredResources;
-
-            return canDiscard;
         }
 
         private void HandleResourceSelectionChanged(ResourceCardSelectedCommand signal)
@@ -79,15 +73,21 @@ namespace Catan.Core.Phases.Handlers
                 _resourcesSelected.SubtractExactAmount(signal.Type, 1);
             }
 
-            bool canDiscard = UpdateRequiredResources();
+            bool canDiscard = RulesCardDiscard.CanDiscard(_currentPlayer, _resourcesSelected).Success;
 
             Bus.Publish(new SelectionChangedEvent(canDiscard));
         }
 
         private void HandleDiscardingAccepted(DiscardingAcceptedCommand signal)
         {
-            _currentPlayer.Resources.SubtractExact(_resourcesSelected);
-            Game.Bank.AddExact(_resourcesSelected);
+            var result = _handler.Handle(_currentPlayer, _resourcesSelected);
+
+            if (!result.Success)
+            {
+                Bus.Publish(new ActionRejectedEvent(_currentPlayer.ID, result.Reason));
+
+                return;
+            }
 
             ProceedToNextPlayer();
         }

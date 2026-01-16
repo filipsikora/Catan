@@ -1,20 +1,18 @@
-﻿using Catan.Core.Engine;
-using Catan.Core.Models;
+﻿using Catan.Application.CommandHandlers;
+using Catan.Core.Engine;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
 using Catan.Shared.Data;
-using System.Collections.Generic;
 
 namespace Catan.Core.Phases.Handlers
 {
     public class LogicDevelopmentCards : BasePhaseLogic
     {
-        private List<int> _playerCardsById;
-
-        public LogicDevelopmentCards(GameState game, EventBus bus, List<int> playerCardsById) : base(game, bus)
+        private PlayDevCardHandler _handler;
+        public LogicDevelopmentCards(GameState game, EventBus bus) : base(game, bus)
         {
-            _playerCardsById = playerCardsById;
+            _handler = new PlayDevCardHandler(game);
         }
 
         public override void Enter() { }
@@ -26,50 +24,32 @@ namespace Catan.Core.Phases.Handlers
             switch (command)
             {
                 case DevelopmentCardClickedCommand c:
-                    HandleDevCardClicked(c);
+                    HandlePlayDevCard(c);
                     break;
 
                 case DevelopmentCardsCanceledCommand c:
-                    HandleDevCardsCanceled(c);
-                    break;
-
-                case RequestDevelopmentCardsViewCommand c:
-                    HandleDevCardsViewRequested(c);
+                    FinishPhase();
                     break;
             }
         }
 
-        public void HandleDevCardClicked(DevelopmentCardClickedCommand signal)
+        private void HandlePlayDevCard(DevelopmentCardClickedCommand signal)
         {
-            DevelopmentCard cardModel = Game.DevelopmentCardsDeckAll.Find(d => d.ID == signal.DevelopmentCardId);
+            var result = _handler.Handle(signal.DevelopmentCardId);
+            var player = Game.GetCurrentPlayer();
 
-            if (!cardModel.IsNew)
+            if (!result.Success)
             {
-                UseCard(cardModel);
+                Bus.Publish(new ActionRejectedEvent(player.ID, result.Reason));
+
+                FinishPhase();
+
+                return;
             }
-        }
 
-        public void HandleDevCardsCanceled(DevelopmentCardsCanceledCommand signal)
-        {
-            bool afterRoll = Game.GetAfterRoll();
-
-            Bus.Publish(new DevelopmentCardsCompletedEvent(afterRoll));
-        }
-
-        public void HandleDevCardsViewRequested(RequestDevelopmentCardsViewCommand signal)
-        {
-            Bus.Publish(new DevelopmentCardsShownEvent(_playerCardsById, Game.GetAfterRoll()));
-        }
-
-        private void UseCard(DevelopmentCard card)
-        {
-            card.IsUsed = true;
-            Game.CurrentPlayer?.DevelopmentCardsByID.Remove(card.ID);
-
-            switch (card.Type)
+            switch (result.Value.Type)
             {
                 case EnumDevelopmentCardTypes.Knight:
-                    Game.UseKnight(Game.CurrentPlayer);
                     Bus.Publish(new ProceedToRobberPlacingEvent());
                     break;
 
@@ -82,7 +62,6 @@ namespace Catan.Core.Phases.Handlers
                     break;
 
                 case EnumDevelopmentCardTypes.VictoryPoint:
-                    Game.UseVictoryPoint(Game.CurrentPlayer);
                     Bus.Publish(new ReturnToNormalRoundEvent());
                     break;
 
@@ -91,5 +70,14 @@ namespace Catan.Core.Phases.Handlers
                     break;
             }
         }
+
+        public void FinishPhase()
+        {
+            bool afterRoll = Game.GetAfterRoll();
+
+            Bus.Publish(new DevelopmentCardsCompletedEvent(afterRoll));
+        }
+
+
     }
 }

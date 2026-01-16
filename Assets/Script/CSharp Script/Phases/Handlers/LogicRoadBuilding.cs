@@ -1,9 +1,9 @@
-﻿using Catan.Core.Engine;
+﻿using Catan.Application.CommandHandlers;
+using Catan.Core.Engine;
 using Catan.Core.Models;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
-using Catan.Shared.Data;
 using System;
 
 namespace Catan.Core.Phases.Handlers
@@ -14,20 +14,19 @@ namespace Catan.Core.Phases.Handlers
         private int RoadsToBuild = 2;
         private int RoadsLeft = 0;
 
-        ResourceCostOrStock RoadCost = BuildingDataRegistry.Cost[typeof(BuildingRoad)].Clone();
         private Edge _selectedEdge;
 
-        public LogicRoadBuilding(GameState game, EventBus bus) : base(game, bus) { }
+        private BuildFreeRoadHandler _handler;
+
+        public LogicRoadBuilding(GameState game, EventBus bus) : base(game, bus)
+        {
+            _handler = new BuildFreeRoadHandler(game);
+        }
 
         public override void Enter()
         {
             RoadsLeft = Game.CurrentPlayer.BuildingCount<BuildingRoad>();
             RoadsToBuild = Math.Min(RoadsToBuild, RoadsLeft);
-
-            for (int i = 0; i < RoadsToBuild; i++)
-            {
-                Game.CurrentPlayer.Resources.AddExact(RoadCost);
-            }
         }
 
         public override void Exit() { }
@@ -61,8 +60,8 @@ namespace Catan.Core.Phases.Handlers
         private void HandleRoadRequested(BuildRoadCommand signal)
         {
             var player = Game.GetCurrentPlayer();
-            var result = Game.BuildRoad(player, _selectedEdge);
-            int id = SelectedEdgeId.Value;
+            var result = _handler.Handle(player.ID, _selectedEdge);
+            int id = result.Edge.Id;
 
             ResetSelection();
 
@@ -76,8 +75,6 @@ namespace Catan.Core.Phases.Handlers
             }
 
             Bus.Publish(new RoadPlacedEvent(id));
-
-            Game.Bank.SubtractExact(RoadCost);
 
             RoadsToBuild--;
             RoadsBuilt++;

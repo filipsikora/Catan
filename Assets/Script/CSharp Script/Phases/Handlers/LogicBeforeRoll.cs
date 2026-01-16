@@ -1,4 +1,5 @@
-﻿using Catan.Core.Engine;
+﻿using Catan.Application.CommandHandlers;
+using Catan.Core.Engine;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
@@ -8,7 +9,12 @@ namespace Catan.Core.Phases.Handlers
 {
     public class LogicBeforeRoll : BasePhaseLogic
     {
-        public LogicBeforeRoll(GameState game, EventBus bus) : base(game, bus) { }
+        private RollDiceHandler _handler;
+
+        public LogicBeforeRoll(GameState game, EventBus bus) : base(game, bus)
+        {
+            _handler = new RollDiceHandler(game);
+        }
 
         public override void Enter() { }
 
@@ -19,33 +25,26 @@ namespace Catan.Core.Phases.Handlers
             switch (command)
             {
                 case RollDiceCommand c:
-                    HandleRollDiceClicked(c);
-                    break;
-
-                case VertexClickedCommand c:
-                    HandleVertexClicked(c);
-                    break;
-
-                case EdgeClickedCommand c:
-                    HandleEdgeClicked(c);
-                    break;
-
-                case HexClickedCommand c:
-                    HandleHexClicked(c);
+                    HandleRollDice(c);
                     break;
 
                 case ShowDevelopmentCardsCommand c:
-                    Bus.Publish(new ProceedToDevelopmentCardsEvent(Game.GetCurrentPlayerDevelopmentCardIds(), Game.GetAfterRoll()));
+                    Bus.Publish(new ProceedToDevelopmentCardsEvent());
+                    break;
+
+                case VertexClickedCommand:
+                case EdgeClickedCommand:
+                case HexClickedCommand:
+                    HandleInvalidClick();
                     break;
             }
         }
 
-        private void HandleRollDiceClicked(RollDiceCommand signal)
+        private void HandleRollDice(RollDiceCommand signal)
         {
-            var resultDiceRoll = Game.RollAndServePlayers();
-            Game.SetAfterRollTo(true);
+            var result = _handler.Handle();
 
-            foreach (var r in resultDiceRoll.Distributions)
+            foreach (var r in result.Distributions)
             {
                 if (r.Granted == 0)
                 {
@@ -63,23 +62,15 @@ namespace Catan.Core.Phases.Handlers
                 }
             }
 
-            bool rolledSeven = resultDiceRoll.Roll == 7;
+            bool rolledSeven = result.Roll == 7;
             Bus.Publish(new DiceRollCompletedEvent(rolledSeven));
         }
 
-        private void HandleVertexClicked(VertexClickedCommand signal)
+        private void HandleInvalidClick()
         {
-            Bus.Publish(new LogMessageEvent(EnumLogTypes.Warning, "Roll first"));
-        }
+            var player = Game.GetCurrentPlayer();
 
-        private void HandleEdgeClicked(EdgeClickedCommand signal)
-        {
-            Bus.Publish(new LogMessageEvent(EnumLogTypes.Warning, "Roll first"));
-        }
-
-        private void HandleHexClicked(HexClickedCommand signal)
-        {
-            Bus.Publish(new LogMessageEvent(EnumLogTypes.Warning, "Roll first"));
+            Bus.Publish(new ActionRejectedEvent(player.ID, ConditionFailureReason.NotRolledYet));
         }
     }
 }

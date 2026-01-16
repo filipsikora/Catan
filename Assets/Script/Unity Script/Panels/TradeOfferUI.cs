@@ -1,15 +1,17 @@
-using Catan.Shared.Data;
+using Catan.Application.Snapshots;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
-using Catan.Unity.Visuals.Models;
-using Catan.Unity.Visuals;
+using Catan.Shared.Data;
 using Catan.Unity.Data;
 using Catan.Unity.Helpers;
+using Catan.Unity.Visuals;
+using Catan.Unity.Visuals.Models;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections.Generic;
 
 namespace Catan.Unity.Panels
 {
@@ -31,7 +33,7 @@ namespace Catan.Unity.Panels
             RegisterButton(EnumTradeOfferUIButtons.CancelTradeOffer, CancelTradeButton);
         }
 
-        public void Show(Dictionary<int, string> potentialPartnersIds)
+        public void Show(List<PlayerNameSnapshot> potentialPartnersData)
         {
             gameObject.SetActive(true);
 
@@ -39,16 +41,16 @@ namespace Catan.Unity.Panels
             VisualsUI.ClearContainer(CardsReviewContainer);
             VisualsUI.ClearContainer(PlayersButtonsContainer);
 
-            foreach (var key in ManagerGame.Instance.Game.Bank.ResourceDictionary.Keys)
+            foreach (EnumResourceTypes type in Enum.GetValues(typeof(EnumResourceTypes)))
             {
-                CardFactory.DrawResourceCard(key, EnumResourceCardLocation.DesiredTrade, CardsChoiceContainer);
+                CardFactory.DrawResourceCard(type, EnumResourceCardLocation.DesiredTrade, CardsChoiceContainer);
             }
 
-            foreach (var (value, key) in potentialPartnersIds)
+            foreach (var player in potentialPartnersData)
             {
                 var buttonObj = Instantiate(PlayerButtonPrefab, PlayersButtonsContainer);
-                buttonObj.GetComponentInChildren<TextMeshProUGUI>().text = potentialPartnersIds[value];
-                buttonObj.GetComponent<Button>().onClick.AddListener(() => Bus.Publish(new TradePartnerChosenCommand(value)));
+                buttonObj.GetComponentInChildren<TextMeshProUGUI>().text = player.Name;
+                buttonObj.GetComponent<Button>().onClick.AddListener(() => Bus.Publish(new TradePartnerChosenCommand(player.Id)));
             }
         }
 

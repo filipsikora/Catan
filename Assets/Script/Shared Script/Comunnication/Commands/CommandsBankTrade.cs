@@ -1,6 +1,5 @@
 ﻿using Catan.Shared.Data;
 using Catan.Shared.Interfaces;
-using System.Collections.Generic;
 
 namespace Catan.Shared.Communication.Commands
 {
@@ -17,8 +16,8 @@ namespace Catan.Shared.Communication.Commands
 
     public class BankTradeDesiredResourceSelected : ICommand
     {
-        public EnumResourceTypes Type;
-        public BankTradeDesiredResourceSelected(EnumResourceTypes type)
+        public EnumResourceTypes? Type;
+        public BankTradeDesiredResourceSelected(EnumResourceTypes? type)
         {
             Type = type;
         }

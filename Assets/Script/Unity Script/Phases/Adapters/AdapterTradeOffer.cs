@@ -3,8 +3,6 @@ using Catan.Shared.Communication.Events;
 using Catan.Unity.Communication.InternalUIEvents;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Catan.Unity.Phases.Adapters
 {
@@ -19,15 +17,10 @@ namespace Catan.Unity.Phases.Adapters
             _binder = new BinderTradeOffer(UI, Manager.EventBus);
             _binder.Bind();
 
-            var potentialPartnersIds = new Dictionary<int, string>();
-
-            foreach (var player in ManagerGame.Instance.Game.PlayerList.Where(p => p != ManagerGame.Instance.Game.CurrentPlayer))
-            {
-                potentialPartnersIds[player.ID] = player.Name;
-            }
+            var potentialPartnersData = Manager.PlayersQueryService.GetNotCurrentPlayersNames();
 
             VisualsUI.SetMainAndPlayerUIVisibility(false, UI.MainUIPanel, UI.PlayerUIPanel);
-            UI.TradeOfferPanel.Show(potentialPartnersIds);
+            UI.TradeOfferPanel.Show(potentialPartnersData);
 
             UI.TradeOfferPanel.PlayersButtonsContainer.gameObject.SetActive(false);
 

@@ -1,4 +1,5 @@
-﻿using Catan.Core.Models;
+﻿using Catan.Application.Snapshots;
+using Catan.Core.Models;
 using UnityEngine;
 
 namespace Catan.Unity.Panels
@@ -25,8 +26,6 @@ namespace Catan.Unity.Panels
         public void ShowTradeOfferButton() => MainUIPanel.ShowTradeOfferButton();
         public void HideTradeOfferButton() => MainUIPanel.HideTradeOfferButton();
 
-        public void UpdatePlayerInfo(Player player) => PlayerUIPanel.UpdatePlayerInfo(player);
-        public void UpdateTexts(Player player) => PlayerUIPanel.UpdateTexts(player);
-        public void UpdateResourceCards(Player player) => PlayerUIPanel.UpdateResourceCards(player);
+        public void UpdatePlayerInfo(PlayerDataSnapshot dataSnapshot, PlayerResourcesSnapshot resourcesSnapshot) => PlayerUIPanel.UpdatePlayerInfo(dataSnapshot, resourcesSnapshot);
     }
 }

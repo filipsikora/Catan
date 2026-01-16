@@ -13,12 +13,12 @@ namespace Catan.Unity.Phases.Binders
         {
             UI.TradeRequestPanel.Bind(EnumTradeRequestUIButtons.AcceptTradeRequest, () =>
             {
-                Bus.Publish(new TradeRequestAcceptedCommand());
+                Bus.Publish(new AcceptTradeRequestCommand());
             });
 
             UI.TradeRequestPanel.Bind(EnumTradeRequestUIButtons.RefuseTradeRequest, () =>
             {
-                Bus.Publish(new TradeRequestRefusedCommand());
+                Bus.Publish(new RefuseTradeRequestCommand());
             });
         }
 

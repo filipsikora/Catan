@@ -1,5 +1,4 @@
-﻿using Catan.Shared.Communication.Commands;
-using Catan.Shared.Communication.Events;
+﻿using Catan.Application.Snapshots;
 using Catan.Unity.Phases.Adapters;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
@@ -9,40 +8,29 @@ namespace Catan.Unity.Phases.Controllers
     public class AdapterTradeRequest : BasePhaseAdapter
     {
         private BinderTradeRequest _binder;
+        private TradeOfferedSnapshot _tradeOfferSnapshot;
 
         public override void OnEnter()
         {
             UI.TradeRequestPanel.gameObject.SetActive(true);
 
             _binder = new BinderTradeRequest(UI, Manager.EventBus);
-
-            VisualsUI.SetMainAndPlayerUIVisibility(false, UI.MainUIPanel, UI.PlayerUIPanel);
-
             _binder.Bind();
 
-            Manager.EventBus.Subscribe<TradeRequestSentEvent>(OnTradeRequestSent);
+            _tradeOfferSnapshot = ManagerGame.Instance.TradeQueryService.GetTradeOfferData();
 
-            Manager.EventBus.Publish(new RequestTradeRequestValidatedCommand());
-        }
+            UI.TradeRequestPanel.AcceptTradeButton.gameObject.SetActive(_tradeOfferSnapshot.CanTrade);
+            UI.TradeRequestPanel.Show(_tradeOfferSnapshot.SellerName, _tradeOfferSnapshot.BuyerName, _tradeOfferSnapshot.Offered, _tradeOfferSnapshot.Desired);
 
-        private void OnTradeRequestSent(TradeRequestSentEvent signal)
-        {
-            UI.TradeRequestPanel.AcceptTradeButton.gameObject.SetActive(signal.CanTrade);
-            var playerOffered = ManagerGame.Instance.Game.GetPlayerById(signal.PlayerId);
-            var playerOffering = ManagerGame.Instance.Game.GetCurrentPlayer();
-            UI.TradeRequestPanel.Show(playerOffered, playerOffering, signal.CardsOffered, signal.CardsDesired);
+            VisualsUI.SetMainAndPlayerUIVisibility(false, UI.MainUIPanel, UI.PlayerUIPanel);
         }
 
         public override void OnExit()
         {
             _binder.Unbind();
 
-            VisualsUI.SetMainAndPlayerUIVisibility(true, UI.MainUIPanel, UI.PlayerUIPanel);
             UI.TradeRequestPanel.gameObject.SetActive(false);
-
-            UI.UpdatePlayerInfo(ManagerGame.Instance.Game.CurrentPlayer);
-
-            Manager.EventBus.Unsubscribe<TradeRequestSentEvent>(OnTradeRequestSent);
+            VisualsUI.SetMainAndPlayerUIVisibility(true, UI.MainUIPanel, UI.PlayerUIPanel);
         }
     }
 }

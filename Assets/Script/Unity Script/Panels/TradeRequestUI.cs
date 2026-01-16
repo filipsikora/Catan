@@ -6,7 +6,7 @@ using Catan.Unity.Helpers;
 using Catan.Shared.Data;
 using Catan.Unity.Visuals.Models;
 using Catan.Unity.Visuals;
-using Catan.Core.Models;
+using System.Collections.Generic;
 
 namespace Catan.Unity.Panels
 {
@@ -28,9 +28,9 @@ namespace Catan.Unity.Panels
             RegisterButton(EnumTradeRequestUIButtons.RefuseTradeRequest, RefuseTradeButton);
         }
 
-        public void Show(Player offeredPlayer, Player offeringPlayer, ResourceCostOrStock offeredCards, ResourceCostOrStock desiredCards)
+        public void Show(string sellerName, string buyerName, Dictionary<EnumResourceTypes, int> offered, Dictionary<EnumResourceTypes, int> desired)
         {
-            string text = $"{offeredPlayer}, {offeringPlayer} is offering";
+            string text = $"{buyerName}, {sellerName} is offering";
             TradeOfferText.text = text;
 
             VisualsUI.ClearContainer(OfferedCardsContainer);
@@ -38,7 +38,7 @@ namespace Catan.Unity.Panels
 
             gameObject.SetActive(true);
 
-            foreach (var entry in offeredCards.ResourceDictionary)
+            foreach (var entry in offered)
             {
                 EnumResourceTypes type = entry.Key;
                 int count = entry.Value;
@@ -49,7 +49,7 @@ namespace Catan.Unity.Panels
                 }
             }
 
-            foreach (var entry in desiredCards.ResourceDictionary)
+            foreach (var entry in desired)
             {
                 EnumResourceTypes type = entry.Key;
                 int count = entry.Value;

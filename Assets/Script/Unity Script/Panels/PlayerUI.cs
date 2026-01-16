@@ -1,10 +1,9 @@
 ﻿using UnityEngine;
 using TMPro;
-using System.Linq;
 using Catan.Unity.Helpers;
 using Catan.Shared.Data;
-using Catan.Core.Models;
 using Catan.Unity.Visuals;
+using Catan.Application.Snapshots;
 
 namespace Catan.Unity.Panels
 {
@@ -18,36 +17,32 @@ namespace Catan.Unity.Panels
 
         public FactoryResourceCards ResourceCardFactory;
 
-        public void UpdatePlayerInfo(Player player)
+        public void UpdatePlayerInfo(PlayerDataSnapshot dataSnapshot, PlayerResourcesSnapshot resourcesSnapshot)
         {
-            UpdateTexts(player);
-            UpdateResourceCards(player);
+            UpdateTexts(dataSnapshot);
+            UpdateResourceCards(resourcesSnapshot);
         }
 
-        public void UpdateTexts(Player player)
+        public void UpdateTexts(PlayerDataSnapshot dataSnapshot)
         {
-            PlayerNameText.text = $"{player.Name}";
+            PlayerNameText.text = $"{dataSnapshot.Name}";
 
             string buildingsInfo = "";
-            foreach (var buildingType in BuildingDataRegistry.MaxPerPlayer.Keys)
-            {
-                int buildingCount = player.Buildings.Count(b => b.GetType() == buildingType);
-                int maxCount = BuildingDataRegistry.MaxPerPlayer[buildingType];
-                int available = maxCount - buildingCount;
 
-                string buildingName = BuildingDataRegistry.Name[buildingType];
-                buildingsInfo += $"{buildingName}: {available} available\n";
+            foreach (var (key, value) in dataSnapshot.BuildingsLeft)
+            {;
+                buildingsInfo += $"{key}: {value} available\n";
             }
 
             PlayerBuildingsText.text = buildingsInfo;
-            PlayerPointsText.text = $"{player.Name}: {player.Points} points, {player.KnightsUsed} knights, {player.VictoryPointsCardsUsed + player.ExtraPoints} extra points";
+            PlayerPointsText.text = $"{dataSnapshot.Name}: {dataSnapshot.Points} points, {dataSnapshot.Knights} knights, {dataSnapshot.VictoryPoints + dataSnapshot.ExtraPoints} extra points";
         }
 
-        public void UpdateResourceCards(Player player)
+        public void UpdateResourceCards(PlayerResourcesSnapshot resourcesSnapshot)
         {
             VisualsUI.ClearContainer(ResourceCardsPanel);
 
-            foreach (var entry in player.Resources.ResourceDictionary)
+            foreach (var entry in resourcesSnapshot.PlayerResources)
             {
                 EnumResourceTypes type = entry.Key;
                 int count = entry.Value;

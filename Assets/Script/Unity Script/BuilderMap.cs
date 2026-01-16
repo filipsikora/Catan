@@ -1,13 +1,13 @@
 ﻿#nullable enable
+using Catan.Application.Snapshots;
+using Catan.Shared.Data;
 using Catan.Unity.Data;
 using Catan.Unity.Visuals.Models;
-using Catan.Shared.Data;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.Helpers;
 using UnityEngine;
-using Catan.Core.Engine;
-using Catan.Core.Models;
 
 namespace Catan.Unity
 {
@@ -19,7 +19,6 @@ namespace Catan.Unity
         public Material IdleGridMaterial;
         public Material WaterMaterial;
 
-        public GameState Game;
         public Transform Board;
 
         public GameObject HexTilePrefab;
@@ -31,35 +30,26 @@ namespace Catan.Unity
         public Dictionary<int, GameObject> EdgeObjects = new();
         public Dictionary<int, GameObject> HexObjects = new();
 
-        public Dictionary<EnumResourceTypes, Color>? PortColorLookup;
+        public Dictionary<int, VertexSnapshot> vertexLookup = new();
+        public Dictionary<int, EdgeSnapshot> edgeLookup = new();
 
-        public void BuildMap(HexMap map)
+        public void BuildMap(BoardSnapshot board)
         {
-            map.GenerateHexesInAxial();
-            map.ConvertHexToPixel(Size);
-            map.GenerateVerticesInPixel(Size);
-            map.AddVerticesToHex(Size);
-            map.SortAndIDVertices();
-            map.GenerateEdgesInPixels(Size);
-            map.SortAndIDEdges();
-            map.GetPortsEdges();
-            map.SetPorts();
+            vertexLookup = board.Vertices.ToDictionary(v => v.VertexId);
+            edgeLookup = board.Edges.ToDictionary(e => e.EdgeId);
 
-            Game.ReadyFieldList();
-            Game.GiveHexesData(map.HexList);
-
-            DrawEdges(map);
-            DrawVertices(map);
-            DrawHexes(map);
-            DrawPorts(map);
+            DrawEdges(board);
+            DrawVertices(board);
+            DrawHexes(board);
+            DrawPorts(board);
         }
 
-        public void DrawHexes(HexMap map)
+        public void DrawHexes(BoardSnapshot board)
         {
-            foreach (var hex in map.HexList)
+            foreach (var hex in board.Hexes)
             {
                 Material mat = FieldMaterialsList.First(f => f.FieldType == hex.FieldType).Material;
-                Vector3 pos = new Vector3(hex.X, 0, hex.Y);
+                Vector3 pos = HexLayout.AxialToPixel(hex.Q, hex.R, Size);
 
                 GameObject hexObject = GameObject.Instantiate(HexTilePrefab, pos, HexTilePrefab.transform.rotation, Board);
 
@@ -68,39 +58,38 @@ namespace Catan.Unity
 
                 hexObject.AddComponent<Rigidbody>().isKinematic = true;
                 var clickable = hexObject.AddComponent<VisualHex>();
-                clickable.HexId = hex.Id;
+                clickable.HexId = hex.HexId;
 
-                HexObjects[hex.Id] = hexObject;
+                HexObjects[hex.HexId] = hexObject;
 
                 if (hex.FieldType != EnumFieldTypes.Desert)
                 {
-                    Vector3 numberPos = new Vector3(hex.X, 0.1f, hex.Y);
+                    Vector3 numberPos = HexLayout.AxialToPixel(hex.Q, hex.R, Size) + Vector3.up * 0.1f;
                     GameObject numberObject = GameObject.Instantiate(HexNumberPrefab, numberPos, HexNumberPrefab.transform.rotation, Board);
 
                     var textMesh = numberObject.GetComponentInChildren<TextMeshPro>();
-                    textMesh.text = hex.FieldNumber.ToString();
+                    textMesh.text = hex.HexNumber.ToString();
                 }
             }
         }
 
-        public void DrawEdges(HexMap map)
+        public void DrawEdges(BoardSnapshot board)
         {
-            foreach (var edge in map.Edges)
+            foreach (var edge in board.Edges)
             {
-                var (start, end, mid) = GetEdgePositions(edge);
+                var (a, b, mid, dir, rotation) = GetEdgeVisualData(edge.EdgeId);
 
-                GameObject edgeObject = new GameObject($"Edge_{edge.Id}");
+                GameObject edgeObject = new GameObject($"Edge_{edge.EdgeId}");
 
                 edgeObject.transform.parent = Board;
                 edgeObject.transform.position = mid;
-                edgeObject.transform.rotation = GetEdgeRotation(edge);
-                edgeObject.transform.Rotate(0, 90f, 0);
+                edgeObject.transform.rotation = rotation;
                 edgeObject.layer = LayerMask.NameToLayer("EdgeLayer");
 
                 LineRenderer lr = edgeObject.AddComponent<LineRenderer>();
                 lr.positionCount = 2;
-                lr.SetPosition(0, start);
-                lr.SetPosition(1, end);
+                lr.SetPosition(0, a);
+                lr.SetPosition(1, b);
                 lr.startWidth = 0.1f;
                 lr.endWidth = 0.1f;
 
@@ -113,7 +102,7 @@ namespace Catan.Unity
                 rb.isKinematic = true;
 
                 BoxCollider bc = edgeObject.AddComponent<BoxCollider>();
-                float length = Vector3.Distance(start, end);
+                float length = Vector3.Distance(a, b);
                 float thickness = 0.15f;
                 float height = 0.1f;
 
@@ -121,32 +110,32 @@ namespace Catan.Unity
                 bc.center = new Vector3(0, height / 2f, 0);
 
                 var clickable = edgeObject.AddComponent<VisualEdge>();
-                clickable.EdgeId = edge.Id;
+                clickable.EdgeId = edge.EdgeId;
 
-                EdgeObjects[edge.Id] = edgeObject;
+                EdgeObjects[edge.EdgeId] = edgeObject;
             }
         }
 
-        public void DrawVertices(HexMap map)
+        public void DrawVertices(BoardSnapshot board)
         {
             float vertexHeight = 0.15f;
 
-            foreach (var vertex in map.VertexList)
+            foreach (var vertex in board.Vertices)
             {
-                GameObject vertexObject;
+                Vector3 pos = ResolveVertexPosition(vertex);
 
-                vertexObject = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-                vertexObject.transform.position = new Vector3(vertex.X, 0 + vertexHeight / 2f, vertex.Y);
+                var vertexObject = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+                vertexObject.transform.position = pos;
                 vertexObject.transform.localScale = new Vector3(0.2f, vertexHeight / 2f, 0.2f);
                 vertexObject.transform.rotation = Quaternion.Euler(0, 90, 0);
                 vertexObject.transform.parent = Board;
-                vertexObject.name = $"Vertex_{vertex.Id}";
+                vertexObject.name = $"Vertex_{vertex.VertexId}";
 
                 vertexObject.layer = LayerMask.NameToLayer("VertexLayer");
 
                 vertexObject.AddComponent<Rigidbody>().isKinematic = true;
                 var clickable = vertexObject.AddComponent<VisualVertex>();
-                clickable.VertexId = vertex.Id;
+                clickable.VertexId = vertex.VertexId;
 
                 if (IdleGridMaterial != null)
                 {
@@ -154,22 +143,21 @@ namespace Catan.Unity
                     renderer.material = IdleGridMaterial;
                 }
 
-                VertexObjects[vertex.Id] = vertexObject;
+                VertexObjects[vertex.VertexId] = vertexObject;
             }
         }
 
-        public void DrawPorts(HexMap map)
+        public void DrawPorts(BoardSnapshot board)
         {
-            foreach (var port in map.PortList)
+            foreach (var port in board.Ports)
             {
-                var (start, end, mid) = GetEdgePositions(port.Edge);
-                Quaternion rotation = GetEdgeRotation(port.Edge);
+                var (_, _, mid, dir, rotation) = GetEdgeVisualData(port.EdgeId);
 
-                Vector3 direction = end - start;
-                Vector3 perpendicular = Vector3.Cross(direction, Vector3.up).normalized;
+                var perpendicular = Vector3.Cross(Vector3.down, dir).normalized;
+
                 Vector3 portPos = mid + perpendicular * -0.30f;
 
-                GameObject portObject = GameObject.Instantiate(CubePortPrefab, portPos, rotation, Board);
+                GameObject portObject = GameObject.Instantiate(CubePortPrefab, portPos, Quaternion.LookRotation(dir), Board);
 
                 Material materialToUse;
 
@@ -191,7 +179,32 @@ namespace Catan.Unity
             }
         }
 
-        public GameObject? FindVertexObjectById(int id)
+        private Vector3 ResolveVertexPosition(VertexSnapshot v)
+        {
+            var points = v.Corners.Select(c =>
+                HexLayout.GetCorner(c.HexQ, c.HexR, c.CornerIndex, Size)
+            );
+
+            return points.Aggregate(Vector3.zero, (a, b) => a + b) / v.Corners.Count
+                   + Vector3.up * 0.075f;
+        }
+
+        public (Vector3 start, Vector3 end, Vector3 mid, Vector3 dir, Quaternion rotation) GetEdgeVisualData(int edgeId)
+        {
+            var edgeObject = edgeLookup[edgeId];
+
+            var start = ResolveVertexPosition(vertexLookup[edgeObject.VertexAId]);
+            var end = ResolveVertexPosition(vertexLookup[edgeObject.VertexBId]);
+
+            var mid = (start + end) / 2f;
+            var dir = (end - start).normalized;
+            var rotation = Quaternion.LookRotation(dir);
+
+            return (start, end, mid, dir, rotation);
+
+        }
+
+        public GameObject? GetVertexObjectById(int id)
         {
             if (VertexObjects.TryGetValue(id, out var obj))
                 return obj;
@@ -200,7 +213,7 @@ namespace Catan.Unity
             return null;
         }
 
-        public GameObject? FindEdgeObjectById(int id)
+        public GameObject? GetEdgeObjectById(int id)
         {
             if (EdgeObjects.TryGetValue(id, out var obj))
                 return obj;
@@ -209,7 +222,7 @@ namespace Catan.Unity
             return null;
         }
 
-        public GameObject? FindHexObjectById(int id)
+        public GameObject? GetHexObjectById(int id)
         {
             if (HexObjects.TryGetValue(id, out var obj))
                 return obj;
@@ -218,23 +231,14 @@ namespace Catan.Unity
             return null;
         }
 
-        public Quaternion GetEdgeRotation(Edge edge)
+        public IEnumerable<int> GetVerticesIds()
         {
-            Vector3 start = new Vector3(edge.VertexA.X, 0.05f, edge.VertexA.Y);
-            Vector3 end = new Vector3(edge.VertexB.X, 0.05f, edge.VertexB.Y);
-
-            Vector3 direction = end - start;
-            direction.Normalize();
-
-            return Quaternion.LookRotation(direction);
+            return VertexObjects.Keys;
         }
-        public (Vector3 start, Vector3 end, Vector3 mid) GetEdgePositions(Edge edge)
-        {
-            Vector3 start = new Vector3(edge.VertexA.X, 0.05f, edge.VertexA.Y);
-            Vector3 end = new Vector3(edge.VertexB.X, 0.05f, edge.VertexB.Y);
-            Vector3 mid = (start + end) / 2f;
 
-            return (start, end, mid);
+        public IEnumerable<int> GetEdgesIds()
+        {
+            return EdgeObjects.Keys;
         }
     }
 }

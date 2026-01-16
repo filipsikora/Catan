@@ -1,11 +1,11 @@
-﻿using Catan.Core.Engine;
+﻿using Catan.Application.CommandHandlers;
+using Catan.Core.Conditions;
+using Catan.Core.Engine;
 using Catan.Core.Models;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
 using Catan.Shared.Data;
-using System.Linq;
-using static Catan.Shared.Communication.Events.ResourcesAvailabilityEvent;
 
 namespace Catan.Core.Phases.Handlers
 {
@@ -14,7 +14,12 @@ namespace Catan.Core.Phases.Handlers
         private ResourceCostOrStock _cardsDesired = new();
         private readonly int _cardsToReceive = 2;
 
-        public LogicYearOfPlentyCard(GameState game, EventBus bus) : base(game, bus) { }
+        private UseYearOfPlentyHandler _handler;
+
+        public LogicYearOfPlentyCard(GameState game, EventBus bus) : base(game, bus)
+        {
+            _handler = new UseYearOfPlentyHandler(game);
+        }
 
         public override void Enter() { }
 
@@ -37,11 +42,11 @@ namespace Catan.Core.Phases.Handlers
         private void HandleResourceCardClicked(ResourceCardSelectedCommand signal)
         {
             EnumResourceTypes type = signal.Type;
-            var availability = Game.CheckResourcesAvailabilityAfterChange(_cardsDesired);
+            var availability = ConditionsTrade.BankHasEnoughResources(Game.Bank, type);
 
             if (!signal.IsSelected)
             {
-                if (_cardsDesired.ResourceDictionary[type] > 0)
+                if (_cardsDesired.Get(type) > 0)
                 {
                     _cardsDesired.SubtractExactAmount(type, 1);
                 }
@@ -49,7 +54,7 @@ namespace Catan.Core.Phases.Handlers
 
             if (signal.IsSelected)
             {
-                if (availability[type])
+                if (availability.Success)
                 {
                     _cardsDesired.AddExactAmount(type, 1);
                 }
@@ -60,21 +65,27 @@ namespace Catan.Core.Phases.Handlers
                 }
             }
 
-            bool canAccept = _cardsDesired.ResourceDictionary.Values.Sum() == _cardsToReceive;
+            bool canAccept = ConditionsResources.HasExactResourcesNumber(_cardsDesired, 2).Success;
 
             Bus.Publish(new SelectionChangedEvent(canAccept));
         }
 
         private void HandleResourcesSelected(CardSelectionAcceptedCommand signal)
         {
-            var results = Game.UseYearOfPlenty(_cardsDesired);
+            var player = Game.GetCurrentPlayer();
+            var result = _handler.Handle(_cardsDesired);
 
-            foreach (var r in results)
+            if (!result.Success)
             {
-                if (r.Granted <= 0)
+                Bus.Publish(new ActionRejectedEvent(player.ID, result.Reason));
+            }
+
+            foreach (var (key, amount) in result.Requested.ResourceDictionary)
+            {
+                if (amount <= 0)
                     continue;
 
-                Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, $"Player{r.PlayerId} received {r.Requested} {r.Type} from Year Of Plenty card"));
+                Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, $"Player{player.ID} received {key} {amount} from Year Of Plenty card"));
             }
 
             Bus.Publish(new ReturnToNormalRoundEvent());

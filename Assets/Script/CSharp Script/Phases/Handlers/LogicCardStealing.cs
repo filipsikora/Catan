@@ -1,26 +1,26 @@
-﻿using Catan.Core.Engine;
-using Catan.Core.Models;
+﻿using Catan.Application.CommandHandlers;
+using Catan.Core.Engine;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
-using System.Linq;
+using Catan.Shared.Data;
 
 namespace Catan.Core.Phases.Handlers
 {
     public class LogicCardStealing : BasePhaseLogic
     {
         private int _victimId;
-        private Player _victim;
+        private int _thiefId;
+
+        private StealCardHandler _handler;
 
         public LogicCardStealing(GameState game, EventBus bus, int victimId) : base(game, bus)
         {
             _victimId = victimId;
+            _handler = new StealCardHandler(game);
         }
 
-        public override void Enter()
-        {
-            _victim = Game.GetPlayerById(_victimId);
-        }
+        public override void Enter() { }
 
         public override void Exit() { }
 
@@ -29,7 +29,7 @@ namespace Catan.Core.Phases.Handlers
             switch (command)
             {
                 case StolenCardSelectedCommand c:
-                    HandleResourceSelectionChanged(c);
+                    HandleSteal(c);
                     break;
 
                 case RequestCardStealingStartCommand c:
@@ -40,23 +40,35 @@ namespace Catan.Core.Phases.Handlers
 
         private void HandleCardStealingStarted(RequestCardStealingStartCommand signal)
         {
-            if (_victim.Resources.ResourceDictionary.Values.Sum() == 0)
+            var thief = Game.GetCurrentPlayer();
+            var victim = Game.GetPlayerById(_victimId);
+
+            _thiefId = thief.ID;
+
+            if (!Rules.RulesRobber.CanSteal(victim).Success)
             {
-                Bus.Publish(new LogMessageEvent(Shared.Data.EnumLogTypes.Info, "Nothing to steal from this player"));
+                Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, "Nothing to steal from this player"));
 
                 FinishPhase();
+
+                return;
             }
 
             else
             {
-                Bus.Publish(new VictimSelectedEvent(_victim.Resources, _victim.ID));
+                Bus.Publish(new VictimSelectedEvent(victim.Resources, victim.ID));
             }
         }
 
-        private void HandleResourceSelectionChanged(StolenCardSelectedCommand signal)
+        private void HandleSteal(StolenCardSelectedCommand signal)
         {
-            Game.CurrentPlayer.Resources.AddExactAmount(signal.Type, 1);
-            _victim.Resources.SubtractExactAmount(signal.Type, 1);
+            var result = _handler.Handle(_victimId, signal.Type);
+
+            if (!result.Success)
+            {
+                Bus.Publish(new ActionRejectedEvent(_victimId, result.Reason));
+                return;
+            }
 
             FinishPhase();
         }

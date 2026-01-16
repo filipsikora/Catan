@@ -1,7 +1,6 @@
 ﻿using Catan.Shared.Communication.Events;
-using Catan.Core.Models;
+using Catan.Unity.Communication.InternalUIEvents;
 using Catan.Unity.Visuals;
-using System.Linq;
 using UnityEngine;
 
 namespace Catan.Unity.Phases.Adapters
@@ -13,22 +12,20 @@ namespace Catan.Unity.Phases.Adapters
             VisualsUI.SetMainAndPlayerUIVisibility(false, UI.MainUIPanel, UI.PlayerUIPanel);
 
             Manager.EventBus.Subscribe<RobberPlacedEvent>(OnRobberPlaced);
-            Manager.EventBus.Subscribe<PotentialVictimsSelectedEvent>(OnPotentialVictimsSelected);
+            Manager.EventBus.Subscribe<PotentialVictimsFoundEvent>(OnPotentialVictimsFound);
 
             Manager.EventBus.Subscribe<LogMessageEvent>(OnLogMessageReceived);
         }
 
         private void OnRobberPlaced(RobberPlacedEvent signal)
         {
-            HexTile hex = Manager.Game.Map.GetHexById(signal.HexId);
-
-            Manager.BoardVisuals.MoveRobberObject(hex);
+            EventBus.Publish(new RobberMovedUIEvent(signal.HexId));
         }
 
-        private void OnPotentialVictimsSelected(PotentialVictimsSelectedEvent signal)
+        private void OnPotentialVictimsFound(PotentialVictimsFoundEvent signal)
         {
-            var victimsList = signal.VictimsIds.Select(id => Manager.Game.GetPlayerById(id)).ToList();
-            UI.VictimSelectorPanel.Show(victimsList);
+            var potentialVictimsData = Manager.PlayersQueryService.GetNotCurrentPlayersNames();
+            UI.VictimSelectorPanel.Show(potentialVictimsData);
         }
 
         private void OnLogMessageReceived(LogMessageEvent signal)
@@ -40,7 +37,7 @@ namespace Catan.Unity.Phases.Adapters
         {
 
             Manager.EventBus.Unsubscribe<RobberPlacedEvent>(OnRobberPlaced);
-            Manager.EventBus.Unsubscribe<PotentialVictimsSelectedEvent>(OnPotentialVictimsSelected);
+            Manager.EventBus.Unsubscribe<PotentialVictimsFoundEvent>(OnPotentialVictimsFound);
 
             Manager.EventBus.Unsubscribe<LogMessageEvent>(OnLogMessageReceived);
 

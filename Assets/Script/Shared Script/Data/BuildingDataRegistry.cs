@@ -6,13 +6,6 @@ namespace Catan.Shared.Data
 {
     public static class BuildingDataRegistry
     {
-        public static readonly Dictionary<Type, ResourceCostOrStock> Cost = new()
-        {
-            { typeof(BuildingVillage), new ResourceCostOrStock(Wheat:1, Wood:1, Clay:1, Wool:1) },
-            { typeof(BuildingTown), new ResourceCostOrStock(Wheat:2, Stone:3) },
-            { typeof(BuildingRoad), new ResourceCostOrStock(Wood:1, Clay:1) }
-        };
-
         public static readonly Dictionary<Type, int> MaxPerPlayer = new()
         {
             { typeof(BuildingVillage), 5 },

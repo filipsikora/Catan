@@ -4,7 +4,6 @@ using Catan.Shared.Data;
 using Catan.Unity.Panels;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace Catan.Unity.Visuals.Controllers
 {

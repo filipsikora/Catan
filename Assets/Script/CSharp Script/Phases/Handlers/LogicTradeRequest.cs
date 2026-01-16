@@ -3,29 +3,27 @@ using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
 using Catan.Core.Engine;
 using Catan.Core.Models;
-using Catan.Core.Helpers;
-using Catan.Shared.Results;
+using Catan.Application.CommandHandlers;
 
 namespace Catan.Core.Phases.Handlers
 {
     public class LogicTradeRequest : BasePhaseLogic
     {
-        private int _playerOfferedId;
-        private Player _playerOffered;
+        private int _buyerId;
         private ResourceCostOrStock _cardsDesired;
         private ResourceCostOrStock _cardsOffered;
 
+        private ReactToTradeHandler _handler;
+
         public LogicTradeRequest(GameState game, EventBus bus, int playerId, ResourceCostOrStock cardsOffered, ResourceCostOrStock cardsDesired) : base(game, bus)
         {
-            _playerOfferedId = playerId;
+            _buyerId = playerId;
             _cardsOffered = cardsOffered;
             _cardsDesired = cardsDesired;
+            _handler = new ReactToTradeHandler(game);
         }
 
-        public override void Enter()
-        {
-            _playerOffered = Game.GetPlayerById(_playerOfferedId);
-        }
+        public override void Enter() { }
 
         public override void Exit() { }
 
@@ -33,45 +31,36 @@ namespace Catan.Core.Phases.Handlers
         {
             switch (command)
             {
-                case TradeRequestAcceptedCommand c:
-                    HandleTradeRequestAccepted(c);
+                case RefuseTradeRequestCommand c:
+                    HandleTradeFinished();
                     break;
 
-                case TradeRequestRefusedCommand c:
-                    FinishTrade();
-                    break;
-
-                case RequestTradeRequestValidatedCommand c:
-                    HandleTradeRequestValidationRequested(c);
+                case AcceptTradeRequestCommand c:
+                    HandleTradeAccepted(c);
                     break;
             }
         }
 
-        private void HandleTradeRequestValidationRequested(RequestTradeRequestValidatedCommand signal)
+        private void HandleTradeAccepted(AcceptTradeRequestCommand signal)
         {
-            ResultCondition result = Conditions.CanAfford(_playerOffered.Resources, _cardsDesired);
+            var seller = Game.GetCurrentPlayer();
+            var buyer = Game.GetPlayerById(_buyerId);
+
+            var result = _handler.Handle(seller.ID, _buyerId, _cardsOffered, _cardsDesired);
 
             if (!result.Success)
             {
-                Bus.Publish(new ActionRejectedEvent(_playerOfferedId, result.Reason));
+                Bus.Publish(new ActionRejectedEvent(_buyerId, result.Reason));
+
+                return;
             }
 
-            Bus.Publish(new TradeRequestSentEvent(_playerOfferedId, result.Success, _cardsOffered, _cardsDesired));
+            Bus.Publish(new LogMessageEvent(Shared.Data.EnumLogTypes.Info, "Trade accepted"));
+
+            HandleTradeFinished();
         }
 
-        private void HandleTradeRequestAccepted(TradeRequestAcceptedCommand signal)
-        {
-            var playerOffering = Game.GetCurrentPlayer();
-            playerOffering.Resources.AddExact(_cardsDesired);
-            _playerOffered.Resources.SubtractExact(_cardsDesired);
-
-            playerOffering.Resources.SubtractExact(_cardsOffered);
-            _playerOffered.Resources.AddExact(_cardsOffered);
-
-            FinishTrade();
-        }
-
-        private void FinishTrade()
+        private void HandleTradeFinished()
         {
             Bus.Publish(new ReturnToNormalRoundEvent());
         }

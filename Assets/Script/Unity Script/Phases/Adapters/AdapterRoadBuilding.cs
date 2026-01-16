@@ -1,4 +1,6 @@
-﻿using Catan.Shared.Communication.Events;
+﻿using Catan.Application.Snapshots;
+using Catan.Shared.Communication.Events;
+using Catan.Unity.Communication.InternalUIEvents;
 using Catan.Unity.Data;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
@@ -9,11 +11,14 @@ namespace Catan.Unity.Phases.Adapters
     public class AdapterRoadBuilding : BasePhaseAdapter
     {
         private BinderNormalRound _binder;
+        private TurnDataSnapshot _turnDataSnapshot;
 
         public override void OnEnter()
         {
             _binder = new BinderNormalRound(UI, EventBus);
             _binder.Bind();
+
+            _turnDataSnapshot = Manager.TurnsQueryService.GetTurnData();
 
             VisualsUI.SetParentVisibility(UI.PlayerUIPanel, false);
             VisualsUI.MakeAllChildrenVisible(UI.MainUIPanel.ButtonsContainer, false);
@@ -27,7 +32,7 @@ namespace Catan.Unity.Phases.Adapters
 
         private void OnEdgeClicked(EdgeHighlightedEvent signal)
         {
-            Manager.BoardVisuals.ResetMarkedPositions();
+            EventBus.Publish(new PositionsResetUIEvent());
 
             var edgeObj = Manager.BoardVisuals.GetEdgeObject(signal.EdgeId);
             Manager.BoardVisuals.SetEdgeVisual(edgeObj, Color.yellow);
@@ -42,20 +47,14 @@ namespace Catan.Unity.Phases.Adapters
 
         private void OnRoadPlaced(RoadPlacedEvent signal)
         {
-            var edge = Manager.Game.Map.GetEdgeById(signal.EdgeId);
-            var (_, _, mid) = Manager.BoardVisuals.GetEdgePositions(edge);
-            var rotation = Manager.BoardVisuals.GetEdgeRotation(edge);
-            var playerColor = RegistryPlayerColor.GetColor(Manager.Game.CurrentPlayer.ID);
-
-            Manager.BoardVisuals.PlaceObject(Manager.CubeRoadPrefab, mid, rotation, playerColor, Manager.Board);
-
-            Manager.BoardVisuals.ResetMarkedPositions();
+            EventBus.Publish(new PositionsResetUIEvent());
+            EventBus.Publish(new RoadPlacedUIEvent(signal.EdgeId, _turnDataSnapshot.PlayerId));
+            EventBus.Publish(new PlayerStateChangedUIEvent(_turnDataSnapshot.PlayerId));
         }
 
         public override void OnExit()
         {
             VisualsUI.SetParentVisibility(UI.PlayerUIPanel, true);
-            UI.UpdatePlayerInfo(Manager.Game.CurrentPlayer);
 
             Manager.EventBus.Unsubscribe<RoadPlacedEvent>(OnRoadPlaced);
 

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Data;
 
-namespace Catan.Shared.Results
+namespace Catan.Core.Results
 {
     public class ResultEndGame
     {

@@ -15,6 +15,8 @@ namespace Catan.Core.Models
 
         public int ID;
 
+        public static readonly ResourceCostOrStock Cost = new ResourceCostOrStock(1, 0, 1, 1, 0);
+
 
         public DevelopmentCard(EnumDevelopmentCardTypes type, int id)
         {

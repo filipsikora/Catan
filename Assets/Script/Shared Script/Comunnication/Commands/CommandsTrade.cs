@@ -17,5 +17,7 @@ namespace Catan.Shared.Communication.Commands
 
     public class TradeRequestAcceptedCommand : ICommand { }
 
-    public class TradeRequestRefusedCommand : ICommand { }
+    public class RefuseTradeRequestCommand : ICommand { }
+
+    public class RequestTradeDataCommand : ICommand { }
 }
