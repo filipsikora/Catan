@@ -1,33 +1,32 @@
-﻿using Catan.Application.CommandHandlers;
+﻿using Catan.Application.Controllers;
 using Catan.Core.Engine;
 using Catan.Core.Models;
 using Catan.Core.Rules;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
-using System.Collections.Generic;
+using Catan.Core.PhaseLogic;
+using System.Linq;
+using Catan.Shared.Data;
 
-namespace Catan.Core.Phases.Handlers
+namespace Catan.Application.Phases
 {
-    public class LogicCardDiscarding : BasePhaseLogic
+    public class CardDiscardingPhase : BasePhase
     {
-        private DiscardCardsHandler _handler;
-
-        private Queue<Player> _playersToDiscard;
         private ResourceCostOrStock _resourcesSelected = new();
         private Player _currentPlayer;
 
-        public LogicCardDiscarding(GameState game, EventBus bus) : base(game, bus)
-        {
-            _handler = new DiscardCardsHandler(game);
-        }
+        public CardDiscardingPhase(GameState game, EventBus bus, PhaseTransitionController phaseTransition) : base(game, bus, phaseTransition) { }
 
         public override void Enter()
         {
-            _playersToDiscard = Game.GetCardsDiscardingPlayers();
-        }
+            if (Game.CardDiscardingProgress == null)
+            {
+                var ids = Game.GetCardsDiscardingPlayers().Select(p => p.ID);
 
-        public override void Exit() { }
+                Game.CreateCardDiscardingContext(ids);
+            }
+        }
 
         public override void Handle(object command)
         {
@@ -49,13 +48,17 @@ namespace Catan.Core.Phases.Handlers
 
         private void ProceedToNextPlayer()
         {
-            if (_playersToDiscard.Count == 0)
+            var context = Game.CardDiscardingProgress;
+
+
+            if (context.PlayersToDiscard.Count == 0)
             {
-                Bus.Publish(new ProceedToRobberPlacingEvent());
+                Game.CardsDiscardedContextClear();
+                PhaseTransition.ChangePhase(EnumGamePhases.RobberPlacing);
                 return;
             }
 
-            _currentPlayer = _playersToDiscard.Dequeue();
+            _currentPlayer = Game.GetPlayerById(Game.CardDiscardingProgress.PlayersToDiscard.Peek());
             _resourcesSelected = new ResourceCostOrStock();
 
             Bus.Publish(new PlayerSelectedToDiscardEvent(_currentPlayer.ID));
@@ -80,7 +83,7 @@ namespace Catan.Core.Phases.Handlers
 
         private void HandleDiscardingAccepted(DiscardingAcceptedCommand signal)
         {
-            var result = _handler.Handle(_currentPlayer, _resourcesSelected);
+            var result = DiscardCardsLogic.Handle(Game, _currentPlayer, _resourcesSelected);
 
             if (!result.Success)
             {

@@ -16,5 +16,7 @@ namespace Catan.Application.Queries.Players
         List<PlayerNameSnapshot> GetSomePlayersNames(List<int> potentialVictimsIds);
 
         List<PlayerNameSnapshot> GetNotCurrentPlayersNames();
+
+        PlayerNameSnapshot GetVictimsName();
     }
 }

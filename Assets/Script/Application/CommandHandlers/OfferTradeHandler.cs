@@ -26,7 +26,7 @@ namespace Catan.Application.CommandHandlers
                 return ResultPlayerTrade.Fail(result.Reason, sellerId, buyerId);
             }
 
-            _game.PlayerTradeOfferedContextMutation(seller.ID, buyer.ID, seller.Name, buyer.Name, offered, desired);
+            _game.CreatePlayerTradeOfferedContext(seller.ID, buyer.ID, seller.Name, buyer.Name, offered, desired);
 
             return ResultPlayerTrade.Ok(sellerId, buyerId, offered, desired);
         }

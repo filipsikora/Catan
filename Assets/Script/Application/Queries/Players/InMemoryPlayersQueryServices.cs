@@ -90,5 +90,13 @@ namespace Catan.Application.Queries.Players
 
             return playersData;
         }
+
+        public PlayerNameSnapshot GetVictimsName()
+        {
+            var victimId = _game.CardStealingProgress.VictimId;
+            var victim = _game.GetPlayerById(victimId);
+
+            return new PlayerNameSnapshot(victim.ID, victim.Name);
+        }
     }
 }

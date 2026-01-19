@@ -46,7 +46,7 @@ namespace Catan.Core.Phases.Handlers
             var seller = Game.GetCurrentPlayer();
             var buyer = Game.GetPlayerById(_buyerId);
 
-            var result = _handler.Handle(seller.ID, _buyerId, _cardsOffered, _cardsDesired);
+            var result = _handler.Handle(seller.ID, _buyerId, _cardsOffered, _cardsDesired, Game.LastPlayerTradeOffered);
 
             if (!result.Success)
             {
@@ -62,6 +62,8 @@ namespace Catan.Core.Phases.Handlers
 
         private void HandleTradeFinished()
         {
+            // set context to null //
+
             Bus.Publish(new ReturnToNormalRoundEvent());
         }
     }

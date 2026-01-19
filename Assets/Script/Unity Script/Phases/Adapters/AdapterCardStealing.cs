@@ -1,5 +1,4 @@
-﻿using Catan.Shared.Communication.Events;
-using Catan.Shared.Communication.Commands;
+﻿using Catan.Shared.Communication.Commands;
 using Catan.Unity.Communication.InternalUIEvents;
 using Catan.Unity.Phases.Adapters;
 using Catan.Application.Snapshots;
@@ -8,21 +7,22 @@ namespace Catan.Unity.Phases.Controllers
 {
     public class AdapterCardStealing : BasePhaseAdapter
     {
+        private PlayerNameSnapshot _victimName;
         private PlayerResourcesSnapshot _victimResources;
         private CurrentPlayerIdSnapshot _thiefData;
+
         public override void OnEnter()
         {
-            Manager.EventBus.Subscribe<VictimSelectedEvent>(OnVictimSelected);
-
             Manager.EventBus.Subscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
 
-            Manager.EventBus.Publish(new RequestCardStealingStartCommand());
+            _victimName = Manager.PlayersQueryService.GetVictimsName();
+            OnVictimSelected(_victimName.Id);
         }
 
-        public void OnVictimSelected(VictimSelectedEvent signal)
+        public void OnVictimSelected(int victimId)
         {
             _thiefData = Manager.PlayersQueryService.GetCurrentPlayerId();
-            _victimResources = Manager.PlayersQueryService.GetPlayersCards(signal.VictimId);
+            _victimResources = Manager.PlayersQueryService.GetPlayersCards(victimId);
             UI.CardTheftPanel.Show(_victimResources);
         }
 
@@ -37,8 +37,6 @@ namespace Catan.Unity.Phases.Controllers
         public override void OnExit()
         {
             Manager.EventBus.Publish(new PlayerStateChangedUIEvent(_thiefData.CurrentPlayerId));
-
-            Manager.EventBus.Unsubscribe<VictimSelectedEvent>(OnVictimSelected);
 
             Manager.EventBus.Unsubscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
 

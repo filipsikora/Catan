@@ -8,6 +8,4 @@
             PlayerCount = playerCount;
         }
     }
-
-    public class GameInitializedEvent { }
 }

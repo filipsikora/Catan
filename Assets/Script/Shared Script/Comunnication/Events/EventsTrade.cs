@@ -1,4 +1,5 @@
 ﻿using Catan.Core.Models;
+using System.Collections.Generic;
 
 namespace Catan.Shared.Communication.Events
 {
@@ -20,7 +21,15 @@ namespace Catan.Shared.Communication.Events
         }
     }
 
-    public class PotentialVictimsFoundEvent { }
+    public class PotentialVictimsFoundEvent
+    {
+        public List<int> VictimsIds { get; }
+
+        public PotentialVictimsFoundEvent(List<int> victimsIds)
+        {
+            VictimsIds = victimsIds;
+        }
+    }
 
     public class PlayerSelectedToDiscardEvent
     {
@@ -28,17 +37,6 @@ namespace Catan.Shared.Communication.Events
         public PlayerSelectedToDiscardEvent(int playerId)
         {
             PlayerId = playerId;
-        }
-    }
-
-    public class VictimSelectedEvent
-    {
-        public ResourceCostOrStock VictimsCards;
-        public int VictimId;
-        public VictimSelectedEvent(ResourceCostOrStock victimCards, int victimId)
-        {
-            VictimsCards = victimCards;
-            VictimId = victimId;
         }
     }
 }

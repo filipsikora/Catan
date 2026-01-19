@@ -1,4 +1,6 @@
 ﻿using Catan.Core.Models;
+using NUnit.Framework;
+using System.Collections.Generic;
 
 namespace Catan.Core.Engine
 {
@@ -19,6 +21,26 @@ namespace Catan.Core.Engine
             BuyerName = buyerName;
             Offered = offered;
             Desired = desired;
+        }
+    }
+
+    public sealed class CardDiscardContext
+    {
+        public Queue<int> PlayersToDiscard { get; }
+
+        public CardDiscardContext(IEnumerable<int> playerIds)
+        {
+            PlayersToDiscard = new Queue<int>(playerIds);
+        }
+    }
+
+    public sealed class CardStealingContext
+    {
+        public int VictimId { get; }
+
+        public CardStealingContext(int victimId)
+        {
+            VictimId = victimId;
         }
     }
 }

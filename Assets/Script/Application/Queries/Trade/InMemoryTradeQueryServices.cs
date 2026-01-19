@@ -16,7 +16,7 @@ namespace Catan.Application.Queries.Players
         public TradeOfferedSnapshot GetTradeOfferData()
         {
             var data = _game.LastPlayerTradeOffered;
-            var canTrade = RulesTrade.CanAcceptTrade(_game.GetPlayerById(data.SellerId), _game.GetPlayerById(data.BuyerId), data.Offered, data.Desired).Success;
+            var canTrade = RulesTrade.CanAcceptTrade(_game.GetPlayerById(data.SellerId), _game.GetPlayerById(data.BuyerId), data.Offered, data.Desired, _game.LastPlayerTradeOffered).Success;
 
             return new TradeOfferedSnapshot(data.SellerId, data.BuyerId, data.SellerName, data.BuyerName, data.Offered.ToDictionary(), data.Desired.ToDictionary(), canTrade);
         }

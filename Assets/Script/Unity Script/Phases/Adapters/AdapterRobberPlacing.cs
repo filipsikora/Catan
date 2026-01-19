@@ -1,7 +1,6 @@
 ﻿using Catan.Shared.Communication.Events;
 using Catan.Unity.Communication.InternalUIEvents;
 using Catan.Unity.Visuals;
-using UnityEngine;
 
 namespace Catan.Unity.Phases.Adapters
 {
@@ -13,8 +12,6 @@ namespace Catan.Unity.Phases.Adapters
 
             Manager.EventBus.Subscribe<RobberPlacedEvent>(OnRobberPlaced);
             Manager.EventBus.Subscribe<PotentialVictimsFoundEvent>(OnPotentialVictimsFound);
-
-            Manager.EventBus.Subscribe<LogMessageEvent>(OnLogMessageReceived);
         }
 
         private void OnRobberPlaced(RobberPlacedEvent signal)
@@ -24,22 +21,14 @@ namespace Catan.Unity.Phases.Adapters
 
         private void OnPotentialVictimsFound(PotentialVictimsFoundEvent signal)
         {
-            var potentialVictimsData = Manager.PlayersQueryService.GetNotCurrentPlayersNames();
+            var potentialVictimsData = Manager.PlayersQueryService.GetSomePlayersNames(signal.VictimsIds);
             UI.VictimSelectorPanel.Show(potentialVictimsData);
-        }
-
-        private void OnLogMessageReceived(LogMessageEvent signal)
-        {
-            Debug.Log($"{signal.Type}: {signal.Message}");
         }
 
         public override void OnExit()
         {
-
             Manager.EventBus.Unsubscribe<RobberPlacedEvent>(OnRobberPlaced);
             Manager.EventBus.Unsubscribe<PotentialVictimsFoundEvent>(OnPotentialVictimsFound);
-
-            Manager.EventBus.Unsubscribe<LogMessageEvent>(OnLogMessageReceived);
 
             UI.VictimSelectorPanel.gameObject.SetActive(false);
         }

@@ -58,6 +58,8 @@ namespace Catan.Core.Engine
         public int RequiredPoints = 10;
 
         public PlayerTradeContext? LastPlayerTradeOffered { get; private set; }
+        public CardDiscardContext? CardDiscardingProgress { get; private set; }
+        public CardStealingContext? CardStealingProgress { get; private set; }
 
         public Dictionary<EnumFieldTypes, int> FieldTypesAmount { get; set; } = new Dictionary<EnumFieldTypes, int>
             {
@@ -470,14 +472,47 @@ namespace Catan.Core.Engine
             buyer.Resources.SubtractExact(desired);
         }
 
-        public void PlayerTradeOfferedContextMutation(int sellerId, int buyerId, string sellerName, string buyerName, ResourceCostOrStock offered, ResourceCostOrStock desired)
+        public void CreatePlayerTradeOfferedContext(int sellerId, int buyerId, string sellerName, string buyerName, ResourceCostOrStock offered, ResourceCostOrStock desired)
         {
             LastPlayerTradeOffered = new PlayerTradeContext(sellerId, buyerId, sellerName, buyerName, offered, desired);
+        }
+
+        public void PlayerTradeOfferedContextClear()
+        {
+            LastPlayerTradeOffered = null;
+        }
+
+        public void CreateCardDiscardingContext(IEnumerable<int> playersIds)
+        {
+            if (CardDiscardingProgress != null)
+                return;
+
+            CardDiscardingProgress = new CardDiscardContext(playersIds);
+        }
+
+        public void CardsDiscardedContextMutation()
+        {
+            CardDiscardingProgress.PlayersToDiscard.Dequeue();
+        }
+
+        public void CardsDiscardedContextClear()
+        {
+            CardDiscardingProgress = null;
         }
 
         public void CardsDiscardedMutation(Player player, ResourceCostOrStock selectedCards)
         {
             PayCostMutation(player, selectedCards);
+        }
+
+        public void CreateCardsStealingContext(int victimId)
+        {
+            CardStealingProgress = new CardStealingContext(victimId);
+        }
+
+        public void CardStealingContextClear()
+        {
+            CardStealingProgress = null;
         }
 
         public void CardStolenMutation(Player victim, EnumResourceTypes resource)

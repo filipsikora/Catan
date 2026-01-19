@@ -2,28 +2,25 @@
 using Catan.Core.Engine;
 using Catan.Shared.Communication.Events;
 using Catan.Shared.Communication.Commands;
-using Catan.Application.CommandHandlers;
+using Catan.Application.Controllers;
 using Catan.Core.Models;
 using Catan.Shared.Data;
+using Catan.Core.PhaseLogic;
+using System.Linq;
+using System.Collections.Generic;
 
-namespace Catan.Core.Phases.Handlers
+namespace Catan.Application.Phases
 {
-    public class LogicRobberPlacing : BasePhaseLogic
+    public class RobberPlacingPhase : BasePhase
     {
         private bool clickableHexes = true;
-        private BlockHexHandler _handler;
 
-        public LogicRobberPlacing(GameState game, EventBus bus) : base(game, bus)
-        {
-            _handler = new BlockHexHandler(game);
-        }
+        public RobberPlacingPhase(GameState game, EventBus bus, PhaseTransitionController phaseTransition) : base(game, bus, phaseTransition) { }
 
         public override void Enter()
         {
-            Bus.Publish(new LogMessageEvent(Shared.Data.EnumLogTypes.Info, "Choose a hex to block"));
+            Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, "Choose a hex to block"));
         }
-
-        public override void Exit() { }
 
         public override void Handle(object command)
         {
@@ -34,7 +31,7 @@ namespace Catan.Core.Phases.Handlers
                     break;
 
                 case VictimChosenCommand c:
-                    Bus.Publish(new RobberPlacingToCardStealingEvent(c.VictimId));
+                    VictimChosen(c);
                     break;
             }
         }
@@ -45,7 +42,7 @@ namespace Catan.Core.Phases.Handlers
                 return;
 
             var hexId = signal.HexId;
-            var result = _handler.Handle(hexId);
+            var result = BlockHexLogic.Handle(Game, hexId);
             var hex = Game.Map.GetHexById(hexId);
             var thief = Game.GetCurrentPlayer();
 
@@ -65,16 +62,24 @@ namespace Catan.Core.Phases.Handlers
 
             victims.Remove(thief);
 
+            List<int> victimsIds = victims.Select(v => v.ID).ToList();
+
             if (victims.Count == 0)
             {
                 Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, "Noone to steal from"));
-                Bus.Publish(new CardStealingCompletedEvent());
+                PhaseTransition.ChangePhase(EnumGamePhases.NormalRound);
             }
 
             else
             {
-                Bus.Publish(new PotentialVictimsFoundEvent());
+                Bus.Publish(new PotentialVictimsFoundEvent(victimsIds));
             }
+        }
+
+        private void VictimChosen(VictimChosenCommand signal)
+        {
+            Game.CreateCardsStealingContext(signal.VictimId);
+            PhaseTransition.ChangePhase(EnumGamePhases.CardStealing);
         }
     }
 }

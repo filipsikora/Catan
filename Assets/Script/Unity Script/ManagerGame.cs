@@ -1,11 +1,11 @@
 ﻿#nullable enable
+using Catan.Application.Controllers;
 using Catan.Application.Queries.Board;
 using Catan.Application.Queries.DevCards;
 using Catan.Application.Queries.Players;
 using Catan.Application.Queries.Resources;
 using Catan.Application.Queries.Turns;
 using Catan.Core.Engine;
-using Catan.Core.Phases.Controllers;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Events;
 using Catan.Shared.Data;
@@ -29,9 +29,8 @@ namespace Catan.Unity
         public static ManagerGame Instance { get; private set; }
 
         public GameState? Game { get; set; }
-        public LogicPhaseTransition LogicPhaseTransition;
-        public LogicGameFlow LogicGameFlow; 
-        public CommandRouter CommandRouter { get; set; }
+        public PhaseTransitionController PhaseTransition { get; set; }
+        public CommandRouterController CommandRouter { get; set; }
 
         public Transform Board;
         private BuilderMap? Builder;
@@ -87,9 +86,6 @@ namespace Catan.Unity
 
             EventBus = new EventBus();
 
-            LogicPhaseTransition = new LogicPhaseTransition(EventBus);
-            CommandRouter = new CommandRouter(EventBus, LogicPhaseTransition);
-
             AdapterPhaseTransition = new AdapterPhaseTransition();
             AdapterGameFlow = new AdapterGameFlow(EventBus, AdapterPhaseTransition);
 
@@ -112,6 +108,10 @@ namespace Catan.Unity
         {
             Game = new GameState(new HexMap());
             Game.InitializeNewGame(playerCount, Size);
+
+            PhaseTransition = new PhaseTransitionController(Game, EventBus);
+            PhaseTransition.ChangePhase(EnumGamePhases.FirstRoundsBuilding);
+            CommandRouter = new CommandRouterController(PhaseTransition, EventBus);
 
             InitializeHelpers();
             InitializeBuilderMap();
@@ -143,8 +143,6 @@ namespace Catan.Unity
 
         public void InitializeHelpers()
         {
-            LogicGameFlow = new LogicGameFlow(Game, LogicPhaseTransition, EventBus);
-
             DevCardsQueryService = new InMemoryDevCardQueryService(Game);
             ResourcesQueryService = new InMemoryResourcesQueryService(Game);
             PlayersQueryService = new InMemoryPlayersQueryServices(Game);
@@ -227,6 +225,8 @@ namespace Catan.Unity
         location burdel
 
         phasecontext gamestate
+
+        adapter check
         */
     }
 }

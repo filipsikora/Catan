@@ -14,12 +14,12 @@ namespace Catan.Application.CommandHandlers
             _game = game;
         }
 
-        public ResultPlayerTrade Handle(int sellerId, int buyerId, ResourceCostOrStock offered, ResourceCostOrStock desired)
+        public ResultPlayerTrade Handle(int sellerId, int buyerId, ResourceCostOrStock offered, ResourceCostOrStock desired, PlayerTradeContext context)
         {
             var seller = _game.GetPlayerById(sellerId);
             var buyer = _game.GetPlayerById(buyerId);
 
-            var result = RulesTrade.CanAcceptTrade(seller, buyer, offered, desired);
+            var result = RulesTrade.CanAcceptTrade(seller, buyer, offered, desired, context);
 
             if (!result.Success)
             {

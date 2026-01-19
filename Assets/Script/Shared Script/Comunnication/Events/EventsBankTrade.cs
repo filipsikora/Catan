@@ -16,13 +16,4 @@ namespace Catan.Shared.Communication.Events
             Resource = resource;
         }
     }
-
-    public sealed class BankTradeExecutedEvent
-    {
-        public ResultBankTrade Result;
-        public BankTradeExecutedEvent(ResultBankTrade result)
-        {
-            Result = result;
-        }
-    }
 }

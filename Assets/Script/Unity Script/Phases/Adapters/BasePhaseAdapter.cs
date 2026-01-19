@@ -2,6 +2,7 @@
 using Catan.Shared.Communication;
 using Catan.Unity.Phases.Controllers;
 using Catan.Unity.Panels;
+using Catan.Unity;
 
 namespace Catan.Unity.Phases.Adapters
 {

@@ -1,34 +1,24 @@
-﻿using Catan.Application.CommandHandlers;
+﻿using Catan.Application.Controllers;
 using Catan.Core.Engine;
 using Catan.Shared.Communication;
-using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
+using Catan.Shared.Communication.Commands;
 using Catan.Shared.Data;
+using Catan.Core.PhaseLogic;
 
-namespace Catan.Core.Phases.Handlers
+namespace Catan.Application.Phases
 {
-    public class LogicFirstRoundsBuilding : BaseBuildPhaseLogic
+    public class FirstRoundsBuildingPhase : BaseBuildPhase
     {
-        BuildInitialVillageHandler _handlerVillage;
-        BuildInitialRoadHandler _handlerRoad;
-        FinishTurnHandler _handlerTurn;
-
         private bool villagePlaced = false;
         private bool roadPlaced = false;
 
-        public LogicFirstRoundsBuilding(GameState game, EventBus bus) : base(game, bus)
-        {
-            _handlerVillage = new BuildInitialVillageHandler(game);
-            _handlerRoad = new BuildInitialRoadHandler(game);
-            _handlerTurn = new FinishTurnHandler(game);
-        }
+        public FirstRoundsBuildingPhase(GameState game, EventBus bus, PhaseTransitionController phaseTransition) : base(game, bus, phaseTransition) { }
 
         public override void Enter()
         {
             Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, "Select a vertex to build your free village, then select an edge to build a free road", 4));
         }
-
-        public override void Exit() { }
 
         public override void Handle(object command)
         {
@@ -94,7 +84,7 @@ namespace Catan.Core.Phases.Handlers
             var player = Game.GetCurrentPlayer();
             int id = SelectedVertexId.Value;
             var vertex = Game.Map.GetVertexById(id);
-            var result = _handlerVillage.Handle(player.ID, vertex);
+            var result = BuildInitialVillageLogic.Handle(Game, player.ID, vertex);
 
             ResetSelection();
 
@@ -115,7 +105,7 @@ namespace Catan.Core.Phases.Handlers
             var edge = Game.Map.GetEdgeById(id);
             var vertex = Game.LastPlacedVillagePosition;
 
-            var result = _handlerRoad.Handle(player.ID, edge, vertex);
+            var result = BuildInitialRoadLogic.Handle(Game, player.ID, edge, vertex);
 
             ResetSelection();
 
@@ -131,9 +121,17 @@ namespace Catan.Core.Phases.Handlers
 
         private void HandleTurnEnded(EndTurnCommand signal)
         {
-            var result = _handlerTurn.Handle(Game.GetCurrentPlayer());
+            var result = FinishTurnLogic.Handle(Game, Game.GetCurrentPlayer());
 
-            Bus.Publish(new FirstRoundsBuildingCompletedEvent(result.InitialRoundsRemaining));
+            if (result.InitialRoundsRemaining)
+            {
+                PhaseTransition.ChangePhase(EnumGamePhases.FirstRoundsBuilding);
+            }
+
+            else
+            {
+                PhaseTransition.ChangePhase(EnumGamePhases.NormalRound);
+            }
         }
     }
 }

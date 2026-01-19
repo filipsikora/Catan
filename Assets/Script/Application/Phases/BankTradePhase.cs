@@ -1,31 +1,21 @@
-﻿using Catan.Application.CommandHandlers;
+﻿using Catan.Application.Controllers;
 using Catan.Core.Engine;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
 using Catan.Shared.Data;
+using Catan.Core.PhaseLogic;
 
-namespace Catan.Core.Phases.Handlers
+namespace Catan.Application.Phases
 {
-    public sealed class LogicBankTrade : BasePhaseLogic
+    public sealed class BankTradePhase : BasePhase
     {
         private EnumResourceTypes? _offered;
         private int _ratio;
 
-        private readonly PerformBankTradeHandler _handler;
-
-        public LogicBankTrade(GameState game, EventBus bus) : base(game, bus)
-        {
-            _handler = new PerformBankTradeHandler(game);
-        }
+        public BankTradePhase(GameState game, EventBus bus, PhaseTransitionController phaseTransition) : base(game, bus, phaseTransition) { }
 
         public override void Enter() { }
-
-        public override void Exit()
-        {
-            _offered = null;
-            _ratio = 0;
-        }
 
         public override void Handle(object command)
         {
@@ -66,7 +56,7 @@ namespace Catan.Core.Phases.Handlers
             if (_offered == null || desired == null)
                 return;
 
-            var result = _handler.Handle(_offered.Value, desired.Value);
+            var result = BankTradeLogic.Handle(Game, _offered.Value, desired.Value);
 
             if (!result.Success)
             {
@@ -81,7 +71,7 @@ namespace Catan.Core.Phases.Handlers
 
         private void FinishPhase()
         {
-            Bus.Publish(new ReturnToNormalRoundEvent());
+            PhaseTransition.ChangePhase(EnumGamePhases.NormalRound);
         }
     }
 }

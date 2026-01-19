@@ -2,6 +2,7 @@
 using Catan.Shared.Data;
 using Catan.Core.Results;
 using Catan.Core.Models;
+using Catan.Core.Engine;
 
 namespace Catan.Core.Conditions
 {
@@ -55,6 +56,36 @@ namespace Catan.Core.Conditions
             }
 
             return ResultCondition.Fail(ConditionFailureReason.InvalidResourceCost);
+        }
+
+        public static ResultCondition TradeContextIsValid(PlayerTradeContext context, int buyerId, int sellerId, ResourceCostOrStock desired, ResourceCostOrStock offered)
+        {
+            if (context == null)
+            {
+                return ResultCondition.Fail(ConditionFailureReason.DoesNotExist);
+            }
+
+            if (context.BuyerId != buyerId)
+            {
+                return ResultCondition.Fail(ConditionFailureReason.TradeContextInvalid);
+            }
+
+            if (context.SellerId != sellerId)
+            {
+                return ResultCondition.Fail(ConditionFailureReason.TradeContextInvalid);
+            }
+
+            if (context.Desired != desired)
+            {
+                return ResultCondition.Fail(ConditionFailureReason.TradeContextInvalid);
+            }
+
+            if (context.Offered != offered)
+            {
+                return ResultCondition.Fail(ConditionFailureReason.TradeContextInvalid);
+            }
+
+            return ResultCondition.Ok();
         }
     }
 }
