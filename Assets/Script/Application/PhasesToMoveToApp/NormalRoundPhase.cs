@@ -1,34 +1,21 @@
-﻿using Catan.Application.CommandHandlers;
+﻿using Catan.Application.Controllers;
 using Catan.Core.Engine;
 using Catan.Core.Models;
+using Catan.Core.PhaseLogic;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
+using Catan.Shared.Data;
 
-namespace Catan.Core.Phases.Handlers
+namespace Catan.Application.Phases
 {
-    public class LogicNormalRound : BaseBuildPhaseLogic
+    public class NormalRoundPhase : BaseBuildPhase
     {
         private readonly ResourceCostOrStock _selected = new();
 
-        private BuildVillageLogic _handlerVillage;
-        private BuildRoadLogic _handlerRoad;
-        private UpgradeVillageLogic _handlerTown;
-        private BuyDevCardLogic _handlerBuyDevCard;
-        private FinishTurnHandler _handlerTurn;
-
-        public LogicNormalRound(GameState game, EventBus bus) : base(game, bus)
-        {
-            _handlerVillage = new BuildVillageLogic(game);
-            _handlerRoad = new BuildRoadLogic(game);
-            _handlerTown = new UpgradeVillageLogic(game);
-            _handlerBuyDevCard = new BuyDevCardLogic(game);
-            _handlerTurn = new FinishTurnHandler(game);
-        }
+        public NormalRoundPhase(GameState game, EventBus bus, PhaseTransitionController phaseTransition) : base(game, bus, phaseTransition) { }
 
         public override void Enter() { }
-
-        public override void Exit() { }
 
         public override void Handle(object command)
         {
@@ -59,7 +46,7 @@ namespace Catan.Core.Phases.Handlers
                     break;
 
                 case BankTradeCommand c:
-                    Bus.Publish(new NormalRoundToBankTradeEvent());
+                    PhaseTransition.ChangePhase(EnumGamePhases.BankTrade);
                     break;
 
                 case OfferTradeCommand c:
@@ -76,7 +63,7 @@ namespace Catan.Core.Phases.Handlers
 
 
                 case ShowDevelopmentCardsCommand c:
-                    Bus.Publish(new ProceedToDevelopmentCardsEvent());
+                    PhaseTransition.ChangePhase(EnumGamePhases.DevelopmentCards);
                     break;
             }
         }
@@ -127,7 +114,7 @@ namespace Catan.Core.Phases.Handlers
             int playerId = Game.GetCurrentPlayer().ID;
             int id = SelectedVertexId.Value;
             var vertex = Game.Map.GetVertexById(id);
-            var result = _handlerVillage.Handle(playerId, vertex);
+            var result = BuildVillageLogic.Handle(Game, playerId, vertex);
 
             ResetSelection();
 
@@ -136,7 +123,7 @@ namespace Catan.Core.Phases.Handlers
                 Bus.Publish(new ActionRejectedEvent(Game.CurrentPlayer.ID, result.Reason));
                 return;
             }
-
+            
             Bus.Publish(new VillagePlacedEvent(id));
         }
 
@@ -145,7 +132,7 @@ namespace Catan.Core.Phases.Handlers
             int playerId = Game.GetCurrentPlayer().ID;
             int id = SelectedEdgeId.Value;
             var edge = Game.Map.GetEdgeById(id);
-            var result = _handlerRoad.Handle(playerId, edge);
+            var result = BuildRoadLogic.Handle(Game, playerId, edge);
 
             ResetSelection();
 
@@ -163,7 +150,7 @@ namespace Catan.Core.Phases.Handlers
             int playerId = Game.GetCurrentPlayer().ID;
             int id = SelectedVertexId.Value;
             var vertex = Game.Map.GetVertexById(id);
-            var result = _handlerTown.Handle(playerId, vertex);
+            var result = UpgradeVillageLogic.Handle(Game, playerId, vertex);
 
             ResetSelection();
 
@@ -181,20 +168,20 @@ namespace Catan.Core.Phases.Handlers
             if (_selected.Total() == 0)
                 return;
 
-            Bus.Publish(new NormalRoundToOfferTradeEvent(_selected));
+            PhaseTransition.ChangePhase(EnumGamePhases.TradeOffer);
         }
 
         private void HandleEndTurnRequested(EndTurnCommand signal)
         {
-            var result = _handlerTurn.Handle(Game.GetCurrentPlayer());
+            var result = FinishTurnLogic.Handle(Game, Game.GetCurrentPlayer());
 
-            Bus.Publish(new NormalRoundToBeforeRollEvent());
+            PhaseTransition.ChangePhase(EnumGamePhases.BeforeRoll);
         }
 
         private void HandleDevelopmentCardsBuyRequested(BuyDevelopmentCardCommand signal)
         {
             var playerId = Game.GetCurrentPlayer().ID;
-            var result = _handlerBuyDevCard.Handle(playerId, Game.DevelopmentCardsDeckAvailable);
+            var result = BuyDevCardLogic.Handle(Game, playerId, Game.DevelopmentCardsDeckAvailable);
 
             if (!result.Success)
             {

@@ -1,25 +1,20 @@
-﻿using Catan.Application.CommandHandlers;
+﻿using Catan.Application.Controllers;
 using Catan.Core.Engine;
+using Catan.Core.PhaseLogic;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
 using Catan.Shared.Data;
 
-namespace Catan.Core.Phases.Handlers
+namespace Catan.Application.Phases
 {
-    public class LogicMonopolyCard : BasePhaseLogic
+    public class MonopolyCardPhase : BasePhase
     {
         private EnumResourceTypes? _type;
-        private UseMonopolyLogic _handler;
 
-        public LogicMonopolyCard(GameState game, EventBus bus) : base(game, bus)
-        {
-            _handler = new UseMonopolyLogic(game);
-        }
+        public MonopolyCardPhase(GameState game, EventBus bus, PhaseTransitionController phaseTransition) : base(game, bus, phaseTransition) { }
 
         public override void Enter() { }
-
-        public override void Exit() { }
 
         public override void Handle(object command)
         {
@@ -53,7 +48,7 @@ namespace Catan.Core.Phases.Handlers
 
         private void HandleResourceAccepted(CardSelectionAcceptedCommand signal)
         {
-            var result = _handler.Handle(_type.Value);
+            var result = UseMonopolyLogic.Handle(Game, _type.Value);
 
             if (!result.Success)
             {
@@ -61,7 +56,7 @@ namespace Catan.Core.Phases.Handlers
                 return;
             }
 
-            Bus.Publish(new ReturnToNormalRoundEvent());
+            PhaseTransition.ChangePhase(EnumGamePhases.MonopolyCard);
         }
     }
 }

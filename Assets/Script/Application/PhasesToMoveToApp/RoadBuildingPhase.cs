@@ -1,14 +1,16 @@
-﻿using Catan.Application.CommandHandlers;
+﻿using Catan.Application.Controllers;
 using Catan.Core.Engine;
 using Catan.Core.Models;
+using Catan.Core.PhaseLogic;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
+using Catan.Shared.Data;
 using System;
 
-namespace Catan.Core.Phases.Handlers
+namespace Catan.Application.Phases
 {
-    public class LogicRoadBuilding : BaseBuildPhaseLogic
+    public class RoadBuildingPhase : BaseBuildPhase
     {
         private int RoadsBuilt = 0;
         private int RoadsToBuild = 2;
@@ -16,20 +18,13 @@ namespace Catan.Core.Phases.Handlers
 
         private Edge _selectedEdge;
 
-        private BuildFreeRoadHandler _handler;
-
-        public LogicRoadBuilding(GameState game, EventBus bus) : base(game, bus)
-        {
-            _handler = new BuildFreeRoadHandler(game);
-        }
+        public RoadBuildingPhase(GameState game, EventBus bus, PhaseTransitionController phaseTransition) : base(game, bus, phaseTransition) { }
 
         public override void Enter()
         {
             RoadsLeft = Game.CurrentPlayer.BuildingCount<BuildingRoad>();
             RoadsToBuild = Math.Min(RoadsToBuild, RoadsLeft);
         }
-
-        public override void Exit() { }
 
         public override void Handle(object command)
         {
@@ -43,7 +38,6 @@ namespace Catan.Core.Phases.Handlers
                     HandleRoadRequested(c);
                     break;
             }
-
         }
 
         private void HandleEdgeClicked(EdgeClickedCommand signal)
@@ -60,7 +54,7 @@ namespace Catan.Core.Phases.Handlers
         private void HandleRoadRequested(BuildRoadCommand signal)
         {
             var player = Game.GetCurrentPlayer();
-            var result = _handler.Handle(player.ID, _selectedEdge);
+            var result = BuildFreeRoadLogic.Handle(Game, player.ID, _selectedEdge);
             int id = result.Edge.Id;
 
             ResetSelection();
@@ -81,7 +75,7 @@ namespace Catan.Core.Phases.Handlers
 
             if (RoadsToBuild == 0)
             {
-                Bus.Publish(new ReturnToNormalRoundEvent());
+                PhaseTransition.ChangePhase(EnumGamePhases.NormalRound);
             }
         }
     }

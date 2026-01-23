@@ -67,6 +67,7 @@ namespace Catan.Application.Phases
             if (victims.Count == 0)
             {
                 Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, "Noone to steal from"));
+
                 PhaseTransition.ChangePhase(EnumGamePhases.NormalRound);
             }
 
@@ -79,6 +80,7 @@ namespace Catan.Application.Phases
         private void VictimChosen(VictimChosenCommand signal)
         {
             Game.CreateCardsStealingContext(signal.VictimId);
+
             PhaseTransition.ChangePhase(EnumGamePhases.CardStealing);
         }
     }

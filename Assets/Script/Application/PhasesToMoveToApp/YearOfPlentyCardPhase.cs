@@ -1,29 +1,23 @@
-﻿using Catan.Application.CommandHandlers;
+﻿using Catan.Application.Controllers;
 using Catan.Core.Conditions;
 using Catan.Core.Engine;
 using Catan.Core.Models;
+using Catan.Core.PhaseLogic;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
 using Catan.Shared.Data;
 
-namespace Catan.Core.Phases.Handlers
+namespace Catan.Application.Phases
 {
-    public class LogicYearOfPlentyCard : BasePhaseLogic
+    public class YearOfPlentyCardPhase : BasePhase
     {
         private ResourceCostOrStock _cardsDesired = new();
         private readonly int _cardsToReceive = 2;
 
-        private UseYearOfPlentyLogic _handler;
-
-        public LogicYearOfPlentyCard(GameState game, EventBus bus) : base(game, bus)
-        {
-            _handler = new UseYearOfPlentyLogic(game);
-        }
+        public YearOfPlentyCardPhase(GameState game, EventBus bus, PhaseTransitionController phaseTransition) : base(game, bus, phaseTransition) { }
 
         public override void Enter() { }
-
-        public override void Exit() { }
 
         public override void Handle(object command)
         {
@@ -73,7 +67,7 @@ namespace Catan.Core.Phases.Handlers
         private void HandleResourcesSelected(CardSelectionAcceptedCommand signal)
         {
             var player = Game.GetCurrentPlayer();
-            var result = _handler.Handle(_cardsDesired);
+            var result = UseYearOfPlentyLogic.Handle(Game, _cardsDesired);
 
             if (!result.Success)
             {
@@ -88,7 +82,7 @@ namespace Catan.Core.Phases.Handlers
                 Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, $"Player{player.ID} received {key} {amount} from Year Of Plenty card"));
             }
 
-            Bus.Publish(new ReturnToNormalRoundEvent());
+            PhaseTransition.ChangePhase(EnumGamePhases.NormalRound);
         }
     }
 }

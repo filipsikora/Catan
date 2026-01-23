@@ -3,26 +3,23 @@ using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
 using Catan.Core.Engine;
 using Catan.Core.Models;
-using Catan.Application.CommandHandlers;
+using Catan.Application.Controllers;
+using Catan.Shared.Data;
+using Catan.Core.PhaseLogic;
 
-namespace Catan.Core.Phases.Handlers
+namespace Catan.Application.Phases
 {
-    public class LogicTradeOffer : BasePhaseLogic
+    public class TradeOfferPhase : BasePhase
     {
         private ResourceCostOrStock _cardsDesired = new();
         private ResourceCostOrStock _cardsOffered;
 
-        private OfferTradeLogic _handler;
-
-        public LogicTradeOffer(GameState game, EventBus bus, ResourceCostOrStock cardsOffered) : base(game, bus)
+        public TradeOfferPhase(GameState game, EventBus bus, ResourceCostOrStock cardsOffered, PhaseTransitionController phaseTransition) : base(game, bus, phaseTransition)
         {
             _cardsOffered = cardsOffered.Clone();
-            _handler = new OfferTradeLogic(game);
         }
 
         public override void Enter() { }
-
-        public override void Exit() { }
 
         public override void Handle(object command)
         {
@@ -33,7 +30,7 @@ namespace Catan.Core.Phases.Handlers
                     break;
 
                 case TradeOfferCanceledCommand c:
-                    Bus.Publish(new ReturnToNormalRoundEvent());
+                    PhaseTransition.ChangePhase(EnumGamePhases.NormalRound);
                     break;
 
                 case TradePartnerChosenCommand c:
@@ -62,7 +59,7 @@ namespace Catan.Core.Phases.Handlers
         private void HandleTradePartnerChosen(TradePartnerChosenCommand signal)
         {
             var seller = Game.GetCurrentPlayer();
-            var result = _handler.Handle(seller.ID, signal.PlayerId, _cardsOffered, _cardsDesired);
+            var result = OfferTradeLogic.Handle(Game, seller.ID, signal.PlayerId, _cardsOffered, _cardsDesired);
 
             if (!result.Success)
             {
@@ -71,7 +68,7 @@ namespace Catan.Core.Phases.Handlers
                 return;
             }
 
-            Bus.Publish(new TradeOfferToTradeRequestEvent(_cardsOffered, _cardsDesired, signal.PlayerId));
+            PhaseTransition.ChangePhase(EnumGamePhases.TradeRequest);
         }
     }
 }
