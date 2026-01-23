@@ -1,23 +1,18 @@
-﻿using Catan.Application.CommandHandlers;
+﻿using Catan.Application.Controllers;
 using Catan.Core.Engine;
+using Catan.Core.PhaseLogic;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
 using Catan.Shared.Data;
 
-namespace Catan.Core.Phases.Handlers
+namespace Catan.Application.Phases
 {
-    public class LogicDevelopmentCards : BasePhaseLogic
+    public class DevelopmentCardsPhase : BasePhase
     {
-        private PlayDevCardHandler _handler;
-        public LogicDevelopmentCards(GameState game, EventBus bus) : base(game, bus)
-        {
-            _handler = new PlayDevCardHandler(game);
-        }
+        public DevelopmentCardsPhase(GameState game, EventBus bus, PhaseTransitionController phaseTransition) : base(game, bus, phaseTransition) { }
 
         public override void Enter() { }
-
-        public override void Exit() { }
 
         public override void Handle(object command)
         {
@@ -35,7 +30,7 @@ namespace Catan.Core.Phases.Handlers
 
         private void HandlePlayDevCard(DevelopmentCardClickedCommand signal)
         {
-            var result = _handler.Handle(signal.DevelopmentCardId);
+            var result = PlayDevCardLogic.Handle(Game, signal.DevelopmentCardId);
             var player = Game.GetCurrentPlayer();
 
             if (!result.Success)
@@ -50,23 +45,23 @@ namespace Catan.Core.Phases.Handlers
             switch (result.Value.Type)
             {
                 case EnumDevelopmentCardTypes.Knight:
-                    Bus.Publish(new ProceedToRobberPlacingEvent());
+                    PhaseTransition.ChangePhase(EnumGamePhases.RobberPlacing);
                     break;
 
                 case EnumDevelopmentCardTypes.Monopoly:
-                    Bus.Publish(new DevelopmentCardsToMonopolyCardEvent());
+                    PhaseTransition.ChangePhase(EnumGamePhases.MonopolyCard);
                     break;
 
                 case EnumDevelopmentCardTypes.RoadBuilding:
-                    Bus.Publish(new DevelopmentCardsToRoadBuildingEvent());
+                    PhaseTransition.ChangePhase(EnumGamePhases.RoadBuilding);
                     break;
 
                 case EnumDevelopmentCardTypes.VictoryPoint:
-                    Bus.Publish(new ReturnToNormalRoundEvent());
+                    PhaseTransition.ChangePhase(EnumGamePhases.NormalRound);
                     break;
 
                 case EnumDevelopmentCardTypes.YearOfPlenty:
-                    Bus.Publish(new DevelopmentCardsToYearOfPlentyUsedEvent());
+                    PhaseTransition.ChangePhase(EnumGamePhases.YearOfPlentyCard);
                     break;
             }
         }
@@ -75,9 +70,15 @@ namespace Catan.Core.Phases.Handlers
         {
             bool afterRoll = Game.GetAfterRoll();
 
-            Bus.Publish(new DevelopmentCardsCompletedEvent(afterRoll));
+            if (afterRoll)
+            {
+                PhaseTransition.ChangePhase(EnumGamePhases.NormalRound);
+            }
+
+            else
+            {
+                PhaseTransition.ChangePhase(EnumGamePhases.BeforeRoll);
+            }
         }
-
-
     }
 }

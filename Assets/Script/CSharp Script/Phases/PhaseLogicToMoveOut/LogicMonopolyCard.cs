@@ -10,11 +10,11 @@ namespace Catan.Core.Phases.Handlers
     public class LogicMonopolyCard : BasePhaseLogic
     {
         private EnumResourceTypes? _type;
-        private UseMonopolyHandler _handler;
+        private UseMonopolyLogic _handler;
 
         public LogicMonopolyCard(GameState game, EventBus bus) : base(game, bus)
         {
-            _handler = new UseMonopolyHandler(game);
+            _handler = new UseMonopolyLogic(game);
         }
 
         public override void Enter() { }

@@ -1,5 +1,4 @@
-﻿using Catan.Application.Queries.DevCards;
-using Catan.Application.Snapshots;
+﻿using Catan.Application.Snapshots;
 using Catan.Core.Engine;
 using System.Collections.Generic;
 using System.Linq;

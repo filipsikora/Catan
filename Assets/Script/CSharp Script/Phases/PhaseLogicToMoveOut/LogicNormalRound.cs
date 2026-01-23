@@ -11,18 +11,18 @@ namespace Catan.Core.Phases.Handlers
     {
         private readonly ResourceCostOrStock _selected = new();
 
-        private BuildVillageHandler _handlerVillage;
-        private BuildRoadHandler _handlerRoad;
-        private UpgradeVillageHandler _handlerTown;
-        private BuyDevCardHandler _handlerBuyDevCard;
+        private BuildVillageLogic _handlerVillage;
+        private BuildRoadLogic _handlerRoad;
+        private UpgradeVillageLogic _handlerTown;
+        private BuyDevCardLogic _handlerBuyDevCard;
         private FinishTurnHandler _handlerTurn;
 
         public LogicNormalRound(GameState game, EventBus bus) : base(game, bus)
         {
-            _handlerVillage = new BuildVillageHandler(game);
-            _handlerRoad = new BuildRoadHandler(game);
-            _handlerTown = new UpgradeVillageHandler(game);
-            _handlerBuyDevCard = new BuyDevCardHandler(game);
+            _handlerVillage = new BuildVillageLogic(game);
+            _handlerRoad = new BuildRoadLogic(game);
+            _handlerTown = new UpgradeVillageLogic(game);
+            _handlerBuyDevCard = new BuyDevCardLogic(game);
             _handlerTurn = new FinishTurnHandler(game);
         }
 

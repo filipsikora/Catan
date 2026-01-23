@@ -19,11 +19,9 @@ using Catan.Unity.Visuals.Controllers;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Vatan.Unity.Visuals.Controllers;
 
 namespace Catan.Unity
 {
-
     public class ManagerGame : MonoBehaviour
     {
         public static ManagerGame Instance { get; private set; }
@@ -100,8 +98,6 @@ namespace Catan.Unity
         private void OnStartGameRequested(StartGameRequestedEvent signal)
         {
             StartGame(signal.PlayerCount);
-
-            EventBus.Publish(new GameInitializedEvent());
         }
 
         public void StartGame(int playerCount)
@@ -227,6 +223,10 @@ namespace Catan.Unity
         phasecontext gamestate
 
         adapter check
+
+
+
+        snapshot w core dla api | ireadgame | query tworzy getter, logic manager czyta game
         */
     }
 }

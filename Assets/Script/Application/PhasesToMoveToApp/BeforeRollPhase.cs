@@ -24,7 +24,7 @@ namespace Catan.Application.Phases
                     break;
 
                 case ShowDevelopmentCardsCommand c:
-                    Bus.Publish(new ProceedToDevelopmentCardsEvent());
+                    PhaseTransition.ChangePhase(EnumGamePhases.DevelopmentCards);
                     break;
 
                 case VertexClickedCommand:

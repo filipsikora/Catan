@@ -12,12 +12,12 @@ namespace Catan.Core.Phases.Handlers
         private ResourceCostOrStock _cardsDesired = new();
         private ResourceCostOrStock _cardsOffered;
 
-        private OfferTradeHandler _handler;
+        private OfferTradeLogic _handler;
 
         public LogicTradeOffer(GameState game, EventBus bus, ResourceCostOrStock cardsOffered) : base(game, bus)
         {
             _cardsOffered = cardsOffered.Clone();
-            _handler = new OfferTradeHandler(game);
+            _handler = new OfferTradeLogic(game);
         }
 
         public override void Enter() { }

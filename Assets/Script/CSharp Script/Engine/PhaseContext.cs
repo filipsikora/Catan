@@ -1,5 +1,4 @@
 ﻿using Catan.Core.Models;
-using NUnit.Framework;
 using System.Collections.Generic;
 
 namespace Catan.Core.Engine

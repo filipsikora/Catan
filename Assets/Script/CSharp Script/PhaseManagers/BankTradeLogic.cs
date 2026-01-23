@@ -13,7 +13,7 @@ namespace Catan.Core.PhaseLogic
             var ratio = game.GetTradeRatio(offered);
 
             var result = RulesTrade.CanTradeWithBank(player, game.Bank, offered, desired, ratio);
-
+            
             if (!result.Success)
             {
                 return ResultBankTrade.Fail(player.ID, result.Reason);

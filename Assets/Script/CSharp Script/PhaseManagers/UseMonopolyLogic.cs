@@ -3,20 +3,13 @@ using Catan.Core.Engine;
 using Catan.Core.Results;
 using Catan.Shared.Data;
 
-namespace Catan.Application.CommandHandlers
+namespace Catan.Core.PhaseLogic
 {
-    public sealed class UseMonopolyHandler
+    public static class UseMonopolyLogic
     {
-        private GameState _game;
-
-        public UseMonopolyHandler(GameState game)
+        public static ResultMonopolyCard Handle(GameState game, EnumResourceTypes resource)
         {
-            _game = game;
-        }
-
-        public ResultMonopolyCard Handle(EnumResourceTypes resource)
-        {
-            var player = _game.GetCurrentPlayer();
+            var player = game.GetCurrentPlayer();
 
             var result = ConditionsResources.ResourceExists(resource);
 
@@ -25,7 +18,7 @@ namespace Catan.Application.CommandHandlers
                 return ResultMonopolyCard.Fail(result.Reason, player.ID, resource);
             }
 
-            var victimsIdsAndAmounts = _game.UseMonopolyMutation(resource);
+            var victimsIdsAndAmounts = game.UseMonopolyMutation(resource);
 
             return ResultMonopolyCard.Ok(player.ID, victimsIdsAndAmounts, resource);
         }

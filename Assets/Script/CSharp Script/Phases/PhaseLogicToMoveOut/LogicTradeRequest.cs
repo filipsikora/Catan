@@ -13,14 +13,14 @@ namespace Catan.Core.Phases.Handlers
         private ResourceCostOrStock _cardsDesired;
         private ResourceCostOrStock _cardsOffered;
 
-        private ReactToTradeHandler _handler;
+        private ReactToTradeLogic _handler;
 
         public LogicTradeRequest(GameState game, EventBus bus, int playerId, ResourceCostOrStock cardsOffered, ResourceCostOrStock cardsDesired) : base(game, bus)
         {
             _buyerId = playerId;
             _cardsOffered = cardsOffered;
             _cardsDesired = cardsDesired;
-            _handler = new ReactToTradeHandler(game);
+            _handler = new ReactToTradeLogic(game);
         }
 
         public override void Enter() { }

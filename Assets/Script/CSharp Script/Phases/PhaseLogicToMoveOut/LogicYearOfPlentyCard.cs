@@ -14,11 +14,11 @@ namespace Catan.Core.Phases.Handlers
         private ResourceCostOrStock _cardsDesired = new();
         private readonly int _cardsToReceive = 2;
 
-        private UseYearOfPlentyHandler _handler;
+        private UseYearOfPlentyLogic _handler;
 
         public LogicYearOfPlentyCard(GameState game, EventBus bus) : base(game, bus)
         {
-            _handler = new UseYearOfPlentyHandler(game);
+            _handler = new UseYearOfPlentyLogic(game);
         }
 
         public override void Enter() { }

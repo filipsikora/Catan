@@ -2,24 +2,16 @@
 using Catan.Core.Models;
 using Catan.Core.Results;
 using Catan.Core.Rules;
-using Catan.Shared.Data;
 using System.Collections.Generic;
 
-namespace Catan.Application.CommandHandlers
+namespace Catan.Core.PhaseLogic
 {
-    public sealed class BuyDevCardHandler
+    public static class BuyDevCardLogic
     {
-        private GameState _game;
-
-        public BuyDevCardHandler(GameState game)
+        public static ResultBuyDevCard Handle(GameState game, int playerId, List<DevelopmentCard> devCardsLeftList)
         {
-            _game = game;
-        }
-
-        public ResultBuyDevCard Handle(int playerId, List<DevelopmentCard> devCardsLeftList)
-        {
-            var player = _game.GetCurrentPlayer();
-            var devCard = _game.DevelopmentCardsDeckAvailable[0];
+            var player = game.GetCurrentPlayer();
+            var devCard = game.DevelopmentCardsDeckAvailable[0];
             var devCardId = devCard.ID;
 
             var result = RulesDevCards.CanBuyDevCard(player, devCard, devCardsLeftList);
@@ -29,7 +21,7 @@ namespace Catan.Application.CommandHandlers
                 return ResultBuyDevCard.Fail(result.Reason, playerId, devCardId);
             }
 
-            _game.BuyDevCardMutation(player, devCard);
+            game.BuyDevCardMutation(player, devCard);
 
             return ResultBuyDevCard.Ok(playerId, devCardId);
         }

@@ -3,7 +3,7 @@ using Catan.Shared.Communication;
 using Catan.Unity.Communication.InternalUIEvents;
 using Catan.Unity.Panels;
 
-namespace Vatan.Unity.Visuals.Controllers
+namespace Catan.Unity.Visuals.Controllers
 {
     public sealed class ControllerPlayerUI
     {

@@ -32,7 +32,10 @@ namespace Catan.Application.Controllers
             {
                 EnumGamePhases.BeforeRoll => new BeforeRollPhase(_game, _bus, this),
                 EnumGamePhases.FirstRoundsBuilding => new FirstRoundsBuildingPhase(_game, _bus, this),
-
+                EnumGamePhases.BankTrade => new BankTradePhase(_game, _bus, this),
+                EnumGamePhases.CardDiscarding => new CardDiscardingPhase(_game, _bus, this),
+                EnumGamePhases.CardStealing => new CardStealingPhase(_game, _bus, this),
+                EnumGamePhases.RobberPlacing => new RobberPlacingPhase(_game, _bus, this)
             };
         }
     }
