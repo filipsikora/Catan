@@ -57,6 +57,8 @@ namespace Catan.Core.Engine
         public int PointsReward = 2;
         public int RequiredPoints = 10;
 
+        public EnumGamePhases CurrentPhase = EnumGamePhases.PlayerSetup;
+
         public PlayerTradeContext? LastPlayerTradeOffered { get; private set; }
         public CardDiscardContext? CardDiscardingProgress { get; private set; }
         public CardStealingContext? CardStealingProgress { get; private set; }
@@ -170,23 +172,6 @@ namespace Catan.Core.Engine
                 FirstRoundsIndices.Enqueue(i);
 
             return FirstRoundsIndices;
-        }
-
-        public List<Player> GetPlayersAdjacentToHex(HexTile hex)
-        {
-            List<Player> adjacentPlayers = new();
-
-            foreach (var vertex in hex.AdjacentVertices)
-            {
-                Player? owner = vertex.Owner;
-
-                if (vertex.IsOwned && !adjacentPlayers.Contains(owner))
-                {
-                    adjacentPlayers.Add(owner);
-                }
-            }
-
-            return adjacentPlayers;
         }
 
         public void ReadyBoard()
@@ -341,23 +326,6 @@ namespace Catan.Core.Engine
 
         // getters //
 
-        public int GetTradeRatio(EnumResourceTypes type)
-        {
-            if (CurrentPlayer.Ports.Count != 0)
-            {
-                Port rightPort = Map.PortList.Find(port => port.Type == type);
-                bool hasThreeToOnePort = CurrentPlayer.Ports.Any(port => port.Type == null);
-
-                if (CurrentPlayer.Ports.Contains(rightPort))
-                    return 2;
-
-                if (hasThreeToOnePort)
-                    return 3;
-            }
-
-            return 4;
-        }
-
         public Queue<Player> GetCardsDiscardingPlayers()
         {
             var playersToDiscard = new Queue<Player>(PlayerList.Where(p => p.Resources.ResourceDictionary.Values.Sum() > 7));
@@ -373,6 +341,11 @@ namespace Catan.Core.Engine
         public Player GetCurrentPlayer()
         {
             return CurrentPlayer;
+        }
+
+        public EnumGamePhases GetCurrentPhase()
+        {
+            return CurrentPhase;
         }
 
         public Player GetPlayerById(int id)
@@ -405,6 +378,11 @@ namespace Catan.Core.Engine
         public void SetAfterRollTo(bool afterRoll)
         {
             AfterRoll = afterRoll;
+        }
+
+        public void SetCurrentPhase(EnumGamePhases phase)
+        {
+            CurrentPhase = phase;
         }
 
         // mutators //
@@ -454,7 +432,7 @@ namespace Catan.Core.Engine
             return card;
         }
 
-        public void BankTradeDoneMutation(Player player, EnumResourceTypes offered, EnumResourceTypes desired, int ratio)
+        public void BankTradeMutation(Player player, EnumResourceTypes offered, EnumResourceTypes desired, int ratio)
         {
             player.Resources.SubtractExactAmount(offered, ratio);
             player.Resources.AddExactAmount(desired, 1);

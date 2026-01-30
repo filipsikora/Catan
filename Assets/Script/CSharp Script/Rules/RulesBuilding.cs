@@ -56,10 +56,10 @@ namespace Catan.Core.Rules
                 ConditionsBuildings.HasVillage(player, vertex));
         }
 
-        public static ResultCondition CanBuildFreeRoad(Player player, Edge edge, GameState game)
+        public static ResultCondition CanBuildFreeRoad(Player player, Edge edge, GameSession session)
         {
             return ResultCondition.Combine(
-                ConditionsMap.PositionExists(edge.Id, id => game.Map.GetEdgeById(id)),
+                ConditionsMap.PositionExists(edge.Id, id => session.GetEdgeById(id)),
                 ConditionsBuildings.HasAvailable<BuildingRoad>(player),
                 ConditionsMap.IsNotOwned(edge),
                 ConditionsMap.HasAccessToPosition(player, edge));

@@ -56,7 +56,7 @@ namespace Catan.Application.Phases
                 return;
             }
 
-            PhaseTransition.ChangePhase(EnumGamePhases.MonopolyCard);
+            PhaseTransition.ChangePhase(EnumGamePhases.NormalRound);
         }
     }
 }

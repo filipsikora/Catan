@@ -3,11 +3,11 @@ using System.Windows.Input;
 
 namespace Catan.Application.Controllers
 {
-    public sealed class CommandRouterController
+    public sealed class CommandReceiver
     {
         private PhaseTransitionController _phaseTransition;
 
-        public CommandRouterController(PhaseTransitionController phaseTransition, EventBus bus)
+        public CommandReceiver(PhaseTransitionController phaseTransition, EventBus bus)
         {
             _phaseTransition = phaseTransition;
 

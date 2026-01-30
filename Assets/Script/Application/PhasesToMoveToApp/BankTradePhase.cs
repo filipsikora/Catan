@@ -1,19 +1,16 @@
 ﻿using Catan.Application.Controllers;
-using Catan.Core.Engine;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
 using Catan.Shared.Data;
-using Catan.Core.PhaseLogic;
 
 namespace Catan.Application.Phases
 {
     public sealed class BankTradePhase : BasePhase
     {
         private EnumResourceTypes? _offered;
-        private int _ratio;
 
-        public BankTradePhase(GameState game, EventBus bus, PhaseTransitionController phaseTransition) : base(game, bus, phaseTransition) { }
+        public BankTradePhase(Facade facade, EventBus bus, PhaseTransitionController phaseTransition) : base(facade, bus, phaseTransition) { }
 
         public override void Enter() { }
 
@@ -37,34 +34,31 @@ namespace Catan.Application.Phases
 
         private void HandleOfferedResourceSelected(BankTradeOfferedResourceSelected signal)
         {
-            var player = Game.GetCurrentPlayer();
-
             _offered = signal.Type;
-            _ratio = Game.GetTradeRatio(signal.Type);
+            var ratio = Facade.GetTradeRatioForCurrentPlayer(signal.Type);
 
-            int amount = player.Resources.ResourceDictionary[signal.Type];
-            bool possibleForPlayer = amount >= _ratio;
+            int amount = Facade.GetCurrentPlayerResourceAmount(signal.Type);
+            bool possibleForPlayer = amount >= ratio;
 
-            Bus.Publish(new BankTradeRatioChangedEvent(_ratio, possibleForPlayer, _offered));
+            Bus.Publish(new BankTradeRatioChangedEvent(ratio, possibleForPlayer, _offered));
         }
 
         private void HandleBankTrade(BankTradeDesiredResourceSelected signal)
         {
-            var player = Game.GetCurrentPlayer();
             var desired = signal.Type;
 
             if (_offered == null || desired == null)
                 return;
 
-            var result = BankTradeLogic.Handle(Game, _offered.Value, desired.Value);
+            var result = Facade.BankTrade(_offered.Value, desired.Value);
 
             if (!result.Success)
             {
-                Bus.Publish(new ActionRejectedEvent(player.ID, result.Reason));
+                Bus.Publish(new ActionRejectedEvent(Facade.GetCurrentPlayerId(), result.Reason));
                 FinishPhase();
             }
 
-            Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, $"player{player.ID} trade {result.Ratio} {result.Offered} for 1 {result.Desired}"));
+            Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, $"player{Facade.GetCurrentPlayerId()} trade {result.Ratio} {result.Offered} for 1 {result.Desired}"));
 
             FinishPhase();
         }

@@ -1,6 +1,5 @@
 ﻿using Catan.Shared.Communication;
 using Catan.Shared.Communication.Events;
-using Catan.Core.Engine;
 using Catan.Application.Controllers;
 
 namespace Catan.Application.Phases
@@ -10,7 +9,7 @@ namespace Catan.Application.Phases
         protected int? SelectedVertexId;
         protected int? SelectedEdgeId;
 
-        protected BaseBuildPhase(GameState game, EventBus bus, PhaseTransitionController phaseTransition) : base(game, bus, phaseTransition) { }
+        protected BaseBuildPhase(Facade facade, EventBus bus, PhaseTransitionController phaseTransition) : base(facade, bus, phaseTransition) { }
 
         protected void ResetSelection()
         {

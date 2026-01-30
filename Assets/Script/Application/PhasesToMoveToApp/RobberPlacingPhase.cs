@@ -1,12 +1,8 @@
 ﻿using Catan.Shared.Communication;
-using Catan.Core.Engine;
 using Catan.Shared.Communication.Events;
 using Catan.Shared.Communication.Commands;
 using Catan.Application.Controllers;
-using Catan.Core.Models;
 using Catan.Shared.Data;
-using Catan.Core.PhaseLogic;
-using System.Linq;
 using System.Collections.Generic;
 
 namespace Catan.Application.Phases
@@ -14,8 +10,9 @@ namespace Catan.Application.Phases
     public class RobberPlacingPhase : BasePhase
     {
         private bool clickableHexes = true;
+        private List<int> _possibleVictimsIds = new();
 
-        public RobberPlacingPhase(GameState game, EventBus bus, PhaseTransitionController phaseTransition) : base(game, bus, phaseTransition) { }
+        public RobberPlacingPhase(Facade facade, EventBus bus, PhaseTransitionController phaseTransition) : base(facade, bus, phaseTransition) { }
 
         public override void Enter()
         {
@@ -42,29 +39,28 @@ namespace Catan.Application.Phases
                 return;
 
             var hexId = signal.HexId;
-            var result = BlockHexLogic.Handle(Game, hexId);
-            var hex = Game.Map.GetHexById(hexId);
-            var thief = Game.GetCurrentPlayer();
+            var result = Facade.BlockHex(hexId);
+            var thiefId = Facade.GetCurrentPlayerId();
 
             if (!result.Success)
                 return;
 
-            Bus.Publish(new RobberPlacedEvent(hex.Id));
+            Bus.Publish(new RobberPlacedEvent(hexId));
 
-            HandleVictimsAfterBlocking(hex, thief);
+            HandleVictimsAfterBlocking(hexId, thiefId);
 
             clickableHexes = false;
         }
 
-        private void HandleVictimsAfterBlocking(HexTile hex, Player thief)
+        private void HandleVictimsAfterBlocking(int hexId, int thiefId)
         {
-            var victims = Game.GetPlayersAdjacentToHex(hex);
+            var possibleVictimsIds = Facade.GetAdjacentToHexPlayersIds(hexId);
 
-            victims.Remove(thief);
+            possibleVictimsIds.Remove(thiefId);
 
-            List<int> victimsIds = victims.Select(v => v.ID).ToList();
+            _possibleVictimsIds = possibleVictimsIds;
 
-            if (victims.Count == 0)
+            if (possibleVictimsIds.Count == 0)
             {
                 Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, "Noone to steal from"));
 
@@ -73,13 +69,20 @@ namespace Catan.Application.Phases
 
             else
             {
-                Bus.Publish(new PotentialVictimsFoundEvent(victimsIds));
+                Bus.Publish(new PotentialVictimsFoundEvent(possibleVictimsIds));
             }
         }
 
         private void VictimChosen(VictimChosenCommand signal)
         {
-            Game.CreateCardsStealingContext(signal.VictimId);
+            var result = Facade.SelectVictim(signal.VictimId, _possibleVictimsIds);
+
+            if (!result.Success)
+            {
+                Bus.Publish(new ActionRejectedEvent(Facade.GetCurrentPlayerId(), result.Reason));
+
+                return;
+            }
 
             PhaseTransition.ChangePhase(EnumGamePhases.CardStealing);
         }

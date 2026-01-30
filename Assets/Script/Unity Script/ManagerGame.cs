@@ -5,6 +5,7 @@ using Catan.Application.Queries.DevCards;
 using Catan.Application.Queries.Players;
 using Catan.Application.Queries.Resources;
 using Catan.Application.Queries.Turns;
+using Catan.Core;
 using Catan.Core.Engine;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Events;
@@ -26,9 +27,10 @@ namespace Catan.Unity
     {
         public static ManagerGame Instance { get; private set; }
 
-        public GameState? Game { get; set; }
+        public GameSession Session { get; set; }
         public PhaseTransitionController PhaseTransition { get; set; }
-        public CommandRouterController CommandRouter { get; set; }
+        public CommandReceiver CommandRouter { get; set; }
+        public Facade UseCaseController { get; set; }
 
         public Transform Board;
         private BuilderMap? Builder;
@@ -102,12 +104,15 @@ namespace Catan.Unity
 
         public void StartGame(int playerCount)
         {
-            Game = new GameState(new HexMap());
-            Game.InitializeNewGame(playerCount, Size);
+            var game = new GameState(new HexMap());
+            game.InitializeNewGame(playerCount, Size);
 
-            PhaseTransition = new PhaseTransitionController(Game, EventBus);
+            Session = new GameSession(game);
+
+            UseCaseController = new Facade(Session);
+            PhaseTransition = new PhaseTransitionController(Session, EventBus);
             PhaseTransition.ChangePhase(EnumGamePhases.FirstRoundsBuilding);
-            CommandRouter = new CommandRouterController(PhaseTransition, EventBus);
+            CommandRouter = new CommandReceiver(PhaseTransition, EventBus);
 
             InitializeHelpers();
             InitializeBuilderMap();
