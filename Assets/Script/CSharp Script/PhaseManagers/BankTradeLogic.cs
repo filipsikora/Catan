@@ -1,31 +1,27 @@
-﻿using Catan.Core.Results;
+﻿using Catan.Core.PhaseManagers;
+using Catan.Core.Results;
 using Catan.Core.Rules;
 using Catan.Shared.Data;
 
 namespace Catan.Core.PhaseLogic
 {
-    public sealed class BankTradeLogic
+    public sealed class BankTradeLogic : BaseLogic
     {
-        private readonly GameSession _session;
-
-        public BankTradeLogic(GameSession session)
-        {
-            _session = session;
-        }
+        public BankTradeLogic(GameSession session) : base(session) { }
 
         public ResultBankTrade Handle(EnumResourceTypes offered, EnumResourceTypes desired)
         {
-            var player = _session.GetCurrentPlayer();
-            var ratio = _session.GetTradeRatioForCurrentPlayer(offered);
-
-            var result = RulesTrade.CanTradeWithBank(player, _session.GetBank(), offered, desired, ratio);
+            var player = Session.GetCurrentPlayer();
+            var ratio = Session.GetTradeRatioForCurrentPlayer(offered);
+            
+            var result = RulesTrade.CanTradeWithBank(player, Session.GetBank(), offered, desired, ratio);
             
             if (!result.Success)
             {
                 return ResultBankTrade.Fail(player.ID, result.Reason);
             }
 
-            _session.BankTradeMutation(player, offered, desired, ratio);
+            Session.BankTradeMutation(offered, desired, ratio);
 
             return ResultBankTrade.Ok(player.ID, offered, desired, ratio);
         }

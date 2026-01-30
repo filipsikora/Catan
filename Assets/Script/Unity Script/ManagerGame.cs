@@ -30,7 +30,7 @@ namespace Catan.Unity
         public GameSession Session { get; set; }
         public PhaseTransitionController PhaseTransition { get; set; }
         public CommandReceiver CommandRouter { get; set; }
-        public Facade UseCaseController { get; set; }
+        public Facade Facade { get; set; }
 
         public Transform Board;
         private BuilderMap? Builder;
@@ -109,8 +109,8 @@ namespace Catan.Unity
 
             Session = new GameSession(game);
 
-            UseCaseController = new Facade(Session);
-            PhaseTransition = new PhaseTransitionController(Session, EventBus);
+            Facade = new Facade(Session);
+            PhaseTransition = new PhaseTransitionController(Facade, EventBus);
             PhaseTransition.ChangePhase(EnumGamePhases.FirstRoundsBuilding);
             CommandRouter = new CommandReceiver(PhaseTransition, EventBus);
 
@@ -138,8 +138,8 @@ namespace Catan.Unity
 
             BoardVisuals.Initialize(Builder, IdleGridMaterial);
 
-            var desertHex = Game.Map.HexList.Find(h => h.FieldType == EnumFieldTypes.Desert);
-            EventBus.Publish(new RobberMovedUIEvent(desertHex.Id));
+            var desertHexId = Session.GetDesertHexId();
+            EventBus.Publish(new RobberMovedUIEvent(desertHexId));
         }
 
         public void InitializeHelpers()
@@ -229,9 +229,9 @@ namespace Catan.Unity
 
         adapter check
 
+        spanshot in core, application queries through facade
 
-
-        snapshot w core dla api | ireadgame | query tworzy getter, logic manager czyta game
+        selectvictim failure check
         */
     }
 }

@@ -394,8 +394,10 @@ namespace Catan.Core.Engine
             return LastRoll;
         }
 
-        public void MarkDevCardsAsOldMutation(Player player)
+        public void MarkDevCardsAsOldMutation()
         {
+            var player = GetCurrentPlayer();
+
             foreach (var devCardId in player.DevelopmentCardsByID)
             {
                 DevelopmentCard devCard = GetDevCardById(devCardId);
@@ -413,27 +415,31 @@ namespace Catan.Core.Engine
             SetAfterRollTo(false);
         }
 
-        public DevelopmentCard DevCardPlayedMutation(Player player, DevelopmentCard card)
+        public DevelopmentCard DevCardPlayedMutation(DevelopmentCard card)
         {
+            var player = GetCurrentPlayer();
+
             card.IsUsed = true;
             player.DevelopmentCardsByID.Remove(card.ID);
 
             switch (card.Type)
             {
                 case EnumDevelopmentCardTypes.Knight:
-                    UseKnightMutation(player);
+                    UseKnightMutation();
                     break;
 
                 case EnumDevelopmentCardTypes.VictoryPoint:
-                    UseVictoryPointMutation(player);
+                    UseVictoryPointMutation();
                     break;
             }
 
             return card;
         }
 
-        public void BankTradeMutation(Player player, EnumResourceTypes offered, EnumResourceTypes desired, int ratio)
+        public void BankTradeMutation(EnumResourceTypes offered, EnumResourceTypes desired, int ratio)
         {
+            var player = GetCurrentPlayer();
+
             player.Resources.SubtractExactAmount(offered, ratio);
             player.Resources.AddExactAmount(desired, 1);
 
@@ -501,8 +507,9 @@ namespace Catan.Core.Engine
             victim.Resources.SubtractExactAmount(resource, 1);
         }
 
-        public void VillageBuiltMutation(Player player, Vertex vertex, bool secondVillage = false)
+        public void VillageBuiltMutation(Vertex vertex, bool secondVillage = false)
         {
+            var player = GetCurrentPlayer();
             var village = new BuildingVillage(player, vertex.X, vertex.Y, vertex);
 
             player.Buildings.Add(village);
@@ -518,7 +525,7 @@ namespace Catan.Core.Engine
 
             if (secondVillage)
             {
-                GiveResourcesForSecondVillageMutation(player, vertex);
+                GiveResourcesForSecondVillageMutation(vertex);
             }
 
             player.CountPoints();
@@ -526,8 +533,9 @@ namespace Catan.Core.Engine
             UpdateRoadChampion();
         }
 
-        public void RoadBuiltMutation(Player player, Edge edge)
+        public void RoadBuiltMutation(Edge edge)
         {
+            var player = GetCurrentPlayer();
             var road = new BuildingRoad(player, edge.X, edge.Y, edge);
             player.Buildings.Add(road);
 
@@ -536,8 +544,9 @@ namespace Catan.Core.Engine
             UpdateRoadChampion();
         }
 
-        public void TownBuiltMutation(Player player, Vertex vertex)
+        public void TownBuiltMutation(Vertex vertex)
         {
+            var player = GetCurrentPlayer();
             var town = new BuildingTown(player, vertex.X, vertex.Y, vertex);
             var village = player.Buildings.FirstOrDefault(b => b is BuildingVillage v && v.Vertex == vertex);
 
@@ -550,25 +559,28 @@ namespace Catan.Core.Engine
             player.CountPoints();
         }
 
-        public void VillagePaidAndBuiltMutation(Player player, Vertex vertex)
+        public void VillagePaidAndBuiltMutation(Vertex vertex)
         {
+            var player = GetCurrentPlayer();
             PayCostMutation(player, BuildingVillage.Cost);
-            VillageBuiltMutation(player, vertex);
+            VillageBuiltMutation(vertex);
         }
 
-        public void RoadPaidAndBuiltMutation(Player player, Edge edge)
+        public void RoadPaidAndBuiltMutation(Edge edge)
         {
+            var player = GetCurrentPlayer();
             PayCostMutation(player, BuildingRoad.Cost);
-            RoadBuiltMutation(player, edge);
+            RoadBuiltMutation(edge);
         }
 
-        public void TownPaidAndBuiltMutation(Player player, Vertex vertex)
+        public void TownPaidAndBuiltMutation(Vertex vertex)
         {
+            var player = GetCurrentPlayer();
             PayCostMutation(player, BuildingTown.Cost);
-            TownBuiltMutation(player, vertex);
+            TownBuiltMutation(vertex);
         }
 
-        public void GiveResourcesForSecondVillageMutation(Player player, Vertex vertex)
+        public void GiveResourcesForSecondVillageMutation(Vertex vertex)
         {
             foreach (HexTile hex in vertex.AdjacentHexTiles)
             {
@@ -591,8 +603,10 @@ namespace Catan.Core.Engine
             }
         }
 
-        public void BuyDevCardMutation(Player player, DevelopmentCard devCard)
+        public void BuyDevCardMutation(DevelopmentCard devCard)
         {
+            var player = GetCurrentPlayer();
+
             PayCostMutation(player, DevelopmentCard.Cost);
 
             DevelopmentCardsDeckAvailable.Remove(devCard);
@@ -633,15 +647,19 @@ namespace Catan.Core.Engine
             }
         }
 
-        public void UseKnightMutation(Player player)
+        public void UseKnightMutation()
         {
+            var player = GetCurrentPlayer();
+
             player.KnightsUsed++;
 
             CheckChampionship(player, ref MostKnightsUsed, player.KnightsUsed, RequiredKnights, ref KnightChampion);
         }
 
-        public void UseVictoryPointMutation(Player player)
+        public void UseVictoryPointMutation()
         {
+            var player = GetCurrentPlayer();
+
             player.VictoryPointsCardsUsed++;
             player.CountPoints();
         }
@@ -698,6 +716,7 @@ namespace Catan.Core.Engine
             }
 
             hex.isBlocked = true;
+            BlockedHexId = hex.Id;
         }
 
         // end //

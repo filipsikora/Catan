@@ -1,26 +1,29 @@
-﻿using Catan.Core.Engine;
-using Catan.Core.Models;
+﻿using Catan.Core.Models;
+using Catan.Core.PhaseManagers;
 using Catan.Core.Results;
 using Catan.Core.Rules;
 
 namespace Catan.Core.PhaseLogic
 {
-    public static class BuildRoadLogic
+    public sealed class BuildRoadLogic : BaseLogic
     {
-        public static ResultBuildRoad Handle(GameState game, int playerId, Edge edge)
-        {
-            var player = game.GetCurrentPlayer();
+        public BuildRoadLogic(GameSession session) : base(session) { }
 
-            var result = RulesBuilding.CanBuildRoad(player, edge, game);
+        public ResultBuildRoad Handle(int edgeId)
+        {
+            var player = Session.GetCurrentPlayer();
+            var edge = Session.GetEdgeById(edgeId);
+
+            var result = RulesBuilding.CanBuildRoad(player, edge, Session);
 
             if (!result.Success)
             {
-                return ResultBuildRoad.Fail(result.Reason, playerId, edge);
+                return ResultBuildRoad.Fail(result.Reason, player.ID, edge);
             }
 
-            game.RoadPaidAndBuiltMutation(player, edge);
+            Session.RoadPaidAndBuiltMutation(edge);
 
-            return ResultBuildRoad.Ok(playerId, edge);
+            return ResultBuildRoad.Ok(player.ID, edge);
         }
     }
 }

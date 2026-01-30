@@ -3,14 +3,12 @@ using Catan.Shared.Communication.Events;
 using Catan.Shared.Communication.Commands;
 using Catan.Application.Controllers;
 using Catan.Shared.Data;
-using System.Collections.Generic;
 
 namespace Catan.Application.Phases
 {
     public class RobberPlacingPhase : BasePhase
     {
         private bool clickableHexes = true;
-        private List<int> _possibleVictimsIds = new();
 
         public RobberPlacingPhase(Facade facade, EventBus bus, PhaseTransitionController phaseTransition) : base(facade, bus, phaseTransition) { }
 
@@ -40,25 +38,20 @@ namespace Catan.Application.Phases
 
             var hexId = signal.HexId;
             var result = Facade.BlockHex(hexId);
-            var thiefId = Facade.GetCurrentPlayerId();
 
             if (!result.Success)
                 return;
 
             Bus.Publish(new RobberPlacedEvent(hexId));
 
-            HandleVictimsAfterBlocking(hexId, thiefId);
+            HandleVictimsAfterBlocking();
 
             clickableHexes = false;
         }
 
-        private void HandleVictimsAfterBlocking(int hexId, int thiefId)
+        private void HandleVictimsAfterBlocking()
         {
-            var possibleVictimsIds = Facade.GetAdjacentToHexPlayersIds(hexId);
-
-            possibleVictimsIds.Remove(thiefId);
-
-            _possibleVictimsIds = possibleVictimsIds;
+            var possibleVictimsIds = Facade.GetPossibleVictimsIds();
 
             if (possibleVictimsIds.Count == 0)
             {
@@ -75,7 +68,7 @@ namespace Catan.Application.Phases
 
         private void VictimChosen(VictimChosenCommand signal)
         {
-            var result = Facade.SelectVictim(signal.VictimId, _possibleVictimsIds);
+            var result = Facade.SelectVictim(signal.VictimId);
 
             if (!result.Success)
             {

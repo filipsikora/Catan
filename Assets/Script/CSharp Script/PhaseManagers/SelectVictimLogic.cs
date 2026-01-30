@@ -1,21 +1,17 @@
-﻿using Catan.Core.Results;
+﻿using Catan.Core.PhaseManagers;
+using Catan.Core.Results;
 using Catan.Core.Rules;
-using System.Collections.Generic;
 
 namespace Catan.Core.PhaseLogic
 {
-    public sealed class SelectVictimLogic
+    public sealed class SelectVictimLogic : BaseLogic
     {
-        private readonly GameSession _session;
+        public SelectVictimLogic(GameSession session) : base(session) { }
 
-        public SelectVictimLogic(GameSession session)
+        public ResultCondition Handle(int victimId)
         {
-            _session = session;
-        }
-
-        public ResultCondition Handle(int victimId, List<int> possibleVictimsIds)
-        {
-            var victim = _session.GetPlayerById(victimId);
+            var victim = Session.GetPlayerById(victimId);
+            var possibleVictimsIds = Session.GetPossibleVictimsIds();
             var result = RulesRobber.ValidVictim(victim, possibleVictimsIds);
 
             if (!result.Success)
@@ -23,7 +19,7 @@ namespace Catan.Core.PhaseLogic
                 return ResultCondition.Fail(result.Reason);
             }
 
-            _session.CreateCardsStealingContext(victim.ID);
+            Session.CreateCardsStealingContext(victim.ID);
 
             return ResultCondition.Ok();
         }

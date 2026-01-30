@@ -1,26 +1,29 @@
-﻿using Catan.Core.Engine;
-using Catan.Core.Models;
+﻿using Catan.Core.Models;
+using Catan.Core.PhaseManagers;
 using Catan.Core.Results;
 using Catan.Core.Rules;
 
 namespace Catan.Core.PhaseLogic
 {
-    public static class BuildVillageLogic
+    public sealed class BuildVillageLogic : BaseLogic
     {
-        public static ResultBuildVillage Handle(GameState game, int playerId, Vertex vertex)
-        {
-            var player = game.GetCurrentPlayer();
+        public BuildVillageLogic(GameSession session) : base(session) { }
 
-            var result = RulesBuilding.CanBuildVillage(player, vertex, game);
+        public ResultBuildVillage Handle(int vertexId)
+        {
+            var player = Session.GetCurrentPlayer();
+            var vertex = Session.GetVertexById(vertexId);
+
+            var result = RulesBuilding.CanBuildVillage(player, vertex, Session);
 
             if (!result.Success)
             {
-                return ResultBuildVillage.Fail(result.Reason, playerId, vertex);
+                return ResultBuildVillage.Fail(result.Reason, player.ID, vertex);
             }
 
-            game.VillagePaidAndBuiltMutation(player, vertex);
+            Session.VillagePaidAndBuiltMutation(vertex);
 
-            return ResultBuildVillage.Ok(playerId, vertex);
+            return ResultBuildVillage.Ok(player.ID, vertex);
         }
     }
 }

@@ -1,26 +1,30 @@
-﻿using Catan.Core.Engine;
-using Catan.Core.Models;
+﻿using Catan.Core.Models;
+using Catan.Core.PhaseManagers;
 using Catan.Core.Results;
 using Catan.Core.Rules;
 
 namespace Catan.Core.PhaseLogic
 {
-    public static class BuildInitialRoadLogic
+    public sealed class BuildInitialRoadLogic : BaseLogic
     {
-        public static ResultBuildInitialRoad Handle(GameState game, int playerId, Edge edge, Vertex vertex)
-        {
-            var player = game.GetPlayerById(playerId);
+        public BuildInitialRoadLogic(GameSession session) : base(session) { }
 
-            var result = RulesBuilding.CanBuildInitialRoad(player, edge, vertex, game);
+        public ResultBuildInitialRoad Handle(int edgeId, int vertexId)
+        {
+            var player = Session.GetCurrentPlayer();
+            var edge = Session.GetEdgeById(edgeId);
+            var vertex = Session.GetVertexById(vertexId);
+
+            var result = RulesBuilding.CanBuildInitialRoad(player, edge, vertex, Session);
 
             if (!result.Success)
             {
-                return ResultBuildInitialRoad.Fail(result.Reason, playerId, edge);
+                return ResultBuildInitialRoad.Fail(result.Reason, player.ID, edge);
             }
 
-            game.RoadBuiltMutation(player, edge);
+            Session.RoadBuiltMutation(edge);
 
-            return ResultBuildInitialRoad.Ok(playerId, edge);
+            return ResultBuildInitialRoad.Ok(player.ID, edge);
         }
     }
 }

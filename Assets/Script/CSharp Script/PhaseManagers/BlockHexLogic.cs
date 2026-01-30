@@ -1,20 +1,16 @@
-﻿using Catan.Core.Results;
+﻿using Catan.Core.PhaseManagers;
+using Catan.Core.Results;
 using Catan.Core.Rules;
 
 namespace Catan.Core.PhaseLogic
 {
-    public sealed class BlockHexLogic
+    public sealed class BlockHexLogic : BaseLogic
     {
-        private readonly GameSession _session;
-
-        public BlockHexLogic(GameSession session)
-        {
-            _session = session;
-        }
+        public BlockHexLogic(GameSession session) : base(session) { }
 
         public ResultBlockHex Handle(int hexId)
         {
-            var hex = _session.GetHexById(hexId);
+            var hex = Session.GetHexById(hexId);
             var result = RulesRobber.CanBlock(hex);
 
             if (!result.Success)
@@ -22,7 +18,7 @@ namespace Catan.Core.PhaseLogic
                 return ResultBlockHex.Fail(result.Reason);
             }
 
-            _session.BlockHexMutation(hex);
+            Session.BlockHexMutation(hex);
 
             return ResultBlockHex.Ok(hex.Id);
         }

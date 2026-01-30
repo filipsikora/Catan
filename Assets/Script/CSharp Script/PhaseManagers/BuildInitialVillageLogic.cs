@@ -1,28 +1,31 @@
-﻿using Catan.Core.Engine;
-using Catan.Core.Models;
+﻿using Catan.Core.Models;
+using Catan.Core.PhaseManagers;
 using Catan.Core.Results;
 using Catan.Core.Rules;
 
 namespace Catan.Core.PhaseLogic
 {
-    public static class BuildInitialVillageLogic
+    public sealed class BuildInitialVillageLogic : BaseLogic
     {
-        public static ResultBuildInitialVillage Handle(GameState game, int playerId, Vertex vertex)
-        {
-            var player = game.GetPlayerById(playerId);
+        public BuildInitialVillageLogic(GameSession session) : base(session) { }
 
-            var result = RulesBuilding.CanBuildInitialVillage(player, vertex, game);
+        public ResultBuildInitialVillage Handle(int vertexId)
+        {
+            var player = Session.GetCurrentPlayer();
+            var vertex = Session.GetVertexById(vertexId);
+
+            var result = RulesBuilding.CanBuildInitialVillage(player, vertex, Session);
 
             if (!result.Success)
             {
-                return ResultBuildInitialVillage.Fail(result.Reason, playerId, vertex);
+                return ResultBuildInitialVillage.Fail(result.Reason, player.ID, vertex);
             }
 
             var secondVillage = player.Points == 1;
 
-            game.VillageBuiltMutation(player, vertex, secondVillage);
+            Session.VillageBuiltMutation(vertex, secondVillage);
 
-            return ResultBuildInitialVillage.Ok(playerId, vertex);
+            return ResultBuildInitialVillage.Ok(player.ID, vertex);
         }
     }
 }
