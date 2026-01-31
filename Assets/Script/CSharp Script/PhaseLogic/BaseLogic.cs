@@ -1,5 +1,4 @@
-﻿
-namespace Catan.Core.PhaseManagers
+﻿namespace Catan.Core.PhaseLogic
 {
     public abstract class BaseLogic
     {

@@ -1,7 +1,7 @@
 ﻿using Catan.Application.Controllers;
 using Catan.Core.Engine;
 using Catan.Core.Models;
-using Catan.Core.PhaseLogic.Logic;
+using Catan.Core.PhaseLogic;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;

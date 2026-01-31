@@ -1,6 +1,4 @@
-﻿using Catan.Core.Models;
-using Catan.Core.PhaseManagers;
-using Catan.Core.Results;
+﻿using Catan.Core.Results;
 using Catan.Core.Rules;
 
 namespace Catan.Core.PhaseLogic

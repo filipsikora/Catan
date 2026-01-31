@@ -454,16 +454,13 @@ namespace Catan.Core.Engine
 
             buyer.Resources.AddExact(offered);
             buyer.Resources.SubtractExact(desired);
+
+            LastPlayerTradeOffered = null;
         }
 
         public void CreatePlayerTradeOfferedContext(int sellerId, int buyerId, string sellerName, string buyerName, ResourceCostOrStock offered, ResourceCostOrStock desired)
         {
             LastPlayerTradeOffered = new PlayerTradeContext(sellerId, buyerId, sellerName, buyerName, offered, desired);
-        }
-
-        public void PlayerTradeOfferedContextClear()
-        {
-            LastPlayerTradeOffered = null;
         }
 
         public void CreateCardDiscardingContext(IEnumerable<int> playersIds)
@@ -477,11 +474,9 @@ namespace Catan.Core.Engine
         public void CardsDiscardedContextMutation()
         {
             CardDiscardingProgress.PlayersToDiscard.Dequeue();
-        }
 
-        public void CardsDiscardedContextClear()
-        {
-            CardDiscardingProgress = null;
+            if (CardDiscardingProgress.PlayersToDiscard.Count == 0)
+                CardDiscardingProgress = null;
         }
 
         public void CardsDiscardedMutation(Player player, ResourceCostOrStock selectedCards)
@@ -494,17 +489,14 @@ namespace Catan.Core.Engine
             CardStealingProgress = new CardStealingContext(victimId);
         }
 
-        public void CardStealingContextClear()
-        {
-            CardStealingProgress = null;
-        }
-
         public void CardStolenMutation(Player victim, EnumResourceTypes resource)
         {
             var thief = CurrentPlayer;
 
             thief.Resources.AddExactAmount(resource, 1);
             victim.Resources.SubtractExactAmount(resource, 1);
+
+            CardStealingProgress = null;
         }
 
         public void VillageBuiltMutation(Vertex vertex, bool secondVillage = false)
