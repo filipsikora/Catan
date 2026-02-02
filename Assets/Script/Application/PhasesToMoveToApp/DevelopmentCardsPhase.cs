@@ -1,6 +1,4 @@
 ﻿using Catan.Application.Controllers;
-using Catan.Core.Engine;
-using Catan.Core.PhaseLogic;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
@@ -10,7 +8,7 @@ namespace Catan.Application.Phases
 {
     public class DevelopmentCardsPhase : BasePhase
     {
-        public DevelopmentCardsPhase(GameState game, EventBus bus, PhaseTransitionController phaseTransition) : base(game, bus, phaseTransition) { }
+        public DevelopmentCardsPhase(Facade facade, EventBus bus, PhaseTransitionController phaseTransition) : base(facade, bus, phaseTransition) { }
 
         public override void Enter() { }
 
@@ -30,12 +28,12 @@ namespace Catan.Application.Phases
 
         private void HandlePlayDevCard(DevelopmentCardClickedCommand signal)
         {
-            var result = PlayDevCardLogic.Handle(Game, signal.DevelopmentCardId);
-            var player = Game.GetCurrentPlayer();
+            var result = Facade.UseDevCard(signal.DevelopmentCardId);
+            var playerId = Facade.GetCurrentPlayerId();
 
             if (!result.Success)
             {
-                Bus.Publish(new ActionRejectedEvent(player.ID, result.Reason));
+                Bus.Publish(new ActionRejectedEvent(playerId, result.Reason));
 
                 FinishPhase();
 
@@ -68,7 +66,7 @@ namespace Catan.Application.Phases
 
         public void FinishPhase()
         {
-            bool afterRoll = Game.GetAfterRoll();
+            bool afterRoll = Facade.GetAfterRoll();
 
             if (afterRoll)
             {

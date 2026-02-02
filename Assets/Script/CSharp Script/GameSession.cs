@@ -2,6 +2,7 @@
 using Catan.Core.Models;
 using Catan.Core.PhaseLogic;
 using Catan.Core.Results;
+using Catan.Core.Rules;
 using Catan.Shared.Data;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,6 +32,8 @@ namespace Catan.Core
         private readonly UpgradeVillageLogic _upgradeVillage;
         private readonly UseMonopolyLogic _useMonopoly;
         private readonly UseYearOfPlentyLogic _useYearOfPlenty;
+        private readonly PrepareTradeOfferLogic _prepareTrade;
+        private readonly PrepareRoadBuiliding _prepareRoadBuilding;
 
         public GameSession(GameState game)
         {
@@ -55,27 +58,59 @@ namespace Catan.Core
             _upgradeVillage = new UpgradeVillageLogic(this);
             _useMonopoly = new UseMonopolyLogic(this);
             _useYearOfPlenty = new UseYearOfPlentyLogic(this);
+            _prepareTrade = new PrepareTradeOfferLogic(this);
+            _prepareRoadBuilding = new PrepareRoadBuiliding(this);
         }
 
         internal GameState Game => _game;
 
         // phase logic //
 
-        public ResultBankTrade BankTrade(EnumResourceTypes offered, EnumResourceTypes desired) => _bankTrade.Handle(offered, desired);
-        public ResultBlockHex BlockHex(int hexId) => _blockHex.Handle(hexId);
-        public ResultCondition SelectVictim(int victimId) => _selectVictim.Handle(victimId);
-        public ResultBuildFreeRoad BuildFreeRoad(int edgeId) => _buildFreeRoad.Handle(edgeId);
-        public ResultBuildInitialRoad BuildInitialRoad(int edgeId, int vertexId) => _buildInitialRoad.Handle(edgeId, vertexId);
+        public ResultBankTrade UseBankTrade(EnumResourceTypes offered, EnumResourceTypes desired) => _bankTrade.Handle(offered, desired);
+        public ResultBlockHex UseBlockHex(int hexId) => _blockHex.Handle(hexId);
+        public ResultCondition UseSelectVictim(int victimId) => _selectVictim.Handle(victimId);
+        public ResultBuildFreeRoad UseBuildFreeRoad(int edgeId) => _buildFreeRoad.Handle(edgeId);
+        public ResultBuildInitialRoad UseBuildInitialRoad(int edgeId, int vertexId) => _buildInitialRoad.Handle(edgeId, vertexId);
+        public ResultBuildInitialVillage UseBuildInitialVillage(int vertexId) => _buildInitialVillage.Handle(vertexId);
+        public ResultBuildRoad UseBuildRoad(int edgeId) => _buildRoad.Handle(edgeId);
+        public ResultBuildVillage UseBuildVillage(int vertexId) => _buildVillage.Handle(vertexId);
+        public ResultUpgradeVillage UseUpgradeVillage(int vertexId) => _upgradeVillage.Handle(vertexId);
+        public ResultRollDice UseRollDice() => _rollDice.Handle();
+        public ResultCondition UseDiscard(int discardingPlayerId, ResourceCostOrStock resourcesSelected) => _discardCards.Handle(discardingPlayerId, resourcesSelected);
+        public ResultStealResource UseSteal(int victimId, EnumResourceTypes resource) => _stealCard.Handle(victimId, resource);
+        public Result<DevelopmentCard> UseDevCard(int cardId) => _playDevCard.Handle(cardId);
+        public ResultFinishTurn UseFinishTurn() => _finishTurn.Handle();
+        public ResultMonopolyCard UseMonopolyCard(EnumResourceTypes resource) => _useMonopoly.Handle(resource);
+        public ResultBuyDevCard UseBuyDevCard() => _buyDevCard.Handle();
+        public ResultCondition UsePrepareTrade(ResourceCostOrStock offered) => _prepareTrade.Handle(offered);
+        public ResultCondition UsePrepareRoadBuilding() => _prepareRoadBuilding.Handle();
+        
 
         // getters //
 
         public int GetCurrentPlayerId() => _game.CurrentPlayer.ID;
+        public int GetCurrentPlayersRoadsLeft() => _game.CurrentPlayer.BuildingCount<BuildingRoad>();
+        public int GetCurrentPlayerResourceAmount(EnumResourceTypes resource) => _game.CurrentPlayer.Resources.Get(resource);
 
         public EnumGamePhases GetCurrentPhase() => _game.CurrentPhase;
 
         public bool GetAfterRoll() => _game.GetAfterRoll();
 
-        public int GetTradeRatioForCurrentPlayer(EnumResourceTypes resource)
+        public int GetDesertHexId() => _game.Map.HexList.Find(h => h.FieldType == EnumFieldTypes.Desert).Id;
+
+
+        public int GetPlayersToDiscardCount() => _game.CardDiscardingProgress.PlayersToDiscard.Count;
+
+        public int GetNextToDiscardId() => _game.CardDiscardingProgress.PlayersToDiscard.Peek();
+
+        public int GetVictimId() => _game.CardStealingProgress.VictimId;
+
+        public int GetLastPlacedVillagePositionId() => _game.LastPlacedVillagePosition.Id;
+
+        public int GetRoadsLeftToBuild() => _game.RoadBuildingProgress.RoadsLeftToBuild;
+
+
+        public int GetCurrentPlayerTradeRatio(EnumResourceTypes resource)
         {
             if (_game.CurrentPlayer.Ports.Count != 0)
             {
@@ -153,16 +188,12 @@ namespace Catan.Core
             return (nextIndex, initialRoundsRemaining);
         }
 
-        public int GetDesertHexId()
+        public bool CanPlayerDiscard(ResourceCostOrStock resourcesSelected, int discardingPlayerId)
         {
-            var desertHex = _game.Map.HexList.Find(h => h.FieldType == EnumFieldTypes.Desert);
+            var discardingPlayer = _game.GetPlayerById(discardingPlayerId);
+            var result = RulesCardDiscard.CanDiscard(discardingPlayer, resourcesSelected);
 
-            return desertHex.Id;
-        }
-
-        public int GetCurrentPlayerResourceAmount(EnumResourceTypes resource)
-        {
-            return _game.CurrentPlayer.Resources.Get(resource);
+            return result.Success;
         }
 
         // internal getters //
@@ -193,6 +224,7 @@ namespace Catan.Core
             return (context != null, context);
         }
 
+        internal List<DevelopmentCard> GetDevCardsLeft() => _game.DevelopmentCardsDeckAvailable;
 
         // internal setters //
 
@@ -221,6 +253,9 @@ namespace Catan.Core
         internal void CreatePlayerTradeOfferedContext(int sellerId, int buyerId, string sellerName, string buyerName, ResourceCostOrStock offered, ResourceCostOrStock desired) =>
             _game.CreatePlayerTradeOfferedContext(sellerId, buyerId, sellerName, buyerName, offered, desired);
         internal void CreateCardDiscardingContext(IEnumerable<int> playersToDiscard) => _game.CreateCardDiscardingContext(playersToDiscard);
+        internal void CreateTradeDraftContext(ResourceCostOrStock offered) => _game.CreateTradeDraftContext(offered);
+        internal void CreateRoadBuildingContext(int roadsLeftToBuild) => _game.CreateRoadBuildingContext(roadsLeftToBuild);
+        internal void RoadBuildingContextMutation() => _game.RoadBuildingContextMutation();
 
         // wrappers //
 

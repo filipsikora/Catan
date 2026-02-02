@@ -37,7 +37,7 @@ namespace Catan.Application.Phases
                 return;
 
             var hexId = signal.HexId;
-            var result = Facade.BlockHex(hexId);
+            var result = Facade.UseBlockHex(hexId);
 
             if (!result.Success)
                 return;
@@ -68,7 +68,7 @@ namespace Catan.Application.Phases
 
         private void VictimChosen(VictimChosenCommand signal)
         {
-            var result = Facade.SelectVictim(signal.VictimId);
+            var result = Facade.UseSelectVictim(signal.VictimId);
 
             if (!result.Success)
             {

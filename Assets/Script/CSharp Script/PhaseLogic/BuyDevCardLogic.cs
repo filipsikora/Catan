@@ -1,7 +1,5 @@
-﻿using Catan.Core.Models;
-using Catan.Core.Results;
+﻿using Catan.Core.Results;
 using Catan.Core.Rules;
-using System.Collections.Generic;
 
 namespace Catan.Core.PhaseLogic
 {
@@ -9,11 +7,12 @@ namespace Catan.Core.PhaseLogic
     {
         public BuyDevCardLogic(GameSession session) : base(session) { }
 
-        public ResultBuyDevCard Handle(List<DevelopmentCard> devCardsLeftList)
+        public ResultBuyDevCard Handle()
         {
             var player = Session.GetCurrentPlayer();
             var devCard = Session.GetFirstDevCard();
             var devCardId = devCard.ID;
+            var devCardsLeftList = Session.GetDevCardsLeft();
 
             var result = RulesDevCards.CanBuyDevCard(player, devCard, devCardsLeftList);
 

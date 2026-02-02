@@ -11,7 +11,7 @@ namespace Catan.Core.PhaseLogic
         public ResultBankTrade Handle(EnumResourceTypes offered, EnumResourceTypes desired)
         {
             var player = Session.GetCurrentPlayer();
-            var ratio = Session.GetTradeRatioForCurrentPlayer(offered);
+            var ratio = Session.GetCurrentPlayerTradeRatio(offered);
             
             var result = RulesTrade.CanTradeWithBank(player, Session.GetBank(), offered, desired, ratio);
             

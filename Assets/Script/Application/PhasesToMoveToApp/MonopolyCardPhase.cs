@@ -1,6 +1,4 @@
 ﻿using Catan.Application.Controllers;
-using Catan.Core.Engine;
-using Catan.Core.PhaseLogic;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
@@ -12,7 +10,7 @@ namespace Catan.Application.Phases
     {
         private EnumResourceTypes? _type;
 
-        public MonopolyCardPhase(GameState game, EventBus bus, PhaseTransitionController phaseTransition) : base(game, bus, phaseTransition) { }
+        public MonopolyCardPhase(Facade facade, EventBus bus, PhaseTransitionController phaseTransition) : base(facade, bus, phaseTransition) { }
 
         public override void Enter() { }
 
@@ -48,11 +46,12 @@ namespace Catan.Application.Phases
 
         private void HandleResourceAccepted(CardSelectionAcceptedCommand signal)
         {
-            var result = UseMonopolyLogic.Handle(Game, _type.Value);
+            var result = Facade.UseMonopolyCard(_type.Value);
+            var playerId = Facade.GetCurrentPlayerId();
 
             if (!result.Success)
             {
-                Bus.Publish(new ActionRejectedEvent(Game.CurrentPlayer.ID, result.Reason));
+                Bus.Publish(new ActionRejectedEvent(playerId, result.Reason));
                 return;
             }
 

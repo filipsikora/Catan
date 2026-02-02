@@ -1,7 +1,5 @@
 ﻿using Catan.Application.Controllers;
-using Catan.Core.Engine;
 using Catan.Core.Models;
-using Catan.Core.PhaseLogic;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
@@ -13,7 +11,7 @@ namespace Catan.Application.Phases
     {
         private readonly ResourceCostOrStock _selected = new();
 
-        public NormalRoundPhase(GameState game, EventBus bus, PhaseTransitionController phaseTransition) : base(game, bus, phaseTransition) { }
+        public NormalRoundPhase(Facade facade, EventBus bus, PhaseTransitionController phaseTransition) : base(facade, bus, phaseTransition) { }
 
         public override void Enter() { }
 
@@ -90,8 +88,9 @@ namespace Catan.Application.Phases
             SelectedVertexId = signal.VertexId;
             SelectedEdgeId = null;
 
-            var vertex = Game.Map.GetVertexById(signal.VertexId);
-            (bool village, bool road, bool town) = Game.CheckBuildOptions(vertex);
+            var village = true;
+            var road = false;
+            var town = true;
 
             Bus.Publish(new VertexHighlightedEvent(signal.VertexId));
             Bus.Publish(new BuildOptionsSentEvent(village, road, town));
@@ -102,8 +101,9 @@ namespace Catan.Application.Phases
             SelectedVertexId = null;
             SelectedEdgeId = signal.EdgeId;
 
-            var edge = Game.Map.GetEdgeById(signal.EdgeId);
-            (bool village, bool road, bool town) = Game.CheckBuildOptions(edge);
+            var village = false;
+            var road = true;
+            var town = false;
 
             Bus.Publish(new EdgeHighlightedEvent(signal.EdgeId));
             Bus.Publish(new BuildOptionsSentEvent(village, road, town));
@@ -111,16 +111,15 @@ namespace Catan.Application.Phases
 
         private void HandleVillageRequested(BuildVillageCommand signal)
         {
-            int playerId = Game.GetCurrentPlayer().ID;
+            int playerId = Facade.GetCurrentPlayerId();
             int id = SelectedVertexId.Value;
-            var vertex = Game.Map.GetVertexById(id);
-            var result = BuildVillageLogic.Handle(Game, playerId, vertex);
+            var result = Facade.UseBuildVillage(id);
 
             ResetSelection();
 
             if (!result.Success)
             {
-                Bus.Publish(new ActionRejectedEvent(Game.CurrentPlayer.ID, result.Reason));
+                Bus.Publish(new ActionRejectedEvent(playerId, result.Reason));
                 return;
             }
             
@@ -129,16 +128,15 @@ namespace Catan.Application.Phases
 
         private void HandleRoadRequested(BuildRoadCommand signal)
         {
-            int playerId = Game.GetCurrentPlayer().ID;
+            int playerId = Facade.GetCurrentPlayerId();
             int id = SelectedEdgeId.Value;
-            var edge = Game.Map.GetEdgeById(id);
-            var result = BuildRoadLogic.Handle(Game, playerId, edge);
+            var result = Facade.UseBuildRoad(id);
 
             ResetSelection();
 
             if (!result.Success)
             {
-                Bus.Publish(new ActionRejectedEvent(Game.CurrentPlayer.ID, result.Reason));
+                Bus.Publish(new ActionRejectedEvent(playerId, result.Reason));
                 return;
             }
 
@@ -147,16 +145,15 @@ namespace Catan.Application.Phases
 
         private void HandleTownRequested(UpgradeVillageCommand signal)
         {
-            int playerId = Game.GetCurrentPlayer().ID;
+            int playerId = Facade.GetCurrentPlayerId();
             int id = SelectedVertexId.Value;
-            var vertex = Game.Map.GetVertexById(id);
-            var result = UpgradeVillageLogic.Handle(Game, playerId, vertex);
+            var result = Facade.UseUpgradeVillage(id);
 
             ResetSelection();
 
             if (!result.Success)
             {
-                Bus.Publish(new ActionRejectedEvent(Game.CurrentPlayer.ID, result.Reason));
+                Bus.Publish(new ActionRejectedEvent(playerId, result.Reason));
                 return;
             }
 
@@ -168,20 +165,29 @@ namespace Catan.Application.Phases
             if (_selected.Total() == 0)
                 return;
 
+            int playerId = Facade.GetCurrentPlayerId();
+            var result = Facade.UsePrepareTrade(_selected);
+
+            if (!result.Success)
+            {
+                Bus.Publish(new ActionRejectedEvent(playerId, result.Reason));
+                return;
+            }
+
             PhaseTransition.ChangePhase(EnumGamePhases.TradeOffer);
         }
 
         private void HandleEndTurnRequested(EndTurnCommand signal)
         {
-            var result = FinishTurnLogic.Handle(Game, Game.GetCurrentPlayer());
+            var result = Facade.UseFinishTurn();
 
             PhaseTransition.ChangePhase(EnumGamePhases.BeforeRoll);
         }
 
         private void HandleDevelopmentCardsBuyRequested(BuyDevelopmentCardCommand signal)
         {
-            var playerId = Game.GetCurrentPlayer().ID;
-            var result = BuyDevCardLogic.Handle(Game, playerId, Game.DevelopmentCardsDeckAvailable);
+            var playerId = Facade.GetCurrentPlayerId();
+            var result = Facade.UseBuyDevCard();
 
             if (!result.Success)
             {

@@ -1,6 +1,4 @@
 ﻿using Catan.Application.Controllers;
-using Catan.Core.Engine;
-using Catan.Core.PhaseLogic;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
@@ -10,7 +8,7 @@ namespace Catan.Application.Phases
 {
     public class CardStealingPhase : BasePhase
     {
-        public CardStealingPhase(GameState game, EventBus bus, PhaseTransitionController phaseTransition) : base(game, bus, phaseTransition) { }
+        public CardStealingPhase(Facade facade, EventBus bus, PhaseTransitionController phaseTransition) : base(facade, bus, phaseTransition) { }
 
         public override void Enter() { }
 
@@ -26,10 +24,10 @@ namespace Catan.Application.Phases
 
         private void HandleSteal(StolenCardSelectedCommand signal)
         {
-            var victimId = Game.CardStealingProgress.VictimId;
-            var result = StealCardLogic.Handle(Game, victimId, signal.Type);
+            var victimId = Facade.GetVictimId();
+            var result = Facade.UseSteal(victimId, signal.Type);
 
-            if (!result.Success)
+            if (!result.Success) 
             {
                 Bus.Publish(new ActionRejectedEvent(victimId, result.Reason));
                 return;
@@ -40,7 +38,7 @@ namespace Catan.Application.Phases
 
         private void FinishPhase()
         {
-            if (Game.AfterRoll)
+            if (Facade.GetAfterRoll())
             {
                 PhaseTransition.ChangePhase(EnumGamePhases.NormalRound);
             }

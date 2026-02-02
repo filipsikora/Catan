@@ -19,6 +19,7 @@ namespace Catan.Core.PhaseLogic
             }
 
             Session.RoadBuiltMutation(edge);
+            Session.RoadBuildingContextMutation();
 
             return ResultBuildFreeRoad.Ok(player.ID, edge);
         }

@@ -1,10 +1,8 @@
 ﻿using Catan.Application.Controllers;
-using Catan.Core.Engine;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Events;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Data;
-using Catan.Core.PhaseLogic;
 
 namespace Catan.Application.Phases
 {
@@ -13,7 +11,7 @@ namespace Catan.Application.Phases
         private bool villagePlaced = false;
         private bool roadPlaced = false;
 
-        public FirstRoundsBuildingPhase(GameState game, EventBus bus, PhaseTransitionController phaseTransition) : base(game, bus, phaseTransition) { }
+        public FirstRoundsBuildingPhase(Facade facade, EventBus bus, PhaseTransitionController phaseTransition) : base(facade, bus, phaseTransition) { }
 
         public override void Enter()
         {
@@ -81,16 +79,15 @@ namespace Catan.Application.Phases
 
         private void HandleBuildVillage(BuildVillageCommand signal)
         {
-            var player = Game.GetCurrentPlayer();
+            var playerId = Facade.GetCurrentPlayerId();
             int id = SelectedVertexId.Value;
-            var vertex = Game.Map.GetVertexById(id);
-            var result = BuildInitialVillageLogic.Handle(Game, player.ID, vertex);
+            var result = Facade.UseBuildInitialVillage(id);
 
             ResetSelection();
 
             if (!result.Success)
             {
-                Bus.Publish(new ActionRejectedEvent(player.ID, result.Reason));
+                Bus.Publish(new ActionRejectedEvent(playerId, result.Reason));
                 return;
             }
 
@@ -100,18 +97,17 @@ namespace Catan.Application.Phases
 
         private void HandleBuildRoad(BuildRoadCommand signal)
         {
-            var player = Game.GetCurrentPlayer();
+            var playerId = Facade.GetCurrentPlayerId();
             int id = SelectedEdgeId.Value;
-            var edge = Game.Map.GetEdgeById(id);
-            var vertex = Game.LastPlacedVillagePosition;
+            var vertexId = Facade.GetLastPlacedVillagePositionId();
 
-            var result = BuildInitialRoadLogic.Handle(Game, player.ID, edge, vertex);
+            var result = Facade.UseBuildInitialRoad(id, vertexId);
 
             ResetSelection();
 
             if (!result.Success)
             {
-                Bus.Publish(new ActionRejectedEvent(Game.CurrentPlayer.ID, result.Reason));
+                Bus.Publish(new ActionRejectedEvent(playerId, result.Reason));
                 return;
             }
 
@@ -121,7 +117,7 @@ namespace Catan.Application.Phases
 
         private void HandleTurnEnded(EndTurnCommand signal)
         {
-            var result = FinishTurnLogic.Handle(Game, Game.GetCurrentPlayer());
+            var result = Facade.UseFinishTurn();
 
             if (result.InitialRoundsRemaining)
             {

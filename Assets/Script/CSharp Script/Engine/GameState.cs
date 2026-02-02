@@ -62,6 +62,8 @@ namespace Catan.Core.Engine
         public PlayerTradeContext? LastPlayerTradeOffered { get; private set; }
         public CardDiscardContext? CardDiscardingProgress { get; private set; }
         public CardStealingContext? CardStealingProgress { get; private set; }
+        public TradeDraftContext? TradeDraft { get; private set; }
+        public RoadBuildingContext? RoadBuildingProgress { get; private set; }
 
         public Dictionary<EnumFieldTypes, int> FieldTypesAmount { get; set; } = new Dictionary<EnumFieldTypes, int>
             {
@@ -461,6 +463,7 @@ namespace Catan.Core.Engine
         public void CreatePlayerTradeOfferedContext(int sellerId, int buyerId, string sellerName, string buyerName, ResourceCostOrStock offered, ResourceCostOrStock desired)
         {
             LastPlayerTradeOffered = new PlayerTradeContext(sellerId, buyerId, sellerName, buyerName, offered, desired);
+            TradeDraft = null;
         }
 
         public void CreateCardDiscardingContext(IEnumerable<int> playersIds)
@@ -471,12 +474,36 @@ namespace Catan.Core.Engine
             CardDiscardingProgress = new CardDiscardContext(playersIds);
         }
 
+        public void CreateTradeDraftContext(ResourceCostOrStock offered)
+        {
+            if (TradeDraft != null)
+                return;
+
+            TradeDraft = new TradeDraftContext(offered);
+        }
+
+        public void CreateRoadBuildingContext(int roadsLeftToBuild)
+        {
+            if (RoadBuildingProgress != null)
+                return;
+
+            RoadBuildingProgress = new RoadBuildingContext(roadsLeftToBuild);
+        }
+
         public void CardsDiscardedContextMutation()
         {
             CardDiscardingProgress.PlayersToDiscard.Dequeue();
 
             if (CardDiscardingProgress.PlayersToDiscard.Count == 0)
                 CardDiscardingProgress = null;
+        }
+
+        public void RoadBuildingContextMutation()
+        {
+            RoadBuildingProgress.RoadsLeftToBuild--;
+
+            if (RoadBuildingProgress.RoadsLeftToBuild == 0)
+                RoadBuildingProgress = null;
         }
 
         public void CardsDiscardedMutation(Player player, ResourceCostOrStock selectedCards)
@@ -486,6 +513,7 @@ namespace Catan.Core.Engine
 
         public void CreateCardsStealingContext(int victimId)
         {
+
             CardStealingProgress = new CardStealingContext(victimId);
         }
 
@@ -687,7 +715,7 @@ namespace Catan.Core.Engine
                             int granted = Bank.SubtractUpTo(type, requested);
                             owner.Resources.AddExactAmount(type, granted);
 
-                            var result = new ResultDistributeResources(owner.ID, type, requested, granted);
+                            var result = new ResultDistributeResources(owner.ID, owner.Name, type, requested, granted);
                             resultList.Add(result);
                         }
                     }

@@ -23,6 +23,26 @@ namespace Catan.Core.Engine
         }
     }
 
+    public sealed class TradeDraftContext
+    {
+        public ResourceCostOrStock Offered { get; }
+
+        public TradeDraftContext(ResourceCostOrStock offered)
+        {
+            Offered = offered;
+        }
+    }
+
+    public sealed class RoadBuildingContext
+    {
+        public int RoadsLeftToBuild { get; set; }
+
+        public RoadBuildingContext(int roadsLeftToBuild)
+        {
+            RoadsLeftToBuild = roadsLeftToBuild;
+        }
+    }
+
     public sealed class CardDiscardContext
     {
         public Queue<int> PlayersToDiscard { get; }

@@ -35,7 +35,7 @@ namespace Catan.Application.Phases
         private void HandleOfferedResourceSelected(BankTradeOfferedResourceSelected signal)
         {
             _offered = signal.Type;
-            var ratio = Facade.GetTradeRatioForCurrentPlayer(signal.Type);
+            var ratio = Facade.GetCurrentPlayerTradeRatio(signal.Type);
 
             int amount = Facade.GetCurrentPlayerResourceAmount(signal.Type);
             bool possibleForPlayer = amount >= ratio;
@@ -50,7 +50,7 @@ namespace Catan.Application.Phases
             if (_offered == null || desired == null)
                 return;
 
-            var result = Facade.BankTrade(_offered.Value, desired.Value);
+            var result = Facade.UseBankTrade(_offered.Value, desired.Value);
 
             if (!result.Success)
             {

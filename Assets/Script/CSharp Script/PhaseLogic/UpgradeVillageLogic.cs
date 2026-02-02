@@ -1,5 +1,4 @@
-﻿using Catan.Core.Models;
-using Catan.Core.Results;
+﻿using Catan.Core.Results;
 using Catan.Core.Rules;
 
 namespace Catan.Core.PhaseLogic
@@ -8,10 +7,10 @@ namespace Catan.Core.PhaseLogic
     {
         public UpgradeVillageLogic(GameSession session) : base(session) { }
 
-        public  ResultUpgradeVillage Handle(Vertex vertex)
+        public  ResultUpgradeVillage Handle(int vertexId)
         {
+            var vertex = Session.GetVertexById(vertexId);
             var player = Session.GetCurrentPlayer();
-
             var result = RulesBuilding.CanUpgradeVillage(player, vertex, Session);
 
             if (!result.Success)

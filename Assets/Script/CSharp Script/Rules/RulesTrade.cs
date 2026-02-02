@@ -35,5 +35,12 @@ namespace Catan.Core.Rules
                 ConditionsPlayer.PlayerExists(seller),
                 ConditionsTrade.NotSamePLayer(seller.ID, buyer.ID));
         }
+
+        public static ResultCondition CanDraftTrade(Player seller, ResourceCostOrStock offered)
+        {
+            return ResultCondition.Combine(
+                ConditionsTrade.CostIsValid(offered),
+                ConditionsPlayer.PlayerExists(seller));
+        }
     }
 }

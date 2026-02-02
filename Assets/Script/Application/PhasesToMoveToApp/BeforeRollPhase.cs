@@ -1,17 +1,15 @@
 ﻿using Catan.Application.Controllers;
-using Catan.Core.Engine;
-using Catan.Core.Models;
-using Catan.Core.PhaseLogic;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
 using Catan.Shared.Data;
+using System.Linq;
 
 namespace Catan.Application.Phases
 {
     public class BeforeRollPhase : BasePhase
     {
-        public BeforeRollPhase(GameState game, EventBus bus, PhaseTransitionController phaseTransition) : base(game, bus, phaseTransition) { }
+        public BeforeRollPhase(Facade facade, EventBus bus, PhaseTransitionController phaseTransition) : base(facade, bus, phaseTransition) { }
 
         public override void Enter() { }
 
@@ -37,22 +35,20 @@ namespace Catan.Application.Phases
 
         private void HandleRollDice(RollDiceCommand signal)
         {
-            var result = RollDiceLogic.Handle(Game);
-            var text = new string("");
+            var result = Facade.UseRollDice();
 
-            foreach (var player in Game.PlayerList)
+            var byPlayer = result.Distributions.GroupBy(d => new { d.PlayerId, d.PlayerName });
+
+            foreach (var playerGroup in byPlayer)
             {
-                var resourcesReceived = new ResourceCostOrStock();
+                var resources = playerGroup.GroupBy(d => d.Type).Select(g => $"{g.Sum(x => x.Granted)} {g.Key.ToString().ToLower()}").ToList();
 
-                foreach (var distribution in result.Distributions)
-                {
-                    if (distribution.PlayerId == player.ID)
-                    {
-                        resourcesReceived.AddExactAmount(distribution.Type, distribution.Granted);
-                    }
-                }
+                if (resources.Count == 0)
+                    continue;
 
-                text += $"{player.ID}:" + resourcesReceived.ToString() + "\n";
+                var text = $"{playerGroup.Key.PlayerName}: {string.Join(", ", resources)}";
+
+                Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, text));
             }
 
             bool rolledSeven = result.Roll == 7;
@@ -70,9 +66,9 @@ namespace Catan.Application.Phases
 
         private void HandleInvalidClick()
         {
-            var player = Game.GetCurrentPlayer();
+            var playerId = Facade.GetCurrentPlayerId();
 
-            Bus.Publish(new ActionRejectedEvent(player.ID, ConditionFailureReason.NotRolledYet));
+            Bus.Publish(new ActionRejectedEvent(playerId, ConditionFailureReason.NotRolledYet));
         }
     }
 }
