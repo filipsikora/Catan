@@ -42,6 +42,10 @@ namespace Catan.Application.Controllers
 
         public int GetRoadsLeftToBuild() => _session.GetRoadsLeftToBuild();
 
+        public bool CheckIfCardsSelected(ResourceCostOrStock resources) => _session.CheckIfCardsSelected(resources);
+
+        public bool CheckIfExactCardsAmountSelected(ResourceCostOrStock resources, int amount) => _session.CheckIfExactCardsAmountSelected(resources, amount);
+
         // use cases//
 
         public ResultBankTrade UseBankTrade(EnumResourceTypes offered, EnumResourceTypes desired) => _session.UseBankTrade(offered, desired);
@@ -62,5 +66,8 @@ namespace Catan.Application.Controllers
         public ResultUpgradeVillage UseUpgradeVillage(int vertexId) => _session.UseUpgradeVillage(vertexId);
         public ResultCondition UsePrepareTrade(ResourceCostOrStock offered) => _session.UsePrepareTrade(offered);
         public ResultCondition UsePrepareRoadBuilding() => _session.UsePrepareRoadBuilding();
+        public ResultPlayerTrade UseOfferTrade(int buyerId, ResourceCostOrStock desired) => _session.UseOfferTrade(buyerId, desired);
+        public ResultPlayerTrade UseReactToTrade() => _session.UseReactToTrade();
+        public ResultYearOfPlenty UseYearOfPlenty(ResourceCostOrStock resources) => _session.UseYearOfPlenty(resources);
     }
 }

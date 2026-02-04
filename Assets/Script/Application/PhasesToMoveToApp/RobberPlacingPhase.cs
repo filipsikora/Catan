@@ -3,6 +3,7 @@ using Catan.Shared.Communication.Events;
 using Catan.Shared.Communication.Commands;
 using Catan.Application.Controllers;
 using Catan.Shared.Data;
+using Catan.Core.Results;
 
 namespace Catan.Application.Phases
 {
@@ -56,7 +57,6 @@ namespace Catan.Application.Phases
             if (possibleVictimsIds.Count == 0)
             {
                 Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, "Noone to steal from"));
-
                 PhaseTransition.ChangePhase(EnumGamePhases.NormalRound);
             }
 
@@ -69,7 +69,7 @@ namespace Catan.Application.Phases
         private void VictimChosen(VictimChosenCommand signal)
         {
             var result = Facade.UseSelectVictim(signal.VictimId);
-
+            
             if (!result.Success)
             {
                 Bus.Publish(new ActionRejectedEvent(Facade.GetCurrentPlayerId(), result.Reason));

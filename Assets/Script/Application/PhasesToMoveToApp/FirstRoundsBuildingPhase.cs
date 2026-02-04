@@ -79,7 +79,6 @@ namespace Catan.Application.Phases
 
         private void HandleBuildVillage(BuildVillageCommand signal)
         {
-            var playerId = Facade.GetCurrentPlayerId();
             int id = SelectedVertexId.Value;
             var result = Facade.UseBuildInitialVillage(id);
 
@@ -87,7 +86,7 @@ namespace Catan.Application.Phases
 
             if (!result.Success)
             {
-                Bus.Publish(new ActionRejectedEvent(playerId, result.Reason));
+                Bus.Publish(new ActionRejectedEvent(result.PlayerId, result.Reason));
                 return;
             }
 
@@ -97,7 +96,6 @@ namespace Catan.Application.Phases
 
         private void HandleBuildRoad(BuildRoadCommand signal)
         {
-            var playerId = Facade.GetCurrentPlayerId();
             int id = SelectedEdgeId.Value;
             var vertexId = Facade.GetLastPlacedVillagePositionId();
 
@@ -107,7 +105,7 @@ namespace Catan.Application.Phases
 
             if (!result.Success)
             {
-                Bus.Publish(new ActionRejectedEvent(playerId, result.Reason));
+                Bus.Publish(new ActionRejectedEvent(result.PlayerId, result.Reason));
                 return;
             }
 

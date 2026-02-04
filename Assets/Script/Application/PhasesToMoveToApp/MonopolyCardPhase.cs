@@ -47,11 +47,10 @@ namespace Catan.Application.Phases
         private void HandleResourceAccepted(CardSelectionAcceptedCommand signal)
         {
             var result = Facade.UseMonopolyCard(_type.Value);
-            var playerId = Facade.GetCurrentPlayerId();
 
             if (!result.Success)
             {
-                Bus.Publish(new ActionRejectedEvent(playerId, result.Reason));
+                Bus.Publish(new ActionRejectedEvent(result.ThiefId, result.Reason));
                 return;
             }
 

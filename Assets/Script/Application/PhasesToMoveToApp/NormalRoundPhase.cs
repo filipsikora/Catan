@@ -111,7 +111,6 @@ namespace Catan.Application.Phases
 
         private void HandleVillageRequested(BuildVillageCommand signal)
         {
-            int playerId = Facade.GetCurrentPlayerId();
             int id = SelectedVertexId.Value;
             var result = Facade.UseBuildVillage(id);
 
@@ -119,7 +118,7 @@ namespace Catan.Application.Phases
 
             if (!result.Success)
             {
-                Bus.Publish(new ActionRejectedEvent(playerId, result.Reason));
+                Bus.Publish(new ActionRejectedEvent(result.PlayerId, result.Reason));
                 return;
             }
             
@@ -128,7 +127,6 @@ namespace Catan.Application.Phases
 
         private void HandleRoadRequested(BuildRoadCommand signal)
         {
-            int playerId = Facade.GetCurrentPlayerId();
             int id = SelectedEdgeId.Value;
             var result = Facade.UseBuildRoad(id);
 
@@ -136,7 +134,7 @@ namespace Catan.Application.Phases
 
             if (!result.Success)
             {
-                Bus.Publish(new ActionRejectedEvent(playerId, result.Reason));
+                Bus.Publish(new ActionRejectedEvent(result.PlayerId, result.Reason));
                 return;
             }
 
@@ -145,7 +143,6 @@ namespace Catan.Application.Phases
 
         private void HandleTownRequested(UpgradeVillageCommand signal)
         {
-            int playerId = Facade.GetCurrentPlayerId();
             int id = SelectedVertexId.Value;
             var result = Facade.UseUpgradeVillage(id);
 
@@ -153,7 +150,7 @@ namespace Catan.Application.Phases
 
             if (!result.Success)
             {
-                Bus.Publish(new ActionRejectedEvent(playerId, result.Reason));
+                Bus.Publish(new ActionRejectedEvent(result.PlayerId, result.Reason));
                 return;
             }
 
@@ -186,12 +183,11 @@ namespace Catan.Application.Phases
 
         private void HandleDevelopmentCardsBuyRequested(BuyDevelopmentCardCommand signal)
         {
-            var playerId = Facade.GetCurrentPlayerId();
             var result = Facade.UseBuyDevCard();
 
             if (!result.Success)
             {
-                Bus.Publish(new ActionRejectedEvent(playerId, result.Reason));
+                Bus.Publish(new ActionRejectedEvent(result.PlayerId, result.Reason));
                 return;
             }
 

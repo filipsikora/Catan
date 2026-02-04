@@ -25,6 +25,7 @@
         SamePlayer,
         VictimInvalid,
         TradeContextInvalid,
-        DiscardContextInvalid
+        DiscardContextInvalid,
+        NotRoadsLeft
     }
 }

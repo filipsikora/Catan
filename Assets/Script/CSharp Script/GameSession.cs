@@ -1,4 +1,5 @@
-﻿using Catan.Core.Engine;
+﻿using Catan.Core.Conditions;
+using Catan.Core.Engine;
 using Catan.Core.Models;
 using Catan.Core.PhaseLogic;
 using Catan.Core.Results;
@@ -84,6 +85,9 @@ namespace Catan.Core
         public ResultBuyDevCard UseBuyDevCard() => _buyDevCard.Handle();
         public ResultCondition UsePrepareTrade(ResourceCostOrStock offered) => _prepareTrade.Handle(offered);
         public ResultCondition UsePrepareRoadBuilding() => _prepareRoadBuilding.Handle();
+        public ResultPlayerTrade UseOfferTrade(int buyerId, ResourceCostOrStock desired) => _offerTrade.Handle(buyerId, desired);
+        public ResultPlayerTrade UseReactToTrade() => _reactToTrade.Handle();
+        public ResultYearOfPlenty UseYearOfPlenty(ResourceCostOrStock resources) => _useYearOfPlenty.Handle(resources);
         
 
         // getters //
@@ -109,6 +113,9 @@ namespace Catan.Core
 
         public int GetRoadsLeftToBuild() => _game.RoadBuildingProgress.RoadsLeftToBuild;
 
+        public bool CheckIfCardsSelected(ResourceCostOrStock resources) => resources.Total() > 0;
+
+        public bool CheckIfExactCardsAmountSelected(ResourceCostOrStock resources, int amount) => ConditionsResources.HasExactResourcesNumber(resources, amount).Success;
 
         public int GetCurrentPlayerTradeRatio(EnumResourceTypes resource)
         {
@@ -209,6 +216,7 @@ namespace Catan.Core
         internal HexTile GetHexById(int id) => _game.Map.GetHexById(id);
         internal Edge GetEdgeById(int id) => _game.Map.GetEdgeById(id);
         internal Vertex GetVertexById(int id) => _game.Map.GetVertexById(id);
+        internal ResourceCostOrStock GetOfferedResources() => _game.TradeDraft.Offered;
 
         internal (bool exists, PlayerTradeContext context) TryGetPlayerTradeContext()
         {

@@ -1,23 +1,17 @@
 ﻿using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
-using Catan.Core.Engine;
 using Catan.Core.Models;
 using Catan.Application.Controllers;
 using Catan.Shared.Data;
-using Catan.Core.PhaseLogic;
 
 namespace Catan.Application.Phases
 {
     public class TradeOfferPhase : BasePhase
     {
         private ResourceCostOrStock _cardsDesired = new();
-        private ResourceCostOrStock _cardsOffered;
 
-        public TradeOfferPhase(GameState game, EventBus bus, ResourceCostOrStock cardsOffered, PhaseTransitionController phaseTransition) : base(game, bus, phaseTransition)
-        {
-            _cardsOffered = cardsOffered.Clone();
-        }
+        public TradeOfferPhase(Facade facade, EventBus bus, PhaseTransitionController phaseTransition) : base(facade, bus, phaseTransition) { }
 
         public override void Enter() { }
 
@@ -51,20 +45,19 @@ namespace Catan.Application.Phases
                 _cardsDesired.SubtractExactAmount(signal.Type, 1);
             }
 
-            bool hasDesired = _cardsDesired.Total() > 0;
+            bool hasDesired = Facade.CheckIfCardsSelected(_cardsDesired);
 
             Bus.Publish(new DesiredCardsChangedEvent(hasDesired));
         }
 
         private void HandleTradePartnerChosen(TradePartnerChosenCommand signal)
         {
-            var seller = Game.GetCurrentPlayer();
-            var result = OfferTradeLogic.Handle(Game, seller.ID, signal.PlayerId, _cardsOffered, _cardsDesired);
+            var buyerId = signal.PlayerId;
+            var result = Facade.UseOfferTrade(buyerId, _cardsDesired);
 
             if (!result.Success)
             {
-                Bus.Publish(new ActionRejectedEvent(seller.ID, result.Reason));
-
+                Bus.Publish(new ActionRejectedEvent(result.SellerId, result.Reason));
                 return;
             }
 

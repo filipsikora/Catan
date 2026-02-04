@@ -8,21 +8,22 @@ namespace Catan.Core.PhaseLogic
     {
         public OfferTradeLogic(GameSession session) : base(session) { }
 
-        public ResultPlayerTrade Handle(int sellerId, int buyerId, ResourceCostOrStock offered, ResourceCostOrStock desired)
+        public ResultPlayerTrade Handle(int buyerId, ResourceCostOrStock desired)
         {
-            var seller = Session.GetPlayerById(sellerId);
+            var seller = Session.GetCurrentPlayer();
             var buyer = Session.GetPlayerById(buyerId);
+            var offered = Session.GetOfferedResources();
 
             var result = RulesTrade.CanOfferTrade(seller, buyer, offered, desired);
 
             if (!result.Success)
             {
-                return ResultPlayerTrade.Fail(result.Reason, sellerId, buyerId);
+                return ResultPlayerTrade.Fail(result.Reason, seller.ID, buyerId);
             }
 
             Session.CreatePlayerTradeOfferedContext(seller.ID, buyer.ID, seller.Name, buyer.Name, offered, desired);
 
-            return ResultPlayerTrade.Ok(sellerId, buyerId, offered, desired);
+            return ResultPlayerTrade.Ok(seller.ID, buyerId, offered, desired);
         }
     }
 }

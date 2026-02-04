@@ -29,7 +29,7 @@ namespace Catan.Application.Phases
 
             if (!result.Success) 
             {
-                Bus.Publish(new ActionRejectedEvent(victimId, result.Reason));
+                Bus.Publish(new ActionRejectedEvent(result.VictimId, result.Reason));
                 return;
             }
 

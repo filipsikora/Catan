@@ -54,7 +54,7 @@ namespace Catan.Application.Phases
 
             if (!result.Success)
             {
-                Bus.Publish(new ActionRejectedEvent(Facade.GetCurrentPlayerId(), result.Reason));
+                Bus.Publish(new ActionRejectedEvent(result.PlayerId, result.Reason));
                 FinishPhase();
             }
 

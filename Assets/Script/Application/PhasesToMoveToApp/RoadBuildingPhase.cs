@@ -14,7 +14,7 @@ namespace Catan.Application.Phases
         {
             var result = Facade.UsePrepareRoadBuilding();
             var playerId = Facade.GetCurrentPlayerId();
-
+            
             if (!result.Success)
             {
                 Bus.Publish(new ActionRejectedEvent(playerId, result.Reason));
@@ -25,7 +25,7 @@ namespace Catan.Application.Phases
 
             if (Facade.GetRoadsLeftToBuild() == 0)
             {
-                Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, "No roads left to build"));
+                Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, "No more roads left"));
                 PhaseTransition.ChangePhase(EnumGamePhases.NormalRound);
             }
         }

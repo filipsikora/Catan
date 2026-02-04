@@ -1,8 +1,5 @@
 ﻿using Catan.Application.Controllers;
-using Catan.Core.Conditions;
-using Catan.Core.Engine;
 using Catan.Core.Models;
-using Catan.Core.PhaseLogic;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
@@ -15,7 +12,7 @@ namespace Catan.Application.Phases
         private ResourceCostOrStock _cardsDesired = new();
         private readonly int _cardsToReceive = 2;
 
-        public YearOfPlentyCardPhase(GameState game, EventBus bus, PhaseTransitionController phaseTransition) : base(game, bus, phaseTransition) { }
+        public YearOfPlentyCardPhase(Facade facade, EventBus bus, PhaseTransitionController phaseTransition) : base(facade, bus, phaseTransition) { }
 
         public override void Enter() { }
 
@@ -36,7 +33,6 @@ namespace Catan.Application.Phases
         private void HandleResourceCardClicked(ResourceCardSelectedCommand signal)
         {
             EnumResourceTypes type = signal.Type;
-            var availability = ConditionsTrade.BankHasEnoughResources(Game.Bank, type);
 
             if (!signal.IsSelected)
             {
@@ -48,30 +44,23 @@ namespace Catan.Application.Phases
 
             if (signal.IsSelected)
             {
-                if (availability.Success)
-                {
-                    _cardsDesired.AddExactAmount(type, 1);
-                }
+                _cardsDesired.AddExactAmount(type, 1);
 
-                else
-                {
-                    Bus.Publish(new LogMessageEvent(EnumLogTypes.Error, "Not enough resources in the bank"));
-                }
             }
 
-            bool canAccept = ConditionsResources.HasExactResourcesNumber(_cardsDesired, 2).Success;
+            bool canAccept = Facade.CheckIfExactCardsAmountSelected(_cardsDesired, _cardsToReceive);
 
             Bus.Publish(new SelectionChangedEvent(canAccept));
         }
 
         private void HandleResourcesSelected(CardSelectionAcceptedCommand signal)
         {
-            var player = Game.GetCurrentPlayer();
-            var result = UseYearOfPlentyLogic.Handle(Game, _cardsDesired);
+            var playerId = Facade.GetCurrentPlayerId();
+            var result = Facade.UseYearOfPlenty(_cardsDesired);
 
             if (!result.Success)
             {
-                Bus.Publish(new ActionRejectedEvent(player.ID, result.Reason));
+                Bus.Publish(new ActionRejectedEvent(playerId, result.Reason));
             }
 
             foreach (var (key, amount) in result.Requested.ResourceDictionary)
@@ -79,7 +68,7 @@ namespace Catan.Application.Phases
                 if (amount <= 0)
                     continue;
 
-                Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, $"Player{player.ID} received {key} {amount} from Year Of Plenty card"));
+                Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, $"Player{playerId} received {key} {amount} from Year Of Plenty card"));
             }
 
             PhaseTransition.ChangePhase(EnumGamePhases.NormalRound);

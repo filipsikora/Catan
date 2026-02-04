@@ -75,7 +75,7 @@ namespace Catan.Application.Phases
             if (!result.Success)
             {
                 Bus.Publish(new ActionRejectedEvent(_currentDiscardingPlayerId, result.Reason));
-
+                
                 return;
             }
 
