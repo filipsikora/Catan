@@ -1,7 +1,7 @@
-﻿using Catan.Application.Snapshots;
+﻿using Catan.Core.Snapshots;
 using System.Collections.Generic;
 
-namespace Catan.Application.Queries.Players
+namespace Catan.Core.Queries.Interfaces
 {
     public interface IPlayersQueryService
     {

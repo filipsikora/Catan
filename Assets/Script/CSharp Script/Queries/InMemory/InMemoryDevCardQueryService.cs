@@ -1,32 +1,32 @@
-﻿using Catan.Application.Snapshots;
-using Catan.Core.Engine;
-using Catan.Core.Models;
-using Catan.Shared.Data;
+﻿using Catan.Core.Snapshots;
+using Catan.Core.Queries.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
+using Catan.Core.Models;
+using Catan.Shared.Data;
 
-namespace Catan.Application.Queries.DevCards
+namespace Catan.Core.Queries.InMemory
 {
     public sealed class InMemoryDevCardQueryService : IDevCardsQueryService
     {
-        private readonly GameState _game;
+        private readonly GameSession _session;
 
-        public InMemoryDevCardQueryService(GameState game)
+        public InMemoryDevCardQueryService(GameSession session)
         {
-            _game = game;
+            _session = session;
         }
 
         public IReadOnlyList<DevelopmentCardSnapshot> GetCurrentPlayerDevCards()
         {
-            var player = _game.GetCurrentPlayer();
-            bool afterRoll = _game.GetAfterRoll();
+            var player = _session.GetCurrentPlayer();
+            bool afterRoll = _session.GetAfterRoll();
 
             return player.DevelopmentCardsByID.Select(id => FindCard(id)).Select(card => Map(card, afterRoll)).ToList();
         }
 
         private DevelopmentCard FindCard(int id)
         {
-            return _game.DevelopmentCardsDeckAll.First(c => c.ID == id);
+            return _session.GetDevCardById(id);
         }
 
         private DevelopmentCardSnapshot Map(DevelopmentCard card, bool afterRoll)

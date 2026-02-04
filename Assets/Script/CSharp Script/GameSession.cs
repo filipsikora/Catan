@@ -117,6 +117,14 @@ namespace Catan.Core
 
         public bool CheckIfExactCardsAmountSelected(ResourceCostOrStock resources, int amount) => ConditionsResources.HasExactResourcesNumber(resources, amount).Success;
 
+        public bool CheckIfInitialRoundsRemaining() => _game.FirstRoundsIndices.Count > 0;
+
+        public int GetBlockedHexId() => _game.GetBlockedHexId();
+
+        public int GetTurn() => _game.Turn;
+
+        public int GetLastRoll() => _game.LastRoll;
+
         public int GetCurrentPlayerTradeRatio(EnumResourceTypes resource)
         {
             if (_game.CurrentPlayer.Ports.Count != 0)
@@ -216,6 +224,33 @@ namespace Catan.Core
         internal HexTile GetHexById(int id) => _game.Map.GetHexById(id);
         internal Edge GetEdgeById(int id) => _game.Map.GetEdgeById(id);
         internal Vertex GetVertexById(int id) => _game.Map.GetVertexById(id);
+        internal IEnumerable<HexTile> GetAllHexTilesView()
+        {
+            foreach (var hex in _game.Map.HexList)
+                yield return hex;
+        }
+        internal IEnumerable<Vertex> GetAllVerticesView()
+        {
+            foreach (var vertex in _game.Map.VertexList)
+                yield return vertex;
+        }
+        internal IEnumerable<Edge> GetAllEdgesView()
+        {
+            foreach (var edge in _game.Map.Edges)
+                yield return edge;
+        }
+        internal IEnumerable<Port> GetAllPortsView()
+        {
+            foreach (var port in _game.Map.PortList)
+                yield return port;
+        }
+
+        internal IEnumerable<Player> GetAllPlayersView()
+        {
+            foreach (var player in _game.PlayerList)
+                yield return player;
+        }
+
         internal ResourceCostOrStock GetOfferedResources() => _game.TradeDraft.Offered;
 
         internal (bool exists, PlayerTradeContext context) TryGetPlayerTradeContext()
@@ -233,6 +268,8 @@ namespace Catan.Core
         }
 
         internal List<DevelopmentCard> GetDevCardsLeft() => _game.DevelopmentCardsDeckAvailable;
+        internal Port GetPortByEdge(Edge edge) => _game.Map.PortList.Find(p => p.Edge == edge);
+
 
         // internal setters //
 

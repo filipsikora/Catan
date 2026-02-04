@@ -1,6 +1,8 @@
 ﻿using Catan.Core;
 using Catan.Core.Models;
+using Catan.Core.Queries.Interfaces;
 using Catan.Core.Results;
+using Catan.Core.Snapshots;
 using Catan.Shared.Data;
 using System.Collections.Generic;
 
@@ -8,11 +10,25 @@ namespace Catan.Application.Controllers
 {
     public sealed class Facade
     {
-        private GameSession _session;
+        private readonly GameSession _session;
 
-        public Facade(GameSession session)
+        private readonly IBoardQueryService _boardQuery;
+        private readonly IDevCardsQueryService _devCardQuery;
+        private readonly IPlayersQueryService _playersQuery;
+        private readonly IResourcesQueryService _resourcesQuery;
+        private readonly ITradeQueryService _tradeQuery;
+        private readonly ITurnsQueryService _turnsQuery;
+
+        public Facade(GameSession session, IBoardQueryService boardQuery, IDevCardsQueryService devcardQuery, IPlayersQueryService playersQuery, 
+            IResourcesQueryService resourcesQuery, ITradeQueryService tradeQuery, ITurnsQueryService turnsQuery)
         {
             _session = session;
+            _boardQuery = boardQuery;
+            _devCardQuery = devcardQuery;
+            _playersQuery = playersQuery;
+            _resourcesQuery = resourcesQuery;
+            _tradeQuery = tradeQuery;
+            _turnsQuery = turnsQuery;
         }
 
         // getters//
@@ -46,6 +62,8 @@ namespace Catan.Application.Controllers
 
         public bool CheckIfExactCardsAmountSelected(ResourceCostOrStock resources, int amount) => _session.CheckIfExactCardsAmountSelected(resources, amount);
 
+        public int GetDesertHexId() => _session.GetDesertHexId();
+
         // use cases//
 
         public ResultBankTrade UseBankTrade(EnumResourceTypes offered, EnumResourceTypes desired) => _session.UseBankTrade(offered, desired);
@@ -69,5 +87,11 @@ namespace Catan.Application.Controllers
         public ResultPlayerTrade UseOfferTrade(int buyerId, ResourceCostOrStock desired) => _session.UseOfferTrade(buyerId, desired);
         public ResultPlayerTrade UseReactToTrade() => _session.UseReactToTrade();
         public ResultYearOfPlenty UseYearOfPlenty(ResourceCostOrStock resources) => _session.UseYearOfPlenty(resources);
+
+        // queries //
+
+        public BoardSnapshot GetBoardData() => _boardQuery.GetBoardData();
+        public PlayerDataSnapshot GetPlayersData(int playerId) => _playersQuery.GetPlayersData(playerId);
+        public PlayerResourcesSnapshot GetPlayersCards(int playerId) => _playersQuery.GetPlayersCards(playerId);
     }
 }

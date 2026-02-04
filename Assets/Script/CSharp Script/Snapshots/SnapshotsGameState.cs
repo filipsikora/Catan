@@ -1,4 +1,4 @@
-﻿namespace Catan.Application.Snapshots
+﻿namespace Catan.Core.Snapshots
 {
     public sealed class TurnDataSnapshot
     {

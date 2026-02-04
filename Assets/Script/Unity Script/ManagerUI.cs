@@ -1,5 +1,4 @@
 ﻿using Catan.Application.Snapshots;
-using Catan.Core.Models;
 using UnityEngine;
 
 namespace Catan.Unity.Panels

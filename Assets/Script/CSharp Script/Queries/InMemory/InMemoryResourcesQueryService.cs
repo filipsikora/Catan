@@ -1,24 +1,24 @@
-﻿using Catan.Application.Snapshots;
-using Catan.Core.Engine;
-using Catan.Shared.Data;
+﻿using Catan.Core.Snapshots;
+using Catan.Core.Queries.Interfaces;
 using System.Collections.Generic;
+using Catan.Shared.Data;
 
-namespace Catan.Application.Queries.Resources
+namespace Catan.Core.Queries.InMemory
 {
     public sealed class InMemoryResourcesQueryService : IResourcesQueryService
     {
-        private readonly GameState _game;
+        private readonly GameSession _session;
 
-        public InMemoryResourcesQueryService(GameState game)
+        public InMemoryResourcesQueryService(GameSession session)
         {
-            _game = game;
+            _session = session;
         }
 
         public ResourcesAvailabilitySnapshot GetResourcesAvailability()
         {
             var resourcesAvailability = new Dictionary<EnumResourceTypes, bool>();
 
-            foreach (var (type, amount) in _game.Bank.ResourceDictionary)
+            foreach (var (type, amount) in _session.GetBank().ResourceDictionary)
             {
                 bool available = amount > 0;
 

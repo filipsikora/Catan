@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using Catan.Application.Snapshots;
+﻿using Catan.Core.Snapshots;
+using System.Collections.Generic;
 
-namespace Catan.Application.Queries.DevCards
+namespace Catan.Core.Queries.Interfaces
 {
     public interface IDevCardsQueryService
     {

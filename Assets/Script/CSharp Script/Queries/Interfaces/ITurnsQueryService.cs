@@ -1,6 +1,6 @@
-﻿using Catan.Application.Snapshots;
+﻿using Catan.Core.Snapshots;
 
-namespace Catan.Application.Queries.Turns
+namespace Catan.Core.Queries.Interfaces
 {
     public interface ITurnsQueryService
     {

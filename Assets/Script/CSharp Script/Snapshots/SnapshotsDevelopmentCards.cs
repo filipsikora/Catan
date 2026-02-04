@@ -1,7 +1,7 @@
 ﻿using Catan.Shared.Data;
 
-namespace Catan.Application.Snapshots
-{ 
+namespace Catan.Core.Snapshots
+{
     public sealed class DevelopmentCardSnapshot
     {
         public int Id { get; }

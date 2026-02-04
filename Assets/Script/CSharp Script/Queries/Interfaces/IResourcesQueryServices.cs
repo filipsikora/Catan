@@ -1,6 +1,6 @@
-﻿using Catan.Application.Snapshots;
+﻿using Catan.Core.Snapshots;
 
-namespace Catan.Application.Queries.Resources
+namespace Catan.Core.Queries.Interfaces
 {
     public interface IResourcesQueryService
     {

@@ -1,29 +1,29 @@
-﻿using Catan.Application.Snapshots;
-using Catan.Core.Engine;
-using Catan.Shared.Data;
+﻿using Catan.Core.Snapshots;
+using Catan.Core.Queries.Interfaces;
 using System.Collections.Generic;
+using Catan.Shared.Data;
 
-namespace Catan.Application.Queries.Players
+namespace Catan.Core.Queries.InMemory
 {
     public sealed class InMemoryPlayersQueryServices : IPlayersQueryService
     {
-        private readonly GameState _game;
+        private readonly GameSession _session;
 
-        public InMemoryPlayersQueryServices(GameState game)
+        public InMemoryPlayersQueryServices(GameSession session)
         {
-            _game = game;
+            _session = session;
         }
 
         public PlayerResourcesSnapshot GetPlayersCards(int playerId)
         {
-            var player = _game.GetPlayerById(playerId);
+            var player = _session.GetPlayerById(playerId);
 
             return new PlayerResourcesSnapshot(player.Resources.ToDictionary());
         }
 
         public PlayerDataSnapshot GetPlayersData(int playerId)
         {
-            var player = _game.GetPlayerById(playerId);
+            var player = _session.GetPlayerById(playerId);
             var playerBuildingsLeft = new Dictionary<string, int>();
 
             foreach (var buildingType in BuildingDataRegistry.MaxPerPlayer.Keys)
@@ -40,7 +40,7 @@ namespace Catan.Application.Queries.Players
 
         public CurrentPlayerIdSnapshot GetCurrentPlayerId()
         {
-            var currentPlayerId = _game.GetCurrentPlayer().ID;
+            var currentPlayerId = _session.GetCurrentPlayerId();
 
             return new CurrentPlayerIdSnapshot(currentPlayerId);
         }
@@ -49,7 +49,7 @@ namespace Catan.Application.Queries.Players
         {
             var allPlayersNamesList = new List<PlayerNameSnapshot>();
 
-            foreach (var player in _game.PlayerList)
+            foreach (var player in _session.GetAllPlayersView())
             {
                 var playerNameData = new PlayerNameSnapshot(player.ID, player.Name);
 
@@ -65,7 +65,7 @@ namespace Catan.Application.Queries.Players
 
             foreach (var playerId in playersIds)
             {
-                var player = _game.GetPlayerById(playerId);
+                var player = _session.GetPlayerById(playerId);
                 var playerNameData = new PlayerNameSnapshot(player.ID, player.Name);
 
                 playersData.Add(playerNameData);
@@ -77,9 +77,9 @@ namespace Catan.Application.Queries.Players
         public List<PlayerNameSnapshot> GetNotCurrentPlayersNames()
         {
             var playersData = new List<PlayerNameSnapshot>();
-            var currentPlayer = _game.GetCurrentPlayer();
+            var currentPlayer = _session.GetCurrentPlayer();
 
-            foreach (var player in _game.PlayerList)
+            foreach (var player in _session.GetAllPlayersView())
             {
                 if (player == currentPlayer)
                     continue;
@@ -93,8 +93,8 @@ namespace Catan.Application.Queries.Players
 
         public PlayerNameSnapshot GetVictimsName()
         {
-            var victimId = _game.CardStealingProgress.VictimId;
-            var victim = _game.GetPlayerById(victimId);
+            var victimId = _session.GetVictimId();
+            var victim = _session.GetPlayerById(victimId);
 
             return new PlayerNameSnapshot(victim.ID, victim.Name);
         }

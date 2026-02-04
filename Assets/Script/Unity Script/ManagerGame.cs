@@ -1,12 +1,8 @@
 ﻿#nullable enable
 using Catan.Application.Controllers;
-using Catan.Application.Queries.Board;
-using Catan.Application.Queries.DevCards;
-using Catan.Application.Queries.Players;
-using Catan.Application.Queries.Resources;
-using Catan.Application.Queries.Turns;
 using Catan.Core;
 using Catan.Core.Engine;
+using Catan.Core.Queries.InMemory;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Events;
 using Catan.Shared.Data;
@@ -47,13 +43,6 @@ namespace Catan.Unity
         public ControllerPlacingBuildings ControllerPlacingBuildings { get; private set; }
         public ControllerPlacingRobber ControllerPlacingRobber { get; private set; }
         public ControllerBoardVisuals ControllerBoardVisuals { get; private set; }
-
-        public IDevCardsQueryService DevCardsQueryService { get; private set; }
-        public IResourcesQueryService ResourcesQueryService { get; private set; }
-        public IPlayersQueryService PlayersQueryService { get; private set; }
-        public ITurnsQueryService TurnsQueryService { get; private set; }
-        public IBoardQueryService BoardsQueryService { get; private set; }
-        public ITradeQueryService TradeQueryService { get; private set; }
 
         public float Size = 1f;
         public Material WaterMaterial;
@@ -109,16 +98,24 @@ namespace Catan.Unity
 
             Session = new GameSession(game);
 
-            Facade = new Facade(Session);
+            var boardQuery = new InMemoryBoardQueryServices(Session);
+            var devCardsQuery = new InMemoryDevCardQueryService(Session);
+            var playersQuery = new InMemoryPlayersQueryServices(Session);
+            var resourcesQuery = new InMemoryResourcesQueryService(Session);
+            var tradeQuery = new InMemoryTradeQueryServices(Session);
+            var turnsQuery = new InMemoryTurnsQueryService(Session);
+
+            Facade = new Facade(Session, boardQuery, devCardsQuery, playersQuery, resourcesQuery, tradeQuery, turnsQuery);
             PhaseTransition = new PhaseTransitionController(Facade, EventBus);
             PhaseTransition.ChangePhase(EnumGamePhases.FirstRoundsBuilding);
+
             CommandRouter = new CommandReceiver(PhaseTransition, EventBus);
 
-            InitializeHelpers();
-            InitializeBuilderMap();
+            InitializeHelpers(Facade);
+            InitializeBuilderMap(Facade);
         }
 
-        public void InitializeBuilderMap()
+        public void InitializeBuilderMap(Facade facade)
         {
             Builder = new BuilderMap
             {
@@ -133,27 +130,20 @@ namespace Catan.Unity
                 WaterMaterial = WaterMaterial
             };
 
-            var boardData = BoardsQueryService.GetBoardData();
+            var boardData = facade.GetBoardData();
             Builder.BuildMap(boardData);
 
             BoardVisuals.Initialize(Builder, IdleGridMaterial);
 
-            var desertHexId = Session.GetDesertHexId();
+            var desertHexId = facade.GetDesertHexId();
             EventBus.Publish(new RobberMovedUIEvent(desertHexId));
         }
 
-        public void InitializeHelpers()
+        public void InitializeHelpers(Facade facade)
         {
-            DevCardsQueryService = new InMemoryDevCardQueryService(Game);
-            ResourcesQueryService = new InMemoryResourcesQueryService(Game);
-            PlayersQueryService = new InMemoryPlayersQueryServices(Game);
-            TurnsQueryService = new InMemoryTurnsQueryService(Game);
-            BoardsQueryService = new InMemoryBoardQueryServices(Game);
-            TradeQueryService = new InMemoryTradeQueryServices(Game);
-
             ControllerResourceCardsUI = new ControllerResourceCards(EventBus);
             ControllerLogMessagesUI = new ControllerLogMessagesUI(EventBus, UIManager.LogsPanel);
-            ControllerPlayerUI = new ControllerPlayerUI(PlayersQueryService, UIManager.PlayerUIPanel, EventBus);
+            ControllerPlayerUI = new ControllerPlayerUI(facade, UIManager.PlayerUIPanel, EventBus);
             ControllerPlacingBuildings = new ControllerPlacingBuildings(EventBus, BoardVisuals);
             ControllerPlacingRobber = new ControllerPlacingRobber(EventBus, BoardVisuals);
             ControllerBoardVisuals = new ControllerBoardVisuals(EventBus, BoardVisuals);
