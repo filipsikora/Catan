@@ -79,7 +79,7 @@ namespace Catan.Core
         public ResultRollDice UseRollDice() => _rollDice.Handle();
         public ResultCondition UseDiscard(int discardingPlayerId, ResourceCostOrStock resourcesSelected) => _discardCards.Handle(discardingPlayerId, resourcesSelected);
         public ResultStealResource UseSteal(int victimId, EnumResourceTypes resource) => _stealCard.Handle(victimId, resource);
-        public Result<DevelopmentCard> UseDevCard(int cardId) => _playDevCard.Handle(cardId);
+        public ResultPlayDevCard UseDevCard(int cardId) => _playDevCard.Handle(cardId);
         public ResultFinishTurn UseFinishTurn() => _finishTurn.Handle();
         public ResultMonopolyCard UseMonopolyCard(EnumResourceTypes resource) => _useMonopoly.Handle(resource);
         public ResultBuyDevCard UseBuyDevCard() => _buyDevCard.Handle();
@@ -263,6 +263,13 @@ namespace Catan.Core
         internal (bool exists, CardStealingContext context) TryGetCardStealingContext()
         {
             var context = _game.CardStealingProgress;
+
+            return (context != null, context);
+        }
+
+        internal (bool exists, CardDiscardContext context) TryGetCardDiscardingContext()
+        {
+            var context = _game.CardDiscardingProgress;
 
             return (context != null, context);
         }

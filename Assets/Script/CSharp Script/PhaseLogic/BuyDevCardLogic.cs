@@ -1,5 +1,6 @@
 ﻿using Catan.Core.Results;
 using Catan.Core.Rules;
+using Catan.Shared.Data;
 
 namespace Catan.Core.PhaseLogic
 {
@@ -12,18 +13,19 @@ namespace Catan.Core.PhaseLogic
             var player = Session.GetCurrentPlayer();
             var devCard = Session.GetFirstDevCard();
             var devCardId = devCard.ID;
+            var devCardType = devCard.Type;
             var devCardsLeftList = Session.GetDevCardsLeft();
 
             var result = RulesDevCards.CanBuyDevCard(player, devCard, devCardsLeftList);
 
             if (!result.Success)
             {
-                return ResultBuyDevCard.Fail(result.Reason, player.ID, devCardId);
+                return ResultBuyDevCard.Fail(result.Reason, player.ID);
             }
 
             Session.BuyDevCardMutation(devCard);
 
-            return ResultBuyDevCard.Ok(player.ID, devCardId);
+            return ResultBuyDevCard.Ok(player.ID, devCardId, devCardType, EnumGamePhases.None);
         }
     }
 }

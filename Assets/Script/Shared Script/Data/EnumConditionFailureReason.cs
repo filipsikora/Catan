@@ -26,6 +26,7 @@
         VictimInvalid,
         TradeContextInvalid,
         DiscardContextInvalid,
-        NotRoadsLeft
+        NotRoadsLeft,
+        NotEnoughResourcesInBank
     }
 }

@@ -14,7 +14,10 @@ namespace Catan.Application.Phases
 
         public CardDiscardingPhase(Facade facade, EventBus bus, PhaseTransitionController phaseTransition) : base(facade, bus, phaseTransition) { }
 
-        public override void Enter() { }
+        public override void Enter()
+        {
+            ProceedToNextPlayer();
+        }
 
         public override void Handle(object command)
         {
@@ -71,7 +74,7 @@ namespace Catan.Application.Phases
         private void HandleDiscardingAccepted(DiscardingAcceptedCommand signal)
         {
             var result = Facade.UseDiscard(_currentDiscardingPlayerId, _resourcesSelected);
-
+            
             if (!result.Success)
             {
                 Bus.Publish(new ActionRejectedEvent(_currentDiscardingPlayerId, result.Reason));

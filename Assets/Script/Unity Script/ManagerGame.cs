@@ -222,6 +222,10 @@ namespace Catan.Unity
         spanshot in core, application queries through facade
 
         selectvictim failure check
+
+        cant play year of plenty if bank has <2 cards
+
+        currentplayer fix + conditions revision
         */
     }
 }

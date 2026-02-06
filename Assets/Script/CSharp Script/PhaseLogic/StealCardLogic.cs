@@ -15,8 +15,8 @@ namespace Catan.Core.PhaseLogic
 
             var (exists, context) = Session.TryGetCardStealingContext();
 
-            if (context == null)
-                return ResultStealResource.Fail(default, default, ConditionFailureReason.DoesNotExist);
+            if (!exists)
+                return ResultStealResource.Fail(thief.ID, victim.ID, ConditionFailureReason.DoesNotExist);
 
             var result = RulesRobber.CanSteal(victim, context);
 
@@ -26,8 +26,12 @@ namespace Catan.Core.PhaseLogic
             }
 
             Session.CardStolenMutation(victim, resource);
+
+            var afterRoll = Session.GetAfterRoll();
+
+            var nextPhase = afterRoll ? EnumGamePhases.NormalRound : EnumGamePhases.BeforeRoll;
             
-            return ResultStealResource.Ok(thief.ID, victimId, resource);
+            return ResultStealResource.Ok(thief.ID, victimId, resource, nextPhase);
         }
     }
 }

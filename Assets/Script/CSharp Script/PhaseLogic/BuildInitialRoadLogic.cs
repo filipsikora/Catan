@@ -1,5 +1,6 @@
 ﻿using Catan.Core.Results;
 using Catan.Core.Rules;
+using Catan.Shared.Data;
 
 namespace Catan.Core.PhaseLogic
 {
@@ -17,12 +18,12 @@ namespace Catan.Core.PhaseLogic
 
             if (!result.Success)
             {
-                return ResultBuildInitialRoad.Fail(result.Reason, player.ID, edge);
+                return ResultBuildInitialRoad.Fail(result.Reason, player.ID, edgeId);
             }
 
             Session.RoadBuiltMutation(edge);
 
-            return ResultBuildInitialRoad.Ok(player.ID, edge);
+            return ResultBuildInitialRoad.Ok(player.ID, edgeId, EnumGamePhases.None);
         }
     }
 }

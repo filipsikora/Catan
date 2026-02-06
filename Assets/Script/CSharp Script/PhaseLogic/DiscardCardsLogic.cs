@@ -1,6 +1,7 @@
 ﻿using Catan.Core.Models;
 using Catan.Core.Results;
 using Catan.Core.Rules;
+using Catan.Shared.Data;
 
 namespace Catan.Core.PhaseLogic
 {
@@ -21,7 +22,9 @@ namespace Catan.Core.PhaseLogic
             Session.CardsDiscardedMutation(player, selectedCards);
             Session.CardsDiscardedContextMutation();
 
-            return ResultCondition.Ok();
+            var nextPhase = Session.GetPlayersToDiscardCount() == 0 ? EnumGamePhases.RobberPlacing : EnumGamePhases.None;
+
+            return ResultCondition.Ok(nextPhase);
         }
     }
 }

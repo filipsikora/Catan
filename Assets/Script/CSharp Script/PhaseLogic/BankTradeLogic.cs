@@ -22,7 +22,7 @@ namespace Catan.Core.PhaseLogic
 
             Session.BankTradeMutation(offered, desired, ratio);
 
-            return ResultBankTrade.Ok(player.ID, offered, desired, ratio);
+            return ResultBankTrade.Ok(player.ID, offered, desired, ratio, EnumGamePhases.NormalRound);
         }
     }
 }

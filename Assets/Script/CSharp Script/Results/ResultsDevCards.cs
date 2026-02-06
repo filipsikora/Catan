@@ -4,45 +4,44 @@ using System.Collections.Generic;
 
 namespace Catan.Core.Results
 {
-    public sealed class ResultBuyDevCard
+    public sealed class ResultBuyDevCard : ResultBase
     {
-        public bool Success { get; }
         public ConditionFailureReason Reason { get; }
 
         public int PlayerId { get; }
-        public int DevCardId { get; }
+        public int? DevCardId { get; }
+        public EnumDevelopmentCardTypes? Type { get; }
 
-        public ResultBuyDevCard(bool succcess, ConditionFailureReason reason, int playerId, int devCardId)
+        private ResultBuyDevCard(bool success, ConditionFailureReason reason, int playerId, int? devCardId, EnumDevelopmentCardTypes? type, EnumGamePhases? nextPhase) : base(success, nextPhase)
         {
-            Success = succcess;
             Reason = reason;
             PlayerId = playerId;
             DevCardId = devCardId;
+            Type = type;
         }
 
-        public static ResultBuyDevCard Ok(int playerId, int devCardId)
+        public static ResultBuyDevCard Ok(int playerId, int devCardId, EnumDevelopmentCardTypes devCardType, EnumGamePhases? nextPhase)
         {
-            return new ResultBuyDevCard(true, ConditionFailureReason.None, playerId, devCardId);
+            return new ResultBuyDevCard(true, ConditionFailureReason.None, playerId, devCardId, devCardType, nextPhase);
         }
 
-        public static ResultBuyDevCard Fail(ConditionFailureReason reason, int playerId, int devCardId)
+        public static ResultBuyDevCard Fail(ConditionFailureReason reason, int playerId)
         {
-            return new ResultBuyDevCard(false, reason, playerId, devCardId);
+            return new ResultBuyDevCard(false, reason, playerId, null, null, null);
         }
     }
 
-    public sealed class ResultMonopolyCard
+    public sealed class ResultMonopolyCard : ResultBase
     {
-        public bool Success;
-        public ConditionFailureReason Reason;
+        public ConditionFailureReason Reason { get; }
 
-        public int ThiefId;
-        public Dictionary<int, int> VictimsIdsAndAmounts;
-        public EnumResourceTypes Resource;
+        public int ThiefId { get; }
+        public Dictionary<int, int> VictimsIdsAndAmounts { get; }
+        public EnumResourceTypes Resource { get; }
 
-        public ResultMonopolyCard(bool success, ConditionFailureReason reason, int thiefId, Dictionary<int, int> victimsIsdAndAmounts, EnumResourceTypes resource)
+        private ResultMonopolyCard(bool success, ConditionFailureReason reason, int thiefId, Dictionary<int, int> victimsIsdAndAmounts, EnumResourceTypes resource, EnumGamePhases? nextPhase) : 
+            base(success, nextPhase)
         {
-            Success = success;
             Reason = reason;
             ThiefId = thiefId;
             VictimsIdsAndAmounts = victimsIsdAndAmounts;
@@ -51,37 +50,62 @@ namespace Catan.Core.Results
 
         public static ResultMonopolyCard Fail(ConditionFailureReason reason, int thiefId, EnumResourceTypes resource)
         {
-            return new ResultMonopolyCard(false, reason, thiefId, default, resource);
+            return new ResultMonopolyCard(false, reason, thiefId, default, resource, null);
         }
 
-        public static ResultMonopolyCard Ok(int thiefId, Dictionary<int, int> victimsIdsAndAmounts, EnumResourceTypes resource)
+        public static ResultMonopolyCard Ok(int thiefId, Dictionary<int, int> victimsIdsAndAmounts, EnumResourceTypes resource, EnumGamePhases nextPhase)
         {
-            return new ResultMonopolyCard(true, ConditionFailureReason.None, thiefId, victimsIdsAndAmounts, resource);
+            return new ResultMonopolyCard(true, ConditionFailureReason.None, thiefId, victimsIdsAndAmounts, resource, nextPhase);
         }
     }
 
-    public sealed class ResultYearOfPlenty
+    public sealed class ResultYearOfPlenty : ResultBase
     {
-        public bool Success;
-        public ConditionFailureReason Reason;
+        public ConditionFailureReason Reason { get; }
 
-        public ResourceCostOrStock Requested;
+        public ResourceCostOrStock Requested { get; }
 
-        public ResultYearOfPlenty(bool success, ConditionFailureReason reason, ResourceCostOrStock requested)
+        private ResultYearOfPlenty(bool success, ConditionFailureReason reason, ResourceCostOrStock requested, EnumGamePhases? nextPhase) : base(success, nextPhase)
         {
-            Success = success;
             Reason = reason;
             Requested = requested;
         }
 
         public static ResultYearOfPlenty Fail(ConditionFailureReason reason)
         {
-            return new ResultYearOfPlenty(false, reason, default);
+            return new ResultYearOfPlenty(false, reason, default, null);
         }
 
-        public static ResultYearOfPlenty Ok(ResourceCostOrStock requested)
+        public static ResultYearOfPlenty Ok(ResourceCostOrStock requested, EnumGamePhases nextPhase)
         {
-            return new ResultYearOfPlenty(true, ConditionFailureReason.None, requested);
+            return new ResultYearOfPlenty(true, ConditionFailureReason.None, requested, nextPhase);
+        }
+    }
+
+    public sealed class ResultPlayDevCard : ResultBase
+    {
+        public ConditionFailureReason Reason { get; }
+
+        public int PlayerId { get; }
+        public int? DevCardId { get; }
+        public EnumDevelopmentCardTypes? Type { get; }
+
+        private ResultPlayDevCard(bool success, ConditionFailureReason reason, int playerId, int? devCardId, EnumDevelopmentCardTypes? type, EnumGamePhases? nextPhase) : base(success, nextPhase)
+        {
+            Reason = reason;
+            PlayerId = playerId;
+            DevCardId = devCardId;
+            Type = type;
+        }
+
+        public static ResultPlayDevCard Ok(int playerId, int devCardId, EnumDevelopmentCardTypes devCardType, EnumGamePhases? nextPhase)
+        {
+            return new ResultPlayDevCard(true, ConditionFailureReason.None, playerId, devCardId, devCardType, nextPhase);
+        }
+
+        public static ResultPlayDevCard Fail(ConditionFailureReason reason, int playerId)
+        {
+            return new ResultPlayDevCard(false, reason, playerId, null, null, null);
         }
     }
 }

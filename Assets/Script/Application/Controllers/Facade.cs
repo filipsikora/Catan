@@ -72,7 +72,7 @@ namespace Catan.Application.Controllers
         public ResultRollDice UseRollDice() => _session.UseRollDice();
         public ResultCondition UseDiscard(int discardingPlayerId, ResourceCostOrStock resourcesSelected) => _session.UseDiscard(discardingPlayerId, resourcesSelected);
         public ResultStealResource UseSteal(int victimId, EnumResourceTypes resource) => _session.UseSteal(victimId, resource);
-        public Result<DevelopmentCard> UseDevCard(int cardId) => _session.UseDevCard(cardId);
+        public ResultPlayDevCard UseDevCard(int cardId) => _session.UseDevCard(cardId);
         public ResultBuildInitialRoad UseBuildInitialRoad(int edgeId, int vertexId) => _session.UseBuildInitialRoad(edgeId, vertexId);
         public ResultBuildInitialVillage UseBuildInitialVillage(int vertexId) => _session.UseBuildInitialVillage(vertexId);
         public ResultBuildRoad UseBuildRoad(int edgeId) => _session.UseBuildRoad(edgeId);

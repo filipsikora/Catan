@@ -1,4 +1,5 @@
 ﻿using Catan.Core.Results;
+using Catan.Shared.Data;
 
 namespace Catan.Core.PhaseLogic
 {
@@ -10,14 +11,26 @@ namespace Catan.Core.PhaseLogic
         {
             Session.RollDice();
 
+            var rolledSevenButNoVictims = false;
             var resultDistributionList = Session.ServePlayersMutation();
             var resultRoll = Session.DiceRolledMutation();
-            var result = new ResultRollDice(resultRoll, resultDistributionList);
+            var nextPhase = EnumGamePhases.NormalRound;
 
             if (resultRoll == 7)
-                Session.GetPlayersToDiscard();
+            {
+                if (Session.GetPlayersToDiscardCount() == 0)
+                {
+                    nextPhase = EnumGamePhases.NormalRound;
+                    rolledSevenButNoVictims = true;
+                }
+                else
+                {
+                    Session.GetPlayersToDiscard();
+                    nextPhase = EnumGamePhases.CardDiscarding;
+                }
+            }
 
-            return result;
+            return ResultRollDice.Ok(resultRoll, resultDistributionList, nextPhase, rolledSevenButNoVictims); ;
         }
     }
 }

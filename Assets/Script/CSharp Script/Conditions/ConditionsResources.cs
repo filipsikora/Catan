@@ -45,6 +45,16 @@ namespace Catan.Core.Conditions
             return ResultCondition.Fail(ConditionFailureReason.InvalidSelection);
         }
 
+        public static ResultCondition HasAtLeastResourcesNumber(ResourceCostOrStock bank, int number)
+        {
+            if (bank.Total() < number)
+            {
+                return ResultCondition.Fail(ConditionFailureReason.NotEnoughResourcesInBank);
+            }
+
+            return ResultCondition.Ok(null)
+        }
+
         public static ResultCondition ResourceExists(EnumResourceTypes resource)
         {
             if (Enum.IsDefined(typeof(EnumResourceTypes), resource))

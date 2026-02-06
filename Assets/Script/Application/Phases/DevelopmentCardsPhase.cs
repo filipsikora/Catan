@@ -40,28 +40,7 @@ namespace Catan.Application.Phases
                 return;
             }
 
-            switch (result.Value.Type)
-            {
-                case EnumDevelopmentCardTypes.Knight:
-                    PhaseTransition.ChangePhase(EnumGamePhases.RobberPlacing);
-                    break;
-
-                case EnumDevelopmentCardTypes.Monopoly:
-                    PhaseTransition.ChangePhase(EnumGamePhases.MonopolyCard);
-                    break;
-
-                case EnumDevelopmentCardTypes.RoadBuilding:
-                    PhaseTransition.ChangePhase(EnumGamePhases.RoadBuilding);
-                    break;
-
-                case EnumDevelopmentCardTypes.VictoryPoint:
-                    PhaseTransition.ChangePhase(EnumGamePhases.NormalRound);
-                    break;
-
-                case EnumDevelopmentCardTypes.YearOfPlenty:
-                    PhaseTransition.ChangePhase(EnumGamePhases.YearOfPlentyCard);
-                    break;
-            }
+            // change phase to result //
         }
 
         public void FinishPhase()

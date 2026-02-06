@@ -1,5 +1,6 @@
 ﻿using Catan.Core.Results;
 using Catan.Core.Rules;
+using Catan.Shared.Data;
 
 namespace Catan.Core.PhaseLogic
 {
@@ -19,7 +20,7 @@ namespace Catan.Core.PhaseLogic
 
             Session.BlockHexMutation(hex);
 
-            return ResultBlockHex.Ok(hex.Id);
+            return ResultBlockHex.Ok(hex.Id, EnumGamePhases.None);
         }
     }
 }

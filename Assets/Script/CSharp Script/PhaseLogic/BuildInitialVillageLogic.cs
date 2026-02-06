@@ -1,5 +1,6 @@
 ﻿using Catan.Core.Results;
 using Catan.Core.Rules;
+using Catan.Shared.Data;
 
 namespace Catan.Core.PhaseLogic
 {
@@ -16,14 +17,14 @@ namespace Catan.Core.PhaseLogic
 
             if (!result.Success)
             {
-                return ResultBuildInitialVillage.Fail(result.Reason, player.ID, vertex);
+                return ResultBuildInitialVillage.Fail(result.Reason, player.ID, vertexId);
             }
 
             var secondVillage = player.Points == 1;
 
             Session.VillageBuiltMutation(vertex, secondVillage);
 
-            return ResultBuildInitialVillage.Ok(player.ID, vertex);
+            return ResultBuildInitialVillage.Ok(player.ID, vertexId, EnumGamePhases.None);
         }
     }
 }

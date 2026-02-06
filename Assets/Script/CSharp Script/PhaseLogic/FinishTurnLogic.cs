@@ -1,4 +1,5 @@
 ﻿using Catan.Core.Results;
+using Catan.Shared.Data;
 
 namespace Catan.Core.PhaseLogic
 {
@@ -17,7 +18,9 @@ namespace Catan.Core.PhaseLogic
             Session.AdvanceToNextPlayerMutation(nextIndex);
             Session.WinCheck();
 
-            return new ResultFinishTurn(player.ID, initialRoundsRemaining);
+            var nextPhase = initialRoundsRemaining ? EnumGamePhases.FirstRoundsBuilding : EnumGamePhases.BeforeRoll;
+
+            return ResultFinishTurn.Ok(player.ID, initialRoundsRemaining, nextPhase);
         }
     }
 }

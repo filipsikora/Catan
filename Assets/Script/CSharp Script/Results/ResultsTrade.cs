@@ -3,19 +3,18 @@ using Catan.Shared.Data;
 
 namespace Catan.Core.Results
 {
-    public sealed class ResultBankTrade
+    public sealed class ResultBankTrade : ResultBase
     {
-        public bool Success { get; }
         public ConditionFailureReason Reason { get; }
 
-        public int PlayerId;
-        public EnumResourceTypes Offered;
-        public EnumResourceTypes Desired;
-        public int Ratio;
+        public int PlayerId { get; }
+        public EnumResourceTypes Offered { get; }
+        public EnumResourceTypes Desired { get; }
+        public int Ratio { get; }
 
-        public ResultBankTrade(bool success, ConditionFailureReason reason, int playerId, EnumResourceTypes offered, EnumResourceTypes desired, int ratio)
+        private ResultBankTrade(bool success, ConditionFailureReason reason, int playerId, EnumResourceTypes offered, EnumResourceTypes desired, int ratio, EnumGamePhases? nextPhase) : 
+            base(success, nextPhase)
         {
-            Success = success;
             Reason = reason;
 
             PlayerId = playerId;
@@ -26,18 +25,17 @@ namespace Catan.Core.Results
 
         public static ResultBankTrade Fail(int playerId, ConditionFailureReason reason)
         {
-            return new ResultBankTrade(false, reason, playerId, default, default, 0);
+            return new ResultBankTrade(false, reason, playerId, default, default, 0, null);
         }
 
-        public static ResultBankTrade Ok(int playerId, EnumResourceTypes offered, EnumResourceTypes desired, int ratio)
+        public static ResultBankTrade Ok(int playerId, EnumResourceTypes offered, EnumResourceTypes desired, int ratio, EnumGamePhases nextPhase)
         {
-            return new ResultBankTrade(true, ConditionFailureReason.None, playerId, offered, desired, ratio);
+            return new ResultBankTrade(true, ConditionFailureReason.None, playerId, offered, desired, ratio, nextPhase);
         }
     }
 
-    public sealed class ResultPlayerTrade
+    public sealed class ResultPlayerTrade : ResultBase
     {
-        public bool Success { get; }
         public ConditionFailureReason Reason { get; }
 
         public int BuyerId { get; }
@@ -45,9 +43,9 @@ namespace Catan.Core.Results
         public ResourceCostOrStock Offered { get; }
         public ResourceCostOrStock Desired { get; }
 
-        public ResultPlayerTrade(bool success, ConditionFailureReason reason, int sellerId, int buyerId, ResourceCostOrStock offered, ResourceCostOrStock desired)
+        private ResultPlayerTrade(bool success, ConditionFailureReason reason, int sellerId, int buyerId, ResourceCostOrStock offered, ResourceCostOrStock desired, EnumGamePhases? nextPhase) : 
+            base(success, nextPhase)
         {
-            Success = success;
             Reason = reason;
             SellerId = sellerId;
             BuyerId = buyerId;
@@ -57,12 +55,12 @@ namespace Catan.Core.Results
 
         public static ResultPlayerTrade Fail(ConditionFailureReason reason, int sellerId, int buyerId)
         {
-            return new ResultPlayerTrade(false, reason, sellerId, buyerId, default, default);
+            return new ResultPlayerTrade(false, reason, sellerId, buyerId, default, default, null);
         }
 
-        public static ResultPlayerTrade Ok(int sellerId, int buyerId, ResourceCostOrStock offered, ResourceCostOrStock desired)
+        public static ResultPlayerTrade Ok(int sellerId, int buyerId, ResourceCostOrStock offered, ResourceCostOrStock desired, EnumGamePhases nextPhase)
         {
-            return new ResultPlayerTrade(true, ConditionFailureReason.None, sellerId, buyerId, offered, desired);
+            return new ResultPlayerTrade(true, ConditionFailureReason.None, sellerId, buyerId, offered, desired, nextPhase);
         }
     }
 }

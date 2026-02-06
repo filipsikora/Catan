@@ -1,6 +1,7 @@
 ﻿using Catan.Core.Models;
 using Catan.Core.Results;
 using Catan.Core.Rules;
+using Catan.Shared.Data;
 
 namespace Catan.Core.PhaseLogic
 {
@@ -23,7 +24,7 @@ namespace Catan.Core.PhaseLogic
 
             Session.CreatePlayerTradeOfferedContext(seller.ID, buyer.ID, seller.Name, buyer.Name, offered, desired);
 
-            return ResultPlayerTrade.Ok(seller.ID, buyerId, offered, desired);
+            return ResultPlayerTrade.Ok(seller.ID, buyerId, offered, desired, EnumGamePhases.TradeRequest);
         }
     }
 }

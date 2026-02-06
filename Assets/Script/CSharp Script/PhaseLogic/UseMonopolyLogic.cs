@@ -21,7 +21,7 @@ namespace Catan.Core.PhaseLogic
 
             var victimsIdsAndAmounts = Session.UseMonopolyMutation(resource);
 
-            return ResultMonopolyCard.Ok(player.ID, victimsIdsAndAmounts, resource);
+            return ResultMonopolyCard.Ok(player.ID, victimsIdsAndAmounts, resource, EnumGamePhases.NormalRound);
         }
     }
 }

@@ -1,6 +1,6 @@
-﻿using Catan.Core.Models;
-using Catan.Core.Results;
+﻿using Catan.Core.Results;
 using Catan.Core.Rules;
+using Catan.Shared.Data;
 
 namespace Catan.Core.PhaseLogic
 {
@@ -8,7 +8,7 @@ namespace Catan.Core.PhaseLogic
     {
         public PlayDevCardLogic(GameSession session) : base(session) { }
 
-        public Result<DevelopmentCard> Handle(int cardId)
+        public ResultPlayDevCard Handle(int cardId)
         {
             var player = Session.GetCurrentPlayer();
             var card = Session.GetDevCardById(cardId);
@@ -17,12 +17,36 @@ namespace Catan.Core.PhaseLogic
 
             if (!result.Success)
             {
-                return Result<DevelopmentCard>.Fail(result.Reason);
+                return ResultPlayDevCard.Fail(result.Reason, player.ID);
             }
 
-            var playedCard = Session.DevCardPlayedMutation(card);
+            if (card.Type == EnumDevelopmentCardTypes.YearOfPlenty)
+            {
+                result = RulesDevCards.CanPlayYearOfPlenty(Session.GetBank(), 2);
+            }
 
-            return Result<DevelopmentCard>.Ok(card);
+            if (card.Type == EnumDevelopmentCardTypes.RoadBuilding)
+            {
+                result = RulesDevCards.CanPlayRoadBuilding(player);
+            }
+
+            if (!result.Success)
+            {
+                return ResultPlayDevCard.Fail(result.Reason, player.ID);
+            }
+
+            EnumGamePhases nextPhase = card.Type switch
+            {
+                EnumDevelopmentCardTypes.Knight => EnumGamePhases.RobberPlacing,
+                EnumDevelopmentCardTypes.Monopoly => EnumGamePhases.MonopolyCard,
+                EnumDevelopmentCardTypes.RoadBuilding => EnumGamePhases.RoadBuilding,
+                EnumDevelopmentCardTypes.VictoryPoint => EnumGamePhases.NormalRound,
+                EnumDevelopmentCardTypes.YearOfPlenty => EnumGamePhases.YearOfPlentyCard
+            };
+
+            Session.DevCardPlayedMutation(card);
+
+            return ResultPlayDevCard.Ok(player.ID, card.ID, card.Type, nextPhase);
         }
     }
 }

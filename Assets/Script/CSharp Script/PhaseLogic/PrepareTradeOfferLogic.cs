@@ -1,6 +1,7 @@
 ﻿using Catan.Core.Models;
 using Catan.Core.Results;
 using Catan.Core.Rules;
+using Catan.Shared.Data;
 
 namespace Catan.Core.PhaseLogic
 {
@@ -20,7 +21,7 @@ namespace Catan.Core.PhaseLogic
 
             Session.CreateTradeDraftContext(offered);
 
-            return ResultCondition.Ok();
+            return ResultCondition.Ok(EnumGamePhases.TradeOffer);
         }
     }
 }

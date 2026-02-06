@@ -1,5 +1,6 @@
 ﻿using Catan.Core.Results;
 using Catan.Core.Rules;
+using Catan.Shared.Data;
 
 namespace Catan.Core.PhaseLogic
 {
@@ -20,7 +21,7 @@ namespace Catan.Core.PhaseLogic
 
             Session.CreateCardsStealingContext(victim.ID);
 
-            return ResultCondition.Ok();
+            return ResultCondition.Ok(EnumGamePhases.CardStealing);
         }
     }
 }

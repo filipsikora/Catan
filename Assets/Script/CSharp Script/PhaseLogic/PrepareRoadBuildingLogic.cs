@@ -1,5 +1,6 @@
 ﻿using Catan.Core.Conditions;
 using Catan.Core.Results;
+using Catan.Shared.Data;
 using System;
 
 namespace Catan.Core.PhaseLogic
@@ -23,7 +24,7 @@ namespace Catan.Core.PhaseLogic
 
             Session.CreateRoadBuildingContext(_roadsToBuild);
 
-            return ResultCondition.Ok();
+            return ResultCondition.Ok(EnumGamePhases.None);
         }
     }
 }

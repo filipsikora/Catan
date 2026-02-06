@@ -191,7 +191,7 @@ namespace Catan.Application.Phases
                 return;
             }
 
-            Bus.Publish(new DevelopmentCardBoughtEvent(result.DevCardId));
+            Bus.Publish(new DevelopmentCardBoughtEvent(result.DevCardId.Value));
         }
     }
 }

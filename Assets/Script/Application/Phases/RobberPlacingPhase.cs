@@ -3,7 +3,6 @@ using Catan.Shared.Communication.Events;
 using Catan.Shared.Communication.Commands;
 using Catan.Application.Controllers;
 using Catan.Shared.Data;
-using Catan.Core.Results;
 
 namespace Catan.Application.Phases
 {

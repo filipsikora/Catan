@@ -15,7 +15,6 @@ namespace Catan.Core.PhaseLogic
             if (!exists)
                 return ResultPlayerTrade.Fail(ConditionFailureReason.DoesNotExist, default, default);
 
-
             var seller = Session.GetPlayerById(context.SellerId);
             var buyer = Session.GetPlayerById(context.BuyerId);
 
@@ -26,7 +25,7 @@ namespace Catan.Core.PhaseLogic
 
             Session.PlayerTradeDoneMutation(seller, buyer, context.Offered, context.Desired);
 
-            return ResultPlayerTrade.Ok(context.SellerId, context.BuyerId, context.Offered, context.Desired);
+            return ResultPlayerTrade.Ok(context.SellerId, context.BuyerId, context.Offered, context.Desired, EnumGamePhases.NormalRound);
         }
     }
 }

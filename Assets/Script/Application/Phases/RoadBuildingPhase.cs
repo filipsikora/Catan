@@ -22,12 +22,6 @@ namespace Catan.Application.Phases
 
                 return;
             }
-
-            if (Facade.GetRoadsLeftToBuild() == 0)
-            {
-                Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, "No more roads left"));
-                PhaseTransition.ChangePhase(EnumGamePhases.NormalRound);
-            }
         }
 
         public override void Handle(object command)
