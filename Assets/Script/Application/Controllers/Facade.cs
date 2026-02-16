@@ -93,5 +93,7 @@ namespace Catan.Application.Controllers
         public BoardSnapshot GetBoardData() => _boardQuery.GetBoardData();
         public PlayerDataSnapshot GetPlayersData(int playerId) => _playersQuery.GetPlayersData(playerId);
         public PlayerResourcesSnapshot GetPlayersCards(int playerId) => _playersQuery.GetPlayersCards(playerId);
+        public ResourcesAvailabilitySnapshot GetResourcesAvailability() => _resourcesQuery.GetResourcesAvailability();
+        public TurnDataSnapshot GetTurnData() => _turnsQuery.GetTurnData();
     }
 }

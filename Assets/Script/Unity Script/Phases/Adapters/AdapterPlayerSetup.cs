@@ -1,29 +1,37 @@
-﻿using Catan.Shared.Communication.Commands;
+﻿using Catan.Shared.Communication;
+using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
+using Catan.Unity.Panels;
 
 namespace Catan.Unity.Phases.Adapters
 {
-    public class AdapterPlayerSetup : BasePhaseAdapter
+    public class AdapterPlayerSetup
     {
-        public override void OnEnter()
-        {
-            UI.PlayerSelectorPanel.SetActive(true);
+        private ManagerUI _ui;
+        private EventBus _bus;
 
-            EventBus.Subscribe<PlayerCountSelectedCommand>(OnPlayerCountSelected);
+        public AdapterPlayerSetup(ManagerUI ui, EventBus bus)
+        {
+            _ui = ui;
+            _bus = bus;
+        }
+
+        public void OnEnter()
+        {
+            _ui.PlayerSelectorPanel.SetActive(true);
+
+            _bus.Subscribe<PlayerCountSelectedCommand>(OnPlayerCountSelected);
         }
 
         public void OnPlayerCountSelected(PlayerCountSelectedCommand signal)
         {
-            EventBus.Publish(new StartGameRequestedEvent(signal.PlayerCount));
-        }
+            _bus.Publish(new StartGameRequestedEvent(signal.PlayerCount));
 
-        public override void OnExit()
-        {
-            UI.PlayerSelectorPanel.SetActive(false);
-            UI.MainUIPanel.gameObject.SetActive(true);
-            UI.PlayerUIPanel.gameObject.SetActive(true);
+            _ui.PlayerSelectorPanel.SetActive(false);
+            _ui.MainUIPanel.gameObject.SetActive(true);
+            _ui.PlayerUIPanel.gameObject.SetActive(true);
 
-            EventBus.Unsubscribe<PlayerCountSelectedCommand>(OnPlayerCountSelected);
+            _bus.Unsubscribe<PlayerCountSelectedCommand>(OnPlayerCountSelected);
         }
     }
 }

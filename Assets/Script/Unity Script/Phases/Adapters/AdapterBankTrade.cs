@@ -1,17 +1,22 @@
-﻿using Catan.Shared.Communication;
+﻿using EventBus = Catan.Shared.Communication.EventBus;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
 using Catan.Unity.Communication.InternalUIEvents;
 using Catan.Unity.Communication.InternalUICommands;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
-using Unity.VisualScripting;
+using Catan.Application.Controllers;
+using Catan.Unity.Panels;
+using Catan.Unity.Data;
+using Catan.Shared.Data;
 
 namespace Catan.Unity.Phases.Adapters
 {
     public class AdapterBankTrade : BasePhaseAdapter
     {
         private BinderBankTrade _binder;
+
+        public AdapterBankTrade(ManagerUI ui, EventBus bus, Facade facade) : base(ui, bus, facade) { }
 
         public override void OnEnter()
         {
@@ -22,10 +27,9 @@ namespace Catan.Unity.Phases.Adapters
             VisualsUI.SetMainAndPlayerUIVisibility(false, UI.MainUIPanel, UI.PlayerUIPanel);
 
             EventBus.Subscribe<BankTradeRatioChangedEvent>(OnRatioChanged);
-
             EventBus.Subscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
 
-            var resourcesAvailabilitySnapshot = Manager.ResourcesQueryService.GetResourcesAvailability();
+            var resourcesAvailabilitySnapshot = Facade.GetResourcesAvailability();
 
             UI.BankTradePanel.Show(resourcesAvailabilitySnapshot);
         }
@@ -40,20 +44,15 @@ namespace Catan.Unity.Phases.Adapters
             if (!signal.IsLeftClicked)
                 return;
 
-            var card = Manager.ControllerResourceCardsUI.GetVisualResourceCardById(signal.VisualResourceCardId);
-
-            if (card == null)
-                return;
-
-            if (card.Location == Shared.Data.EnumResourceCardLocation.OfferedTrade)
+            if (signal.Location == EnumResourceCardLocation.OfferedTrade)
             {
-                EventBus.Publish(new BankTradeOfferedResourceSelected(card.Type));
-                EventBus.Publish(new ResourceCardVisualStateChangedUICommand(card.VisualResourceCardId, card.Location, Data.EnumResourceCardVisualState.Highlighted));
+                EventBus.Publish(new BankTradeOfferedResourceSelected(signal.Type));
+                EventBus.Publish(new ResourceCardVisualStateChangedUICommand(signal.VisualResourceCardId, signal.Location, EnumResourceCardVisualState.Highlighted));
             }
 
             else
             {
-                EventBus.Publish(new BankTradeDesiredResourceSelected(card.Type));
+                EventBus.Publish(new BankTradeDesiredResourceSelected(signal.Type));
             }
         }
 
@@ -62,7 +61,6 @@ namespace Catan.Unity.Phases.Adapters
             _binder.Unbind();
 
             EventBus.Unsubscribe<BankTradeRatioChangedEvent>(OnRatioChanged);
-
             EventBus.Unsubscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
 
             VisualsUI.SetMainAndPlayerUIVisibility(true, UI.MainUIPanel, UI.PlayerUIPanel);

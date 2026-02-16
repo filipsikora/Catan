@@ -37,12 +37,6 @@ namespace Catan.Unity
 
         public AdapterPhaseTransition? AdapterPhaseTransition;
         public AdapterGameFlow AdapterGameFlow;
-        public ControllerResourceCards ControllerResourceCardsUI { get; private set; }
-        public ControllerLogMessagesUI ControllerLogMessagesUI { get; private set; }
-        public ControllerPlayerUI ControllerPlayerUI { get; private set; }
-        public ControllerPlacingBuildings ControllerPlacingBuildings { get; private set; }
-        public ControllerPlacingRobber ControllerPlacingRobber { get; private set; }
-        public ControllerBoardVisuals ControllerBoardVisuals { get; private set; }
 
         public float Size = 1f;
         public Material WaterMaterial;
@@ -74,16 +68,14 @@ namespace Catan.Unity
             PortColorLookup = ResourceList.ToDictionary(r => r.Type, r => r.Color);
 
             EventBus = new EventBus();
-
             AdapterPhaseTransition = new AdapterPhaseTransition();
-            AdapterGameFlow = new AdapterGameFlow(EventBus, AdapterPhaseTransition);
 
             EventBus.Subscribe<StartGameRequestedEvent>(OnStartGameRequested);
         }
 
         void Start()
         {
-            AdapterPhaseTransition.TransitionTo(new AdapterPlayerSetup());
+            AdapterPhaseTransition.TransitionTo(new AdapterPlayerSetup(UIManager, EventBus));
         }
 
         private void OnStartGameRequested(StartGameRequestedEvent signal)
@@ -107,12 +99,13 @@ namespace Catan.Unity
 
             Facade = new Facade(Session, boardQuery, devCardsQuery, playersQuery, resourcesQuery, tradeQuery, turnsQuery);
             PhaseTransition = new PhaseTransitionController(Facade, EventBus);
-            PhaseTransition.ChangePhase(EnumGamePhases.FirstRoundsBuilding);
-
+            AdapterGameFlow = new AdapterGameFlow(UIManager, EventBus, Facade, AdapterPhaseTransition);
             CommandRouter = new CommandReceiver(PhaseTransition, EventBus);
 
             InitializeHelpers(Facade);
             InitializeBuilderMap(Facade);
+
+            PhaseTransition.ChangePhase(EnumGamePhases.FirstRoundsBuilding);
         }
 
         public void InitializeBuilderMap(Facade facade)
@@ -141,12 +134,12 @@ namespace Catan.Unity
 
         public void InitializeHelpers(Facade facade)
         {
-            ControllerResourceCardsUI = new ControllerResourceCards(EventBus);
-            ControllerLogMessagesUI = new ControllerLogMessagesUI(EventBus, UIManager.LogsPanel);
-            ControllerPlayerUI = new ControllerPlayerUI(facade, UIManager.PlayerUIPanel, EventBus);
-            ControllerPlacingBuildings = new ControllerPlacingBuildings(EventBus, BoardVisuals);
-            ControllerPlacingRobber = new ControllerPlacingRobber(EventBus, BoardVisuals);
-            ControllerBoardVisuals = new ControllerBoardVisuals(EventBus, BoardVisuals);
+            new ControllerResourceCards(EventBus);
+            new ControllerLogMessagesUI(EventBus, UIManager.LogsPanel);
+            new ControllerPlayerUI(facade, UIManager.PlayerUIPanel, EventBus);
+            new ControllerPlacingBuildings(EventBus, BoardVisuals);
+            new ControllerPlacingRobber(EventBus, BoardVisuals);
+            new ControllerBoardVisuals(EventBus, BoardVisuals);
         }
 
         void Update()

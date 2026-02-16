@@ -1,9 +1,8 @@
-﻿using Catan.Application.Snapshots;
+﻿using Catan.Core.Snapshots;
 using UnityEngine;
 
 namespace Catan.Unity.Panels
 {
-
     public class ManagerUI : MonoBehaviour
     {
         public MainUI MainUIPanel;

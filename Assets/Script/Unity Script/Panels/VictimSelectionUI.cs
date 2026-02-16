@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Catan.Shared.Communication.Commands;
-using Catan.Application.Snapshots;
+using Catan.Core.Snapshots;
 
 namespace Catan.Unity.Panels
 {

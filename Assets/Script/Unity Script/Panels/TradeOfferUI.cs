@@ -1,4 +1,4 @@
-using Catan.Application.Snapshots;
+using Catan.Core.Snapshots;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Data;
