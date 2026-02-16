@@ -9,7 +9,7 @@ namespace Catan.Application.Phases
 {
     public class TradeOfferPhase : BasePhase
     {
-        private ResourceCostOrStock _cardsDesired = new();
+        private readonly ResourceCostOrStock _cardsDesired = new();
 
         public TradeOfferPhase(Facade facade, EventBus bus, PhaseTransitionController phaseTransition) : base(facade, bus, phaseTransition) { }
 
@@ -61,7 +61,7 @@ namespace Catan.Application.Phases
                 return;
             }
 
-            PhaseTransition.ChangePhase(EnumGamePhases.TradeRequest);
+            TransitionPhase(result);
         }
     }
 }

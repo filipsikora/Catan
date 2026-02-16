@@ -171,14 +171,14 @@ namespace Catan.Application.Phases
                 return;
             }
 
-            PhaseTransition.ChangePhase(EnumGamePhases.TradeOffer);
+            TransitionPhase(result);
         }
 
         private void HandleEndTurnRequested(EndTurnCommand signal)
         {
             var result = Facade.UseFinishTurn();
 
-            PhaseTransition.ChangePhase(EnumGamePhases.BeforeRoll);
+            TransitionPhase(result);
         }
 
         private void HandleDevelopmentCardsBuyRequested(BuyDevelopmentCardCommand signal)

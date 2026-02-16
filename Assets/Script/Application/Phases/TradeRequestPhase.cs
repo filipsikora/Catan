@@ -17,7 +17,7 @@ namespace Catan.Application.Phases
             switch (command)
             {
                 case RefuseTradeRequestCommand c:
-                    HandleTradeFinished();
+                    PhaseTransition.ChangePhase(EnumGamePhases.NormalRound);
                     break;
 
                 case AcceptTradeRequestCommand c:
@@ -38,12 +38,7 @@ namespace Catan.Application.Phases
 
             Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, "Trade accepted"));
 
-            HandleTradeFinished();
-        }
-
-        private void HandleTradeFinished()
-        {
-            PhaseTransition.ChangePhase(EnumGamePhases.NormalRound);
+            TransitionPhase(result);
         }
     }
 }

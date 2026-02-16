@@ -52,7 +52,7 @@ namespace Catan.Core.Conditions
                 return ResultCondition.Fail(ConditionFailureReason.NotEnoughResourcesInBank);
             }
 
-            return ResultCondition.Ok(null)
+            return ResultCondition.Ok();
         }
 
         public static ResultCondition ResourceExists(EnumResourceTypes resource)

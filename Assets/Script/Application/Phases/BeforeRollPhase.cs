@@ -51,17 +51,7 @@ namespace Catan.Application.Phases
                 Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, text));
             }
 
-            bool rolledSeven = result.Roll == 7;
-            
-            if (rolledSeven)
-            {
-                PhaseTransition.ChangePhase(EnumGamePhases.CardDiscarding);
-            }
-
-            else
-            {
-                PhaseTransition.ChangePhase(EnumGamePhases.NormalRound);
-            }
+            TransitionPhase(result);
         }
 
         private void HandleInvalidClick()

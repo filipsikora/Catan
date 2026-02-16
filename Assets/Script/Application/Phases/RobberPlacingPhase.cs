@@ -1,14 +1,15 @@
-﻿using Catan.Shared.Communication;
-using Catan.Shared.Communication.Events;
+﻿using Catan.Application.Controllers;
+using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
-using Catan.Application.Controllers;
+using Catan.Shared.Communication.Events;
 using Catan.Shared.Data;
+using System.Collections.Generic;
 
 namespace Catan.Application.Phases
 {
     public class RobberPlacingPhase : BasePhase
     {
-        private bool clickableHexes = true;
+        private bool _clickableHexes = true;
 
         public RobberPlacingPhase(Facade facade, EventBus bus, PhaseTransitionController phaseTransition) : base(facade, bus, phaseTransition) { }
 
@@ -33,7 +34,7 @@ namespace Catan.Application.Phases
 
         private void HandleHexClicked(HexClickedCommand signal)
         {
-            if (!clickableHexes)
+            if (!_clickableHexes)
                 return;
 
             var hexId = signal.HexId;
@@ -44,16 +45,14 @@ namespace Catan.Application.Phases
 
             Bus.Publish(new RobberPlacedEvent(hexId));
 
-            HandleVictimsAfterBlocking();
+            HandleVictimsAfterBlocking(result.CanSteal, result.PotentialVictimsIds);
 
-            clickableHexes = false;
+            _clickableHexes = false;
         }
 
-        private void HandleVictimsAfterBlocking()
+        private void HandleVictimsAfterBlocking(bool canSteal, List<int> potentialVictimsIds)
         {
-            var possibleVictimsIds = Facade.GetPossibleVictimsIds();
-
-            if (possibleVictimsIds.Count == 0)
+            if (!canSteal)
             {
                 Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, "Noone to steal from"));
                 PhaseTransition.ChangePhase(EnumGamePhases.NormalRound);
@@ -61,7 +60,7 @@ namespace Catan.Application.Phases
 
             else
             {
-                Bus.Publish(new PotentialVictimsFoundEvent(possibleVictimsIds));
+                Bus.Publish(new PotentialVictimsFoundEvent(potentialVictimsIds));
             }
         }
 
@@ -76,7 +75,7 @@ namespace Catan.Application.Phases
                 return;
             }
 
-            PhaseTransition.ChangePhase(EnumGamePhases.CardStealing);
+            TransitionPhase(result);
         }
     }
 }

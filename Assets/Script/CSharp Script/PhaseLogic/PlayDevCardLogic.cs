@@ -1,6 +1,7 @@
 ﻿using Catan.Core.Results;
 using Catan.Core.Rules;
 using Catan.Shared.Data;
+using System;
 
 namespace Catan.Core.PhaseLogic
 {
@@ -14,35 +15,50 @@ namespace Catan.Core.PhaseLogic
             var card = Session.GetDevCardById(cardId);
             var afterRoll = Session.GetAfterRoll();
             var result = RulesDevCards.CanPlayDevCard(player, card, afterRoll);
+            var nextPhase = EnumGamePhases.NormalRound;
 
             if (!result.Success)
             {
                 return ResultPlayDevCard.Fail(result.Reason, player.ID);
             }
 
-            if (card.Type == EnumDevelopmentCardTypes.YearOfPlenty)
+            switch (card.Type)
             {
-                result = RulesDevCards.CanPlayYearOfPlenty(Session.GetBank(), 2);
-            }
+                case EnumDevelopmentCardTypes.Knight:
+                    nextPhase = EnumGamePhases.RobberPlacing;
+                    break;
 
-            if (card.Type == EnumDevelopmentCardTypes.RoadBuilding)
-            {
-                result = RulesDevCards.CanPlayRoadBuilding(player);
-            }
+                case EnumDevelopmentCardTypes.Monopoly:
+                    nextPhase = EnumGamePhases.MonopolyCard;
+                    break;
 
-            if (!result.Success)
-            {
-                return ResultPlayDevCard.Fail(result.Reason, player.ID);
-            }
+                case EnumDevelopmentCardTypes.RoadBuilding:
+                    result = RulesDevCards.CanPlayRoadBuilding(player);
 
-            EnumGamePhases nextPhase = card.Type switch
-            {
-                EnumDevelopmentCardTypes.Knight => EnumGamePhases.RobberPlacing,
-                EnumDevelopmentCardTypes.Monopoly => EnumGamePhases.MonopolyCard,
-                EnumDevelopmentCardTypes.RoadBuilding => EnumGamePhases.RoadBuilding,
-                EnumDevelopmentCardTypes.VictoryPoint => EnumGamePhases.NormalRound,
-                EnumDevelopmentCardTypes.YearOfPlenty => EnumGamePhases.YearOfPlentyCard
-            };
+                    if (!result.Success)
+                        return ResultPlayDevCard.Fail(result.Reason, player.ID);
+
+
+                    var roadsAvailable = Math.Min(Session.GetCurrentPlayersRoadsLeft(), 2);
+
+                    Session.CreateRoadBuildingContext(roadsAvailable);
+
+                    nextPhase = EnumGamePhases.RoadBuilding;
+                    break;
+
+                case EnumDevelopmentCardTypes.VictoryPoint:
+                    break;
+
+                case EnumDevelopmentCardTypes.YearOfPlenty:
+                    result = RulesDevCards.CanPlayYearOfPlenty(Session.GetBank(), 2);
+
+                    if (!result.Success)
+                        return ResultPlayDevCard.Fail(result.Reason, player.ID);
+
+
+                    nextPhase = EnumGamePhases.YearOfPlentyCard;
+                    break;
+            }
 
             Session.DevCardPlayedMutation(card);
 

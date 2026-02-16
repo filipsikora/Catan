@@ -10,19 +10,7 @@ namespace Catan.Application.Phases
     {
         public RoadBuildingPhase(Facade facade, EventBus bus, PhaseTransitionController phaseTransition) : base(facade, bus, phaseTransition) { }
 
-        public override void Enter()
-        {
-            var result = Facade.UsePrepareRoadBuilding();
-            var playerId = Facade.GetCurrentPlayerId();
-            
-            if (!result.Success)
-            {
-                Bus.Publish(new ActionRejectedEvent(playerId, result.Reason));
-                PhaseTransition.ChangePhase(EnumGamePhases.NormalRound);
-
-                return;
-            }
-        }
+        public override void Enter() { }
 
         public override void Handle(object command)
         {
@@ -66,10 +54,7 @@ namespace Catan.Application.Phases
 
             Bus.Publish(new RoadPlacedEvent(id));
 
-            if (Facade.GetRoadsLeftToBuild() == 0)
-            {
-                PhaseTransition.ChangePhase(EnumGamePhases.NormalRound);
-            }
+            TransitionPhase(result);
         }
     }
 }

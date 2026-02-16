@@ -2,7 +2,6 @@
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
-using Catan.Shared.Data;
 
 namespace Catan.Application.Phases
 {
@@ -33,20 +32,7 @@ namespace Catan.Application.Phases
                 return;
             }
 
-            FinishPhase();
-        }
-
-        private void FinishPhase()
-        {
-            if (Facade.GetAfterRoll())
-            {
-                PhaseTransition.ChangePhase(EnumGamePhases.NormalRound);
-            }
-
-            else
-            {
-                PhaseTransition.ChangePhase(EnumGamePhases.BeforeRoll);
-            }
+            PhaseTransition.ChangePhase(Facade.GetNextPhaseFromAfterRoll());
         }
     }
 }

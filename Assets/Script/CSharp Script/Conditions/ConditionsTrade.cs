@@ -18,6 +18,14 @@ namespace Catan.Core.Conditions
             return ResultCondition.Ok();
         }
 
+        public static ResultCondition PlayerHasEnoughResource(int playerAmount, int neededAmount)
+        {
+            if (playerAmount >= neededAmount)
+                return ResultCondition.Ok();
+
+            return ResultCondition.Fail(ConditionFailureReason.NotEnoughResources);
+        }
+
         public static ResultCondition BankHasEnoughResources(ResourceCostOrStock bank, EnumResourceTypes type)
         {
             if (bank.Get(type) < 1)

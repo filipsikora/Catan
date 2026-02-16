@@ -11,14 +11,14 @@ namespace Catan.Core.Results
             Reason = reason;
         }
 
-        public static ResultCondition Ok(EnumGamePhases? nextPhase)
+        public static ResultCondition Ok(EnumGamePhases? nextPhase = null)
         {
             return new(true, ConditionFailureReason.None, nextPhase);
         }
 
-        public static ResultCondition Fail(ConditionFailureReason reason)
+        public static ResultCondition Fail(ConditionFailureReason reason, EnumGamePhases? nextPhase = null)
         {
-            return new(false, reason, null);
+            return new(false, reason, nextPhase);
         }
 
         public static ResultCondition Combine(params ResultCondition[] conditions)

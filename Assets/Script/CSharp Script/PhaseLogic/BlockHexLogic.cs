@@ -1,6 +1,5 @@
 ﻿using Catan.Core.Results;
 using Catan.Core.Rules;
-using Catan.Shared.Data;
 
 namespace Catan.Core.PhaseLogic
 {
@@ -20,7 +19,10 @@ namespace Catan.Core.PhaseLogic
 
             Session.BlockHexMutation(hex);
 
-            return ResultBlockHex.Ok(hex.Id, EnumGamePhases.None);
+            var potentialVictimsIds = Session.GetPossibleVictimsIds();
+            var canSteal = potentialVictimsIds.Count > 0;
+
+            return ResultBlockHex.Ok(hex.Id, canSteal, potentialVictimsIds, null);
         }
     }
 }

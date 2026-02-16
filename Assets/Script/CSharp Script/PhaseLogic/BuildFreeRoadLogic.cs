@@ -22,7 +22,7 @@ namespace Catan.Core.PhaseLogic
             Session.RoadBuiltMutation(edge);
             Session.RoadBuildingContextMutation();
 
-            var nextPhase = Session.GetRoadsLeftToBuild() == 0 ? EnumGamePhases.NormalRound : EnumGamePhases.None;
+            EnumGamePhases? nextPhase = Session.GetRoadsLeftToBuild() == 0 ? EnumGamePhases.NormalRound : null;
 
             return ResultBuildFreeRoad.Ok(player.ID, edgeId, nextPhase);
         }

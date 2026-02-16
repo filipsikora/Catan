@@ -1,5 +1,7 @@
-﻿using Catan.Core.Conditions;
+﻿#nullable enable
+
 using Catan.Shared.Data;
+using System.Collections.Generic;
 
 namespace Catan.Core.Results
 {
@@ -36,21 +38,25 @@ namespace Catan.Core.Results
         public ConditionFailureReason Reason { get; }
 
         public int? HexId { get; }
+        public bool CanSteal { get; }
+        public List<int>? PotentialVictimsIds { get; }
 
-        private ResultBlockHex(bool success, ConditionFailureReason reason, int? hexId, EnumGamePhases? nextPhase) : base(success, nextPhase)
+        private ResultBlockHex(bool success, ConditionFailureReason reason, int? hexId, bool canSteal, List<int>? potentialVictimsIds, EnumGamePhases? nextPhase) : base(success, nextPhase)
         {
             Reason = reason;
             HexId = hexId;
+            CanSteal = canSteal;
+            PotentialVictimsIds = potentialVictimsIds;
         }
 
-        public static ResultBlockHex Ok(int hexId, EnumGamePhases nextPhase)
+        public static ResultBlockHex Ok(int hexId, bool canSteal, List<int> potentialVictimsIds, EnumGamePhases? nextPhase)
         {
-            return new ResultBlockHex(true, ConditionFailureReason.None, hexId, nextPhase);
+            return new ResultBlockHex(true, ConditionFailureReason.None, hexId, canSteal, potentialVictimsIds, nextPhase);
         }
 
         public static ResultBlockHex Fail(ConditionFailureReason reason)
         {
-            return new ResultBlockHex(false, reason, null, null);
+            return new ResultBlockHex(false, reason, null, false, null, null);
         }
     }
 }

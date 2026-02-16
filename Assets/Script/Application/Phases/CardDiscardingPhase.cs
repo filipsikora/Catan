@@ -39,9 +39,7 @@ namespace Catan.Application.Phases
 
         private void ProceedToNextPlayer()
         {
-            var playersLeft = Facade.GetPlayersToDiscardCount();
-
-            if (playersLeft == 0)
+            if (Facade.GetNextPhaseAfterDiscarding() != null)
             {
                 PhaseTransition.ChangePhase(EnumGamePhases.RobberPlacing);
 

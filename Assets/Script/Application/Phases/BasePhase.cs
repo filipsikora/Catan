@@ -1,4 +1,5 @@
 ﻿using Catan.Application.Controllers;
+using Catan.Core.Results;
 using Catan.Shared.Communication;
 using Catan.Shared.Data;
 
@@ -21,9 +22,12 @@ namespace Catan.Application.Phases
 
         public abstract void Enter();
 
-        protected void FinishPhase(EnumGamePhases phase)
+        protected void TransitionPhase(ResultBase result)
         {
-            PhaseTransition.ChangePhase(phase);
+            if (result.NextPhase != null)
+            {
+                PhaseTransition.ChangePhase(result.NextPhase.Value);
+            }
         }
     }
 }

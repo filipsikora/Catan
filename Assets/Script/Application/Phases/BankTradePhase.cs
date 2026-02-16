@@ -23,7 +23,7 @@ namespace Catan.Application.Phases
                     break;
 
                 case BankTradeCanceledCommand c:
-                    FinishPhase();
+                    PhaseTransition.ChangePhase(EnumGamePhases.NormalRound);
                     break;
 
                 case BankTradeDesiredResourceSelected c:
@@ -38,7 +38,7 @@ namespace Catan.Application.Phases
             var ratio = Facade.GetCurrentPlayerTradeRatio(signal.Type);
 
             int amount = Facade.GetCurrentPlayerResourceAmount(signal.Type);
-            bool possibleForPlayer = amount >= ratio;
+            bool possibleForPlayer = Facade.PlayerHasEnoughResources(amount, ratio);
 
             Bus.Publish(new BankTradeRatioChangedEvent(ratio, possibleForPlayer, _offered));
         }
@@ -51,21 +51,15 @@ namespace Catan.Application.Phases
                 return;
 
             var result = Facade.UseBankTrade(_offered.Value, desired.Value);
-
+            
             if (!result.Success)
             {
                 Bus.Publish(new ActionRejectedEvent(result.PlayerId, result.Reason));
-                FinishPhase();
             }
 
-            Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, $"player{Facade.GetCurrentPlayerId()} trade {result.Ratio} {result.Offered} for 1 {result.Desired}"));
+            Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, $"player{result.} trade {result.Ratio} {result.Offered} for 1 {result.Desired}"));
 
-            FinishPhase();
-        }
-
-        private void FinishPhase()
-        {
-            PhaseTransition.ChangePhase(EnumGamePhases.NormalRound);
+            TransitionPhase(result);
         }
     }
 }

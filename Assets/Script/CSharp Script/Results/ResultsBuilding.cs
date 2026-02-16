@@ -143,7 +143,7 @@ namespace Catan.Core.Results
             EdgeId = edgeId;
         }
 
-        public static ResultBuildFreeRoad Ok(int playerId, int edgeId, EnumGamePhases nextPhase)
+        public static ResultBuildFreeRoad Ok(int playerId, int edgeId, EnumGamePhases? nextPhase)
         {
             return new ResultBuildFreeRoad(true, ConditionFailureReason.None, playerId, edgeId, nextPhase);
         }

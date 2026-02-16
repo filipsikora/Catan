@@ -71,7 +71,7 @@ namespace Catan.Application.Phases
                 Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, $"Player{playerId} received {key} {amount} from Year Of Plenty card"));
             }
 
-            PhaseTransition.ChangePhase(EnumGamePhases.NormalRound);
+            TransitionPhase(result);
         }
     }
 }

@@ -21,7 +21,7 @@ namespace Catan.Application.Phases
                     break;
 
                 case DevelopmentCardsCanceledCommand c:
-                    FinishPhase();
+                    PhaseTransition.ChangePhase(Facade.GetNextPhaseFromAfterRoll());
                     break;
             }
         }
@@ -35,27 +35,14 @@ namespace Catan.Application.Phases
             {
                 Bus.Publish(new ActionRejectedEvent(playerId, result.Reason));
 
-                FinishPhase();
+                if (result.Reason == ConditionFailureReason.NoBuildingsAvailable)
+                    Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, "No roads available"));
 
-                return;
+                if (result.Reason == ConditionFailureReason.NotEnoughResourcesInBank)
+                    Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, "No resources in bank"));
             }
 
-            // change phase to result //
-        }
-
-        public void FinishPhase()
-        {
-            bool afterRoll = Facade.GetAfterRoll();
-
-            if (afterRoll)
-            {
-                PhaseTransition.ChangePhase(EnumGamePhases.NormalRound);
-            }
-
-            else
-            {
-                PhaseTransition.ChangePhase(EnumGamePhases.BeforeRoll);
-            }
+            TransitionPhase(result);
         }
     }
 }

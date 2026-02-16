@@ -34,8 +34,11 @@ namespace Catan.Application.Controllers
         // getters//
 
         public EnumGamePhases GetCurrentPhase() => _session.GetCurrentPhase();
+        public EnumGamePhases GetNextPhaseFromAfterRoll() => _session.GetNextPhaseFromAfterRoll();
+        public EnumGamePhases? GetNextPhaseAfterDiscarding() => _session.GetNextPhaseAfterDiscarding();
 
         public int GetCurrentPlayerTradeRatio(EnumResourceTypes resource) => _session.GetCurrentPlayerTradeRatio(resource);
+        public bool PlayerHasEnoughResources(int playerAmount, int neededAmount) => _session.PlayerHasEnoughResources(playerAmount, neededAmount);
         public int GetCurrentPlayersRoadsLeft() => _session.GetCurrentPlayersRoadsLeft();
         public int GetCurrentPlayerResourceAmount(EnumResourceTypes resource) => _session.GetCurrentPlayerResourceAmount(resource);
         public int GetCurrentPlayerId() => _session.GetCurrentPlayerId();
@@ -43,8 +46,6 @@ namespace Catan.Application.Controllers
         public List<int> GetAdjacentToHexPlayersIds(int hexId) => _session.GetAdjacentToHexPlayersIds(hexId);
 
         public List<int> GetPossibleVictimsIds() => _session.GetPossibleVictimsIds();
-
-        public int GetPlayersToDiscardCount() => _session.GetPlayersToDiscardCount();
 
         public int GetNextToDiscardId() => _session.GetNextToDiscardId();
 
@@ -83,7 +84,6 @@ namespace Catan.Application.Controllers
         public ResultBuyDevCard UseBuyDevCard() => _session.UseBuyDevCard();
         public ResultUpgradeVillage UseUpgradeVillage(int vertexId) => _session.UseUpgradeVillage(vertexId);
         public ResultCondition UsePrepareTrade(ResourceCostOrStock offered) => _session.UsePrepareTrade(offered);
-        public ResultCondition UsePrepareRoadBuilding() => _session.UsePrepareRoadBuilding();
         public ResultPlayerTrade UseOfferTrade(int buyerId, ResourceCostOrStock desired) => _session.UseOfferTrade(buyerId, desired);
         public ResultPlayerTrade UseReactToTrade() => _session.UseReactToTrade();
         public ResultYearOfPlenty UseYearOfPlenty(ResourceCostOrStock resources) => _session.UseYearOfPlenty(resources);

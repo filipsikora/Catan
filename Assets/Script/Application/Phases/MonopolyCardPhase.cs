@@ -54,7 +54,7 @@ namespace Catan.Application.Phases
                 return;
             }
 
-            PhaseTransition.ChangePhase(EnumGamePhases.NormalRound);
+            TransitionPhase(result);
         }
     }
 }

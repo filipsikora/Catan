@@ -34,7 +34,6 @@ namespace Catan.Core
         private readonly UseMonopolyLogic _useMonopoly;
         private readonly UseYearOfPlentyLogic _useYearOfPlenty;
         private readonly PrepareTradeOfferLogic _prepareTrade;
-        private readonly PrepareRoadBuiliding _prepareRoadBuilding;
 
         public GameSession(GameState game)
         {
@@ -60,7 +59,6 @@ namespace Catan.Core
             _useMonopoly = new UseMonopolyLogic(this);
             _useYearOfPlenty = new UseYearOfPlentyLogic(this);
             _prepareTrade = new PrepareTradeOfferLogic(this);
-            _prepareRoadBuilding = new PrepareRoadBuiliding(this);
         }
 
         internal GameState Game => _game;
@@ -84,7 +82,6 @@ namespace Catan.Core
         public ResultMonopolyCard UseMonopolyCard(EnumResourceTypes resource) => _useMonopoly.Handle(resource);
         public ResultBuyDevCard UseBuyDevCard() => _buyDevCard.Handle();
         public ResultCondition UsePrepareTrade(ResourceCostOrStock offered) => _prepareTrade.Handle(offered);
-        public ResultCondition UsePrepareRoadBuilding() => _prepareRoadBuilding.Handle();
         public ResultPlayerTrade UseOfferTrade(int buyerId, ResourceCostOrStock desired) => _offerTrade.Handle(buyerId, desired);
         public ResultPlayerTrade UseReactToTrade() => _reactToTrade.Handle();
         public ResultYearOfPlenty UseYearOfPlenty(ResourceCostOrStock resources) => _useYearOfPlenty.Handle(resources);
@@ -97,6 +94,9 @@ namespace Catan.Core
         public int GetCurrentPlayerResourceAmount(EnumResourceTypes resource) => _game.CurrentPlayer.Resources.Get(resource);
 
         public EnumGamePhases GetCurrentPhase() => _game.CurrentPhase;
+        public EnumGamePhases GetNextPhaseFromAfterRoll() => GetAfterRoll() ? EnumGamePhases.NormalRound : EnumGamePhases.BeforeRoll;
+        public EnumGamePhases? GetNextPhaseAfterDiscarding() => GetPlayersToDiscardCount() == 0 ? EnumGamePhases.RobberPlacing : null;
+        public bool PlayerHasEnoughResources(int playerAmount, int neededAmount) => ConditionsTrade.PlayerHasEnoughResource(playerAmount, neededAmount).Success;
 
         public bool GetAfterRoll() => _game.GetAfterRoll();
 

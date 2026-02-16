@@ -27,6 +27,7 @@
         TradeContextInvalid,
         DiscardContextInvalid,
         NotRoadsLeft,
-        NotEnoughResourcesInBank
+        NotEnoughResourcesInBank,
+        NotEnoughResources
     }
 }

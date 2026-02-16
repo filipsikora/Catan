@@ -117,15 +117,8 @@ namespace Catan.Application.Phases
         {
             var result = Facade.UseFinishTurn();
 
-            if (result.InitialRoundsRemaining)
-            {
-                PhaseTransition.ChangePhase(EnumGamePhases.FirstRoundsBuilding);
-            }
+            TransitionPhase(result);
 
-            else
-            {
-                PhaseTransition.ChangePhase(EnumGamePhases.NormalRound);
-            }
         }
     }
 }
