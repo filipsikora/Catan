@@ -7,8 +7,8 @@ namespace Catan.Unity.Phases.Adapters
 {
     public class AdapterPlayerSetup
     {
-        private ManagerUI _ui;
-        private EventBus _bus;
+        private readonly ManagerUI _ui;
+        private readonly EventBus _bus;
 
         public AdapterPlayerSetup(ManagerUI ui, EventBus bus)
         {

@@ -35,9 +35,20 @@ namespace Catan.Unity.Communication.InternalUICommands
     public class MultipleResourceCardVisualStateResetUICommand : ICommand
     {
         public EnumResourceCardLocation Location;
+
         public MultipleResourceCardVisualStateResetUICommand(EnumResourceCardLocation location)
         {
             Location = location;
+        }
+    }
+
+    public class ResourceCardToggledUICommand : ICommand
+    {
+        public int VisualResourceCardId { get; }
+        
+        public ResourceCardToggledUICommand(int visualResourceCardId)
+        {
+            VisualResourceCardId = visualResourceCardId;
         }
     }
 }

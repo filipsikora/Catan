@@ -75,7 +75,8 @@ namespace Catan.Unity
 
         void Start()
         {
-            AdapterPhaseTransition.TransitionTo(new AdapterPlayerSetup(UIManager, EventBus));
+            var setup = new AdapterPlayerSetup(UIManager, EventBus);
+            setup.OnEnter();
         }
 
         private void OnStartGameRequested(StartGameRequestedEvent signal)
@@ -99,11 +100,12 @@ namespace Catan.Unity
 
             Facade = new Facade(Session, boardQuery, devCardsQuery, playersQuery, resourcesQuery, tradeQuery, turnsQuery);
             PhaseTransition = new PhaseTransitionController(Facade, EventBus);
-            AdapterGameFlow = new AdapterGameFlow(UIManager, EventBus, Facade, AdapterPhaseTransition);
+            AdapterGameFlow = new AdapterGameFlow(UIManager, EventBus, Facade, AdapterPhaseTransition, BoardVisuals);
             CommandRouter = new CommandReceiver(PhaseTransition, EventBus);
 
-            InitializeHelpers(Facade);
+            var controllerResourceCards = InitializeHelpers(Facade);
             InitializeBuilderMap(Facade);
+            UIManager.Initialize(EventBus, controllerResourceCards);
 
             PhaseTransition.ChangePhase(EnumGamePhases.FirstRoundsBuilding);
         }
@@ -132,14 +134,16 @@ namespace Catan.Unity
             EventBus.Publish(new RobberMovedUIEvent(desertHexId));
         }
 
-        public void InitializeHelpers(Facade facade)
+        public ControllerResourceCards InitializeHelpers(Facade facade)
         {
-            new ControllerResourceCards(EventBus);
+            var controllerResourceCards = new ControllerResourceCards(EventBus);
             new ControllerLogMessagesUI(EventBus, UIManager.LogsPanel);
             new ControllerPlayerUI(facade, UIManager.PlayerUIPanel, EventBus);
             new ControllerPlacingBuildings(EventBus, BoardVisuals);
             new ControllerPlacingRobber(EventBus, BoardVisuals);
             new ControllerBoardVisuals(EventBus, BoardVisuals);
+
+            return controllerResourceCards;
         }
 
         void Update()
@@ -219,6 +223,8 @@ namespace Catan.Unity
         cant play year of plenty if bank has <2 cards
 
         currentplayer fix + conditions revision
+
+        unity: fix dependencies in controllers and adapters
         */
     }
 }

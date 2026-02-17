@@ -29,12 +29,19 @@ namespace Catan.Application.Controllers
         {
             return next switch
             {
-                EnumGamePhases.BeforeRoll => new BeforeRollPhase(_bus, this),
-                EnumGamePhases.FirstRoundsBuilding => new FirstRoundsBuildingPhase(_bus, this),
+                EnumGamePhases.BeforeRoll => new BeforeRollPhase(_facade, _bus, this),
+                EnumGamePhases.FirstRoundsBuilding => new FirstRoundsBuildingPhase(_facade, _bus, this),
                 EnumGamePhases.BankTrade => new BankTradePhase(_facade, _bus, this),
-                EnumGamePhases.CardDiscarding => new CardDiscardingPhase(_bus, this),
-                EnumGamePhases.CardStealing => new CardStealingPhase(_bus, this),
-                EnumGamePhases.RobberPlacing => new RobberPlacingPhase(_bus, this)
+                EnumGamePhases.CardDiscarding => new CardDiscardingPhase(_facade, _bus, this),
+                EnumGamePhases.CardStealing => new CardStealingPhase(_facade, _bus, this),
+                EnumGamePhases.RobberPlacing => new RobberPlacingPhase(_facade, _bus, this),
+                EnumGamePhases.DevelopmentCards => new DevelopmentCardsPhase(_facade, _bus, this),
+                EnumGamePhases.MonopolyCard => new MonopolyCardPhase(_facade, _bus, this),
+                EnumGamePhases.NormalRound => new NormalRoundPhase(_facade, _bus, this),
+                EnumGamePhases.RoadBuilding => new RoadBuildingPhase(_facade, _bus, this),
+                EnumGamePhases.TradeOffer => new TradeOfferPhase(_facade, _bus, this),
+                EnumGamePhases.TradeRequest => new TradeRequestPhase(_facade, _bus, this),
+                EnumGamePhases.YearOfPlentyCard => new YearOfPlentyCardPhase(_facade, _bus, this)
             };
         }
     }

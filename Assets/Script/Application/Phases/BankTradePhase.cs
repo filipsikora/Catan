@@ -57,7 +57,7 @@ namespace Catan.Application.Phases
                 Bus.Publish(new ActionRejectedEvent(result.PlayerId, result.Reason));
             }
 
-            Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, $"player{result.} trade {result.Ratio} {result.Offered} for 1 {result.Desired}"));
+            Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, $"player{result.PlayerId} trade {result.Ratio} {result.Offered} for 1 {result.Desired}"));
 
             TransitionPhase(result);
         }

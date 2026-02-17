@@ -24,7 +24,7 @@ namespace Catan.Core.PhaseLogic
 
             Session.VillageBuiltMutation(vertex, secondVillage);
 
-            return ResultBuildInitialVillage.Ok(player.ID, vertexId, EnumGamePhases.None);
+            return ResultBuildInitialVillage.Ok(player.ID, vertexId, null);
         }
     }
 }

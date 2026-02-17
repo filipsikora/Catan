@@ -22,7 +22,7 @@ namespace Catan.Core.PhaseLogic
 
             Session.RoadPaidAndBuiltMutation(edge);
 
-            return ResultBuildRoad.Ok(player.ID, edgeId, EnumGamePhases.None);
+            return ResultBuildRoad.Ok(player.ID, edgeId, null);
         }
     }
 }

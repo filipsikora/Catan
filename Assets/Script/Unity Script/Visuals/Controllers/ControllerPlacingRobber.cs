@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Catan.Unity.Visuals.Controllers
 {
-    public class ControllerPlacingRobber : MonoBehaviour
+    public class ControllerPlacingRobber
     {
         private VisualsBoard _board;
         private GameObject? _robber;
@@ -27,7 +27,7 @@ namespace Catan.Unity.Visuals.Controllers
 
             if (_robber == null)
             {
-                _board.PlaceObject(ManagerGame.Instance.CubeRobberPrefab, pos, null, null, ManagerGame.Instance.Board);
+                _robber = _board.PlaceObject(ManagerGame.Instance.CubeRobberPrefab, pos, null, null, ManagerGame.Instance.Board);
             }
 
             else

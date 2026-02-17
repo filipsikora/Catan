@@ -1,4 +1,4 @@
-﻿using Catan.Application.Snapshots;
+﻿using Catan.Core.Snapshots;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;

@@ -1,5 +1,4 @@
-﻿using Catan.Core.Models;
-using Catan.Shared.Data;
+﻿using Catan.Shared.Data;
 
 namespace Catan.Core.Results
 {
@@ -18,7 +17,7 @@ namespace Catan.Core.Results
             VertexId = vertexId;
         }
 
-        public static ResultBuildInitialVillage Ok(int playerId, int vertexId, EnumGamePhases nextPhase)
+        public static ResultBuildInitialVillage Ok(int playerId, int vertexId, EnumGamePhases? nextPhase)
         {
             return new ResultBuildInitialVillage(true, ConditionFailureReason.None, playerId, vertexId, nextPhase);
         }
@@ -43,7 +42,7 @@ namespace Catan.Core.Results
             EdgeId = edgeId;
         }
 
-        public static ResultBuildInitialRoad Ok(int playerId, int edgeId, EnumGamePhases nextPhase)
+        public static ResultBuildInitialRoad Ok(int playerId, int edgeId, EnumGamePhases? nextPhase)
         {
             return new ResultBuildInitialRoad(true, ConditionFailureReason.None, playerId, edgeId, nextPhase);
         }
@@ -68,7 +67,7 @@ namespace Catan.Core.Results
             VertexId = vertexId;
         }
 
-        public static ResultBuildVillage Ok(int playerId, int vertexId, EnumGamePhases nextPhase)
+        public static ResultBuildVillage Ok(int playerId, int vertexId, EnumGamePhases? nextPhase)
         {
             return new ResultBuildVillage(true, ConditionFailureReason.None, playerId, vertexId, nextPhase);
         }
@@ -93,7 +92,7 @@ namespace Catan.Core.Results
             EdgeId = edgeId;
         }
 
-        public static ResultBuildRoad Ok(int playerId, int edgeId, EnumGamePhases nextPhase)
+        public static ResultBuildRoad Ok(int playerId, int edgeId, EnumGamePhases? nextPhase)
         {
             return new ResultBuildRoad(true, ConditionFailureReason.None, playerId, edgeId, nextPhase);
         }

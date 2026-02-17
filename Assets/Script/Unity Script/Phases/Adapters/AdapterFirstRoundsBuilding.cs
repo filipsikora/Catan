@@ -1,7 +1,9 @@
-﻿using Catan.Application.Snapshots;
+﻿using Catan.Application.Controllers;
+using Catan.Core.Snapshots;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Events;
 using Catan.Unity.Communication.InternalUIEvents;
+using Catan.Unity.Panels;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
 using UnityEngine;
@@ -12,13 +14,19 @@ namespace Catan.Unity.Phases.Adapters
     {
         public BinderFirstRoundBuildings _binder;
         private TurnDataSnapshot _turnDataSnapshot;
+        private VisualsBoard _board;
+
+        public AdapterFirstRoundsBuilding(ManagerUI ui, EventBus bus, Facade facade, VisualsBoard board) : base(ui, bus, facade)
+        {
+            _board = board;
+        }
 
         public override void OnEnter()
         {
             _binder = new BinderFirstRoundBuildings(UI, EventBus);
             _binder.Bind();
 
-            _turnDataSnapshot = Manager.TurnsQueryService.GetTurnData();
+            _turnDataSnapshot = Facade.GetTurnData();
 
             VisualsUI.MakeAllChildrenVisible(UI.MainUIPanel.ButtonsContainer, false);
 
@@ -38,16 +46,16 @@ namespace Catan.Unity.Phases.Adapters
         {
             EventBus.Publish(new PositionsResetUIEvent());
 
-            var vertexObj = Manager.BoardVisuals.GetVertexObject(signal.VertexId);
-            Manager.BoardVisuals.SetVertexVisual(vertexObj, Color.yellow);
+            var vertexObj = _board.GetVertexObject(signal.VertexId);
+            _board.SetVertexVisual(vertexObj, Color.yellow);
         }
 
         private void OnEdgeClicked(EdgeHighlightedEvent signal)
         {
             EventBus.Publish(new PositionsResetUIEvent());
 
-            var edgeObj = Manager.BoardVisuals.GetEdgeObject(signal.EdgeId);
-            Manager.BoardVisuals.SetEdgeVisual(edgeObj, Color.yellow);
+            var edgeObj = _board.GetEdgeObject(signal.EdgeId);
+            _board.SetEdgeVisual(edgeObj, Color.yellow);
         }
 
         private void OnPositionClicked(BuildOptionsSentEvent signal)

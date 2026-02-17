@@ -22,7 +22,7 @@ namespace Catan.Core.PhaseLogic
 
             Session.VillagePaidAndBuiltMutation(vertex);
 
-            return ResultBuildVillage.Ok(player.ID, vertexId,  EnumGamePhases.None);
+            return ResultBuildVillage.Ok(player.ID, vertexId, null);
         }
     }
 }

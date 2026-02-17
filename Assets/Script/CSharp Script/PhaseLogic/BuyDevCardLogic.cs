@@ -25,7 +25,7 @@ namespace Catan.Core.PhaseLogic
 
             Session.BuyDevCardMutation(devCard);
 
-            return ResultBuyDevCard.Ok(player.ID, devCardId, devCardType, EnumGamePhases.None);
+            return ResultBuyDevCard.Ok(player.ID, devCardId, devCardType, null);
         }
     }
 }

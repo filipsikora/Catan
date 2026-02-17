@@ -1,7 +1,10 @@
-﻿using Catan.Application.Snapshots;
+﻿using Catan.Application.Controllers;
+using Catan.Core.Snapshots;
+using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
 using Catan.Unity.Communication.InternalUIEvents;
+using Catan.Unity.Panels;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
 
@@ -12,6 +15,8 @@ namespace Catan.Unity.Phases.Adapters
         BinderCardSelection _binder;
         TurnDataSnapshot _turnData;
 
+        public AdapterYearOfPlentyCard(ManagerUI ui, EventBus bus, Facade facade) : base(ui, bus, facade) { }
+
         public override void OnEnter()
         {
             UI.CardSelectorPanel.gameObject.SetActive(true);
@@ -19,7 +24,7 @@ namespace Catan.Unity.Phases.Adapters
             _binder = new BinderCardSelection(UI, EventBus);
             _binder.Bind();
 
-            _turnData = Manager.TurnsQueryService.GetTurnData();
+            _turnData = Facade.GetTurnData();
 
             VisualsUI.SetMainAndPlayerUIVisibility(false, UI.MainUIPanel, UI.PlayerUIPanel);
             UI.CardSelectorPanel.Show("Choose two resources to get for free");

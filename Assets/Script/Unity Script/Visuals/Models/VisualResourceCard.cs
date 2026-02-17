@@ -3,6 +3,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using Catan.Unity.Data;
 using Catan.Unity.Communication.InternalUIEvents;
+using Catan.Shared.Communication;
+using Catan.Unity.Visuals.Controllers;
 
 namespace Catan.Unity.Visuals.Models
 {
@@ -14,31 +16,29 @@ namespace Catan.Unity.Visuals.Models
         public EnumResourceCardVisualState State = EnumResourceCardVisualState.None;
         public bool IsToggled = false;
 
-        public void Initialize(EnumResourceCardLocation location, int visualResourceCardId, EnumResourceTypes type)
+        private EventBus _bus;
+        private ControllerResourceCards _controller;
+
+        public void Initialize(EnumResourceCardLocation location, int visualResourceCardId, EnumResourceTypes type, EventBus bus, ControllerResourceCards controller)
         {
             Location = location;
             VisualResourceCardId = visualResourceCardId;
             Type = type;
-        }
-
-        public void ToggleCard()
-        {
-            IsToggled = !IsToggled;
+            _bus = bus;
+            _controller = controller;
+            _controller.Register(this);
         }
 
         public void OnPointerClick(PointerEventData eventData)
         {
             bool isLeftClicked = eventData.button == PointerEventData.InputButton.Left;
 
-            ManagerGame.Instance.EventBus.Publish(new ResourceCardClickedUIEvent(VisualResourceCardId, Type, Location, isLeftClicked));
+            _bus.Publish(new ResourceCardClickedUIEvent(VisualResourceCardId, Type, Location, isLeftClicked, IsToggled));
         }
 
         private void OnDestroy()
         {
-            if (ManagerGame.Instance != null)
-            {
-                ManagerGame.Instance.ControllerResourceCardsUI.Unregister(this);
-            }
+            _controller.Unregister(this);
         }
 
         public override string ToString()

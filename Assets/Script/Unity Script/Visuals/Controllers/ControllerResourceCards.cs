@@ -17,6 +17,7 @@ namespace Catan.Unity.Visuals.Controllers
             _bus.Subscribe<ResourceCardVisualStateChangedUICommand>(OnResourceCardVisualStateChanged);
             _bus.Subscribe<MultipleResourceCardVisualStateResetUICommand>(OnMultipleResourceCardsVisualStateChanged);
             _bus.Subscribe<ResourceCardTypeVisualStateChangedUICommand>(OnResourceCardTypeVisualStateChanged);
+            _bus.Subscribe<ResourceCardToggledUICommand>(OnResourceCardToggled);
         }
 
         private void ApplyVisualChange(VisualResourceCard card, EnumResourceCardVisualState state)
@@ -40,7 +41,7 @@ namespace Catan.Unity.Visuals.Controllers
         private void OnResourceCardVisualStateChanged(ResourceCardVisualStateChangedUICommand signal)
         {
             var card = GetVisualResourceCardById(signal.VisualResourceCardId);
-
+            
             if (card == null)
                 return;
 
@@ -53,11 +54,8 @@ namespace Catan.Unity.Visuals.Controllers
             {
                 if (card.Type == signal.Type)
                 {
-                    if (card == null)
-                        return;
+                    ApplyVisualChange(card, signal.State);
                 }
-
-                ApplyVisualChange(card, signal.State);
             }
         }
 
@@ -70,6 +68,13 @@ namespace Catan.Unity.Visuals.Controllers
                     VisualsUI.ResetResourceCard(card);
                 }
             }
+        }
+
+        private void OnResourceCardToggled(ResourceCardToggledUICommand signal)
+        {
+            var card = GetVisualResourceCardById(signal.VisualResourceCardId);
+
+            ToggleCard(card);
         }
 
         public void Register(VisualResourceCard card)
@@ -89,11 +94,20 @@ namespace Catan.Unity.Visuals.Controllers
             return card;
         }
 
+        private void ToggleCard(VisualResourceCard card)
+        {
+            if (card == null)
+                return;
+
+            card.IsToggled = !card.IsToggled;
+        }
+
         public void Dispose()
         {
             _bus.Unsubscribe<ResourceCardVisualStateChangedUICommand>(OnResourceCardVisualStateChanged);
             _bus.Unsubscribe<MultipleResourceCardVisualStateResetUICommand>(OnMultipleResourceCardsVisualStateChanged);
             _bus.Unsubscribe<ResourceCardTypeVisualStateChangedUICommand>(OnResourceCardTypeVisualStateChanged);
+            _bus.Unsubscribe<ResourceCardToggledUICommand>(OnResourceCardToggled);
         }
     }
 }

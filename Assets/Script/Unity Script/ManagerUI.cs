@@ -1,4 +1,7 @@
 ﻿using Catan.Core.Snapshots;
+using Catan.Shared.Communication;
+using Catan.Unity.Helpers;
+using Catan.Unity.Visuals.Controllers;
 using UnityEngine;
 
 namespace Catan.Unity.Panels
@@ -17,6 +20,13 @@ namespace Catan.Unity.Panels
         public DevelopmentCardsUI DevelopmentCardsPanel;
         public CardSelectorUI CardSelectorPanel;
         public LogsUI LogsPanel;
+
+        public FactoryResourceCards factoryResourceCards;
+
+        public void Initialize(EventBus bus, ControllerResourceCards controller)
+        {
+            factoryResourceCards.Initialize(bus, controller);
+        }
 
         public void UpdateTurnCounter(int turn) => MainUIPanel.UpdateTurnCounter(turn);
         public void UpdateRolledDice(int lastRoll) => MainUIPanel.UpdateRolledDice(lastRoll);

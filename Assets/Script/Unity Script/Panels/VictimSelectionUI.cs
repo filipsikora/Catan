@@ -13,7 +13,7 @@ namespace Catan.Unity.Panels
         public Transform ButtonsContainer;
         public GameObject ButtonPlayerOptionPrefab;
 
-        public void Show(List<PlayerNameSnapshot> potentialVictimsData)
+        public void Show(IReadOnlyList<PlayerNameSnapshot> potentialVictimsData)
         {
             gameObject.SetActive(true);
 

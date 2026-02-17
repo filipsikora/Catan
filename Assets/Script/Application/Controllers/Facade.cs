@@ -95,5 +95,10 @@ namespace Catan.Application.Controllers
         public PlayerResourcesSnapshot GetPlayersCards(int playerId) => _playersQuery.GetPlayersCards(playerId);
         public ResourcesAvailabilitySnapshot GetResourcesAvailability() => _resourcesQuery.GetResourcesAvailability();
         public TurnDataSnapshot GetTurnData() => _turnsQuery.GetTurnData();
+        public PlayerNameSnapshot GetVictimsName() => _playersQuery.GetVictimsName();
+        public IReadOnlyList<DevelopmentCardSnapshot> GetCurrentPlayerDevCards() => _devCardQuery.GetCurrentPlayerDevCards();
+        public IReadOnlyList<PlayerNameSnapshot> GetSomePlayersNames(List<int> potentialVictimsIds) => _playersQuery.GetSomePlayersNames(potentialVictimsIds);
+        public IReadOnlyList<PlayerNameSnapshot> GetNotCurrentPlayersNames() => _playersQuery.GetNotCurrentPlayersNames();
+        public TradeOfferedSnapshot GetTradeOfferData() => _tradeQuery.GetTradeOfferData();
     }
 }

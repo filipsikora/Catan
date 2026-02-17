@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using Catan.Unity.Visuals.Models;
-using Catan.Application.Snapshots;
+using Catan.Core.Snapshots;
 
 namespace Catan.Unity.Helpers
 {

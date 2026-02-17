@@ -1,10 +1,12 @@
-﻿using Catan.Application.Snapshots;
+﻿using Catan.Application.Controllers;
+using Catan.Core.Snapshots;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Communication.Events;
 using Catan.Unity.Communication.InternalUICommands;
 using Catan.Unity.Communication.InternalUIEvents;
 using Catan.Unity.Data;
+using Catan.Unity.Panels;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
 using UnityEngine;
@@ -16,12 +18,19 @@ namespace Catan.Unity.Phases.Adapters
         private BinderNormalRound _binder;
         private TurnDataSnapshot _turnDataSnapshot;
 
+        private VisualsBoard _board;
+
+        public AdapterNormalRound(ManagerUI ui, EventBus bus, Facade facade, VisualsBoard board) : base(ui, bus, facade)
+        {
+            _board = board;
+        }
+
         public override void OnEnter()
         {
             _binder = new BinderNormalRound(UI, EventBus);
             _binder.Bind();
 
-            _turnDataSnapshot = Manager.TurnsQueryService.GetTurnData();            
+            _turnDataSnapshot = Facade.GetTurnData();            
 
             EventBus.Subscribe<SelectionChangedEvent>(OnTradePossible);
 
@@ -63,16 +72,16 @@ namespace Catan.Unity.Phases.Adapters
         {
             EventBus.Publish(new PositionsResetUIEvent());
 
-            var vertexObject = Manager.BoardVisuals.GetVertexObject(signal.VertexId);
-            Manager.BoardVisuals.SetVertexVisual(vertexObject, Color.yellow);
+            var vertexObject = _board.GetVertexObject(signal.VertexId);
+            _board.SetVertexVisual(vertexObject, Color.yellow);
         }
 
         private void OnEdgeClicked(EdgeHighlightedEvent signal)
         {
             EventBus.Publish(new PositionsResetUIEvent());
 
-            var edgeObject = Manager.BoardVisuals.GetEdgeObject(signal.EdgeId);
-            Manager.BoardVisuals.SetEdgeVisual(edgeObject, Color.yellow);
+            var edgeObject = _board.GetEdgeObject(signal.EdgeId);
+            _board.SetEdgeVisual(edgeObject, Color.yellow);
         }
 
         private void OnPositionClicked(BuildOptionsSentEvent signal)
@@ -113,14 +122,9 @@ namespace Catan.Unity.Phases.Adapters
             if (!signal.IsLeftClicked)
                 return;
 
-            var card = Manager.ControllerResourceCardsUI.GetVisualResourceCardById(signal.VisualResourceCardId);
+            EventBus.Publish(new ResourceCardSelectedCommand(!signal.IsToggled, signal.Type));
 
-            if (card == null)
-                return;
-
-            EventBus.Publish(new ResourceCardSelectedCommand(!card.IsToggled, card.Type));
-
-            if (card.IsToggled)
+            if (signal.IsToggled)
             {
                 EventBus.Publish(new ResourceCardVisualStateChangedUICommand(signal.VisualResourceCardId, signal.Location, Data.EnumResourceCardVisualState.None));
             }
@@ -130,7 +134,7 @@ namespace Catan.Unity.Phases.Adapters
                 EventBus.Publish(new ResourceCardVisualStateChangedUICommand(signal.VisualResourceCardId, signal.Location, Data.EnumResourceCardVisualState.Lifted));
             }
 
-            card.ToggleCard();
+            EventBus.Publish(new ResourceCardToggledUICommand(signal.VisualResourceCardId));
         }
 
         public override void OnExit()

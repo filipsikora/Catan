@@ -22,7 +22,7 @@ namespace Catan.Core.PhaseLogic
             Session.CardsDiscardedMutation(player, selectedCards);
             Session.CardsDiscardedContextMutation();
 
-            var nextPhase = Session.GetPlayersToDiscardCount() == 0 ? EnumGamePhases.RobberPlacing : EnumGamePhases.None;
+            EnumGamePhases? nextPhase = Session.GetPlayersToDiscardCount() == 0 ? EnumGamePhases.RobberPlacing : null;
 
             return ResultCondition.Ok(nextPhase);
         }

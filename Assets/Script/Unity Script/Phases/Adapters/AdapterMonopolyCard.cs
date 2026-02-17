@@ -6,12 +6,17 @@ using Catan.Unity.Communication.InternalUICommands;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
 using Catan.Unity.Data;
+using Catan.Unity.Panels;
+using Catan.Shared.Communication;
+using Catan.Application.Controllers;
 
 namespace Catan.Unity.Phases.Adapters
 {
     public class AdapterMonopolyCard : BasePhaseAdapter
     {
         public BinderCardSelection _binder;
+
+        public AdapterMonopolyCard(ManagerUI ui, EventBus bus, Facade facade) : base(ui, bus, facade) { }
 
         public override void OnEnter()
         {
