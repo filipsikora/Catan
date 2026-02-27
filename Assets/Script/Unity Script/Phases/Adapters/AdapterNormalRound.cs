@@ -46,6 +46,8 @@ namespace Catan.Unity.Phases.Adapters
 
             EventBus.Subscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
 
+            UI.UpdateTurnCounter(_turnDataSnapshot.TurnNumber);
+
             UI.HideTradeOfferButton();
             VisualsUI.ResetResourceCardsInParent(UI.PlayerUIPanel.ResourceCardsPanel);
 
@@ -144,7 +146,6 @@ namespace Catan.Unity.Phases.Adapters
             EventBus.Publish(new PositionsResetUIEvent());
 
             UI.HideTradeOfferButton();
-            UI.UpdateTurnCounter(_turnDataSnapshot.TurnNumber);
 
             EventBus.Unsubscribe<SelectionChangedEvent>(OnTradePossible);
 

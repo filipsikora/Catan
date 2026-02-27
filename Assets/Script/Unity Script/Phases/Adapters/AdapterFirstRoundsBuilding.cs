@@ -40,10 +40,14 @@ namespace Catan.Unity.Phases.Adapters
             EventBus.Subscribe<RoadPlacedEvent>(OnRoadPlaced);
 
             EventBus.Publish(new PlayerStateChangedUIEvent(_turnDataSnapshot.PlayerId));
+
+            UnityEngine.Debug.Log("chuj onenter");
         }
 
         private void OnVertexClicked(VertexHighlightedEvent signal)
         {
+            UnityEngine.Debug.Log("chuj w adapterze");
+
             EventBus.Publish(new PositionsResetUIEvent());
 
             var vertexObj = _board.GetVertexObject(signal.VertexId);

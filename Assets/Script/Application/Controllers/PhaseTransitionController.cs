@@ -21,6 +21,7 @@ namespace Catan.Application.Controllers
         public void ChangePhase(EnumGamePhases next)
         {
             Current = CreatePhase(next);
+            Current.Enter();
 
             _bus.Publish(new PhaseChangedEvent(next));
         }

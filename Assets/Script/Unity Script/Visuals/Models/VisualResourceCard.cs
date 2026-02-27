@@ -44,6 +44,6 @@ namespace Catan.Unity.Visuals.Models
         public override string ToString()
         {
             return $"Card: {Type}, {VisualResourceCardId}";
-        }
+        }   
     }
 }

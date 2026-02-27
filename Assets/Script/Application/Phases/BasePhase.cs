@@ -1,7 +1,6 @@
 ﻿using Catan.Application.Controllers;
 using Catan.Core.Results;
 using Catan.Shared.Communication;
-using Catan.Shared.Data;
 
 namespace Catan.Application.Phases
 {

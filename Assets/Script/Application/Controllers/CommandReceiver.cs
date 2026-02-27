@@ -1,16 +1,15 @@
 ﻿using Catan.Shared.Communication;
-using System.Windows.Input;
+using Catan.Shared.Interfaces;
 
 namespace Catan.Application.Controllers
 {
     public sealed class CommandReceiver
     {
-        private PhaseTransitionController _phaseTransition;
+        private readonly PhaseTransitionController _phaseTransition;
 
         public CommandReceiver(PhaseTransitionController phaseTransition, EventBus bus)
         {
             _phaseTransition = phaseTransition;
-
             bus.Subscribe<ICommand>(Handle);
         }
 

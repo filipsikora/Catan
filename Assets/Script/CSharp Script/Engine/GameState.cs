@@ -330,7 +330,7 @@ namespace Catan.Core.Engine
 
         public Queue<Player> GetCardsDiscardingPlayers()
         {
-            var playersToDiscard = new Queue<Player>(PlayerList.Where(p => p.Resources.ResourceDictionary.Values.Sum() > 7));
+            var playersToDiscard = new Queue<Player>(PlayerList.Where(p => p.Resources.Total() > 7));
 
             return playersToDiscard;
         }

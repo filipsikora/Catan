@@ -46,6 +46,7 @@ namespace Catan.Application.Phases
 
         private void HandleVertexClicked(VertexClickedCommand signal)
         {
+
             if (villagePlaced)
                 return;
 

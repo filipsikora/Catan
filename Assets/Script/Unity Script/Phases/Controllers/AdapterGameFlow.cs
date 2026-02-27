@@ -81,6 +81,7 @@ namespace Catan.Unity.Phases.Controllers
 
                 case EnumGamePhases.FirstRoundsBuilding:
                     _phases.TransitionTo(new AdapterFirstRoundsBuilding(_ui, _bus, _facade, _board));
+                    UnityEngine.Debug.Log("chuj adapter");
                     break;
             }
         }

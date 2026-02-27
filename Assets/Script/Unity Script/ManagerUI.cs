@@ -22,10 +22,12 @@ namespace Catan.Unity.Panels
         public LogsUI LogsPanel;
 
         public FactoryResourceCards factoryResourceCards;
+        public FactoryDevelopmentCards factoryDevCards;
 
         public void Initialize(EventBus bus, ControllerResourceCards controller)
         {
             factoryResourceCards.Initialize(bus, controller);
+            factoryDevCards.Initialize(bus);
         }
 
         public void UpdateTurnCounter(int turn) => MainUIPanel.UpdateTurnCounter(turn);

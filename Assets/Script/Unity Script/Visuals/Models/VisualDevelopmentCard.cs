@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Data;
+using Catan.Shared.Communication;
 
 namespace Catan.Unity.Visuals.Models
 {
@@ -18,18 +19,21 @@ namespace Catan.Unity.Visuals.Models
         public TextMeshProUGUI Name;
         [SerializeField] public TMPro.TextMeshProUGUI Label;
 
+        private EventBus _bus;
+
         private int _id { get; set; }
 
-        public void Initialize(DevelopmentCardSnapshot snapshot)
+        public void Initialize(DevelopmentCardSnapshot snapshot, EventBus bus)
         {
             _id = snapshot.Id;
+            _bus = bus;
 
             SetupVisuals(snapshot.Type, snapshot.IsNew, snapshot.IsPlayable);
         }
 
         public void OnCardClicked()
         {
-            ManagerGame.Instance.EventBus.Publish(new DevelopmentCardClickedCommand(_id));  
+            _bus.Publish(new DevelopmentCardClickedCommand(_id));  
         }
 
         public void SetupVisuals(EnumDevelopmentCardTypes type, bool isNew, bool isPlayable)

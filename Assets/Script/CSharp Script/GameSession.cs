@@ -103,7 +103,12 @@ namespace Catan.Core
         public int GetDesertHexId() => _game.Map.HexList.Find(h => h.FieldType == EnumFieldTypes.Desert).Id;
 
 
-        public int GetPlayersToDiscardCount() => _game.CardDiscardingProgress.PlayersToDiscard.Count;
+        public int GetPlayersToDiscardCount()
+        {
+            var players = _game.GetCardsDiscardingPlayers();
+
+            return players.Count;
+        }
 
         public int GetNextToDiscardId() => _game.CardDiscardingProgress.PlayersToDiscard.Peek();
 
@@ -191,7 +196,7 @@ namespace Catan.Core
             {
                 _game.FirstRoundsIndices.Dequeue();
 
-                initialRoundsRemaining = true;
+                initialRoundsRemaining = _game.FirstRoundsIndices.Count > 0;
                 nextIndex = initialRoundsRemaining ? _game.FirstRoundsIndices.Peek() : 0;
 
                 return (nextIndex, initialRoundsRemaining);

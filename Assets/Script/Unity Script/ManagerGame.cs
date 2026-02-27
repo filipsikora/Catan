@@ -8,6 +8,7 @@ using Catan.Shared.Communication.Events;
 using Catan.Shared.Data;
 using Catan.Unity.Communication.InternalUIEvents;
 using Catan.Unity.Data;
+using Catan.Unity.Helpers;
 using Catan.Unity.Panels;
 using Catan.Unity.Phases.Adapters;
 using Catan.Unity.Phases.Controllers;
@@ -54,6 +55,8 @@ namespace Catan.Unity
         public List<RegistryDataResource> ResourceList;
         public Dictionary<EnumResourceTypes, Color> PortColorLookup { get; private set; }
 
+        public HandlerCameraClicks ClickHandler;
+
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -69,6 +72,7 @@ namespace Catan.Unity
 
             EventBus = new EventBus();
             AdapterPhaseTransition = new AdapterPhaseTransition();
+            ClickHandler.Initialize(EventBus);
 
             EventBus.Subscribe<StartGameRequestedEvent>(OnStartGameRequested);
         }
@@ -126,7 +130,7 @@ namespace Catan.Unity
             };
 
             var boardData = facade.GetBoardData();
-            Builder.BuildMap(boardData);
+            Builder.BuildMap(boardData, EventBus);
 
             BoardVisuals.Initialize(Builder, IdleGridMaterial);
 
