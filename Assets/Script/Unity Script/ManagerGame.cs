@@ -229,6 +229,8 @@ namespace Catan.Unity
         currentplayer fix + conditions revision
 
         unity: fix dependencies in controllers and adapters
+
+        delete wrapper from eventbus?
         */
     }
 }

@@ -1,6 +1,5 @@
 ﻿using Catan.Application;
 using Catan.Application.Interfaces;
-using Catan.Application.UIMessages;
 using Catan.Core.Interfaces;
 using Catan.Shared.Interfaces;
 using Catan.Unity.Phases.Controllers;
@@ -13,12 +12,14 @@ namespace Catan.Unity.Helpers
         private GameApplication _gameApplication;
         private AdapterGameFlow _gameFlow;
         private EventsTranslator _translator;
+        private EventBus _bus;
 
-        public HandlerEvents(GameApplication gameApplication, AdapterGameFlow gameFlow, EventsTranslator translator)
+        public HandlerEvents(GameApplication gameApplication, AdapterGameFlow gameFlow, EventsTranslator translator, EventBus bus)
         {
             _gameApplication = gameApplication;
             _gameFlow = gameFlow;
             _translator = translator;
+            _bus = bus;
         }
 
         public void Execute(ICommand command)
@@ -41,7 +42,7 @@ namespace Catan.Unity.Helpers
             {
                 var internalUIEvent = _translator.TranslateUIMessage(uiMessage);
 
-                // once eventbus is moved to unity publish here //
+                _bus.Publish(internalUIEvent);
             }
         }
 
@@ -51,7 +52,7 @@ namespace Catan.Unity.Helpers
             {
                 var internalUIEvent = _translator.TranslateDomainEvent(domainEvent);
 
-                // once eventbus is moved to unity publish here //
+                _bus.Publish(internalUIEvent);
             }
         }
     }

@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using Catan.Unity.Data;
 using Catan.Unity.Communication.InternalUIEvents;
-using Catan.Shared.Communication;
+using Catan.Unity.Helpers;
 using Catan.Unity.Visuals.Controllers;
 
 namespace Catan.Unity.Visuals.Models

@@ -45,7 +45,7 @@ namespace Catan.Application
                 EnumGamePhases.BeforeRoll => new BeforeRollPhase(Facade),
                 EnumGamePhases.FirstRoundsBuilding => new FirstRoundsBuildingPhase(Facade),
                 EnumGamePhases.BankTrade => new BankTradePhase(Facade),
-                EnumGamePhases.CardDiscarding => new CardDiscardingPhase(_facade, _bus, this),
+                EnumGamePhases.CardDiscarding => new CardDiscardingPhase(Facade),
                 EnumGamePhases.CardStealing => new CardStealingPhase(_facade, _bus, this),
                 EnumGamePhases.RobberPlacing => new RobberPlacingPhase(_facade, _bus, this),
                 EnumGamePhases.DevelopmentCards => new DevelopmentCardsPhase(_facade, _bus, this),

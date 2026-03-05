@@ -1,9 +1,9 @@
-﻿using Catan.Core.Interfaces;
+﻿using Catan.Application.Interfaces;
 using Catan.Shared.Data;
 
 namespace Catan.Core.DomainEvents
 {
-    public sealed class BankTradeRatioChangedMessage : IDomainEvent
+    public sealed class BankTradeRatioChangedMessage : IUIMessages
     {
         public int Ratio { get; }
         public bool PossibleForPlayer { get; }

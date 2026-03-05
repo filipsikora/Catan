@@ -14,10 +14,10 @@ namespace Catan.Unity.Visuals.Controllers
         public ControllerResourceCards(EventBus bus)
         {
             _bus = bus;
-            _bus.Subscribe<ResourceCardVisualStateChangedUICommand>(OnResourceCardVisualStateChanged);
-            _bus.Subscribe<MultipleResourceCardVisualStateResetUICommand>(OnMultipleResourceCardsVisualStateChanged);
-            _bus.Subscribe<ResourceCardTypeVisualStateChangedUICommand>(OnResourceCardTypeVisualStateChanged);
-            _bus.Subscribe<ResourceCardToggledUICommand>(OnResourceCardToggled);
+            _bus.Subscribe<ResourceCardVisualStateChangedUIEvent>(OnResourceCardVisualStateChanged);
+            _bus.Subscribe<MultipleResourceCardVisualStateResetUIEvent>(OnMultipleResourceCardsVisualStateChanged);
+            _bus.Subscribe<ResourceCardTypeVisualStateChangedUIEvent>(OnResourceCardTypeVisualStateChanged);
+            _bus.Subscribe<ResourceCardToggledUIEvent>(OnResourceCardToggled);
         }
 
         private void ApplyVisualChange(VisualResourceCard card, EnumResourceCardVisualState state)
@@ -38,7 +38,7 @@ namespace Catan.Unity.Visuals.Controllers
             }
         }
 
-        private void OnResourceCardVisualStateChanged(ResourceCardVisualStateChangedUICommand signal)
+        private void OnResourceCardVisualStateChanged(ResourceCardVisualStateChangedUIEvent signal)
         {
             var card = GetVisualResourceCardById(signal.VisualResourceCardId);
             
@@ -48,7 +48,7 @@ namespace Catan.Unity.Visuals.Controllers
             ApplyVisualChange(card, signal.State);
         }
 
-        private void OnResourceCardTypeVisualStateChanged(ResourceCardTypeVisualStateChangedUICommand signal)
+        private void OnResourceCardTypeVisualStateChanged(ResourceCardTypeVisualStateChangedUIEvent signal)
         {
             foreach (var card in _cards.Values)
             {
@@ -59,7 +59,7 @@ namespace Catan.Unity.Visuals.Controllers
             }
         }
 
-        private void OnMultipleResourceCardsVisualStateChanged(MultipleResourceCardVisualStateResetUICommand signal)
+        private void OnMultipleResourceCardsVisualStateChanged(MultipleResourceCardVisualStateResetUIEvent signal)
         {
             foreach (var card in _cards.Values)
             {
@@ -70,7 +70,7 @@ namespace Catan.Unity.Visuals.Controllers
             }
         }
 
-        private void OnResourceCardToggled(ResourceCardToggledUICommand signal)
+        private void OnResourceCardToggled(ResourceCardToggledUIEvent signal)
         {
             var card = GetVisualResourceCardById(signal.VisualResourceCardId);
 
@@ -104,10 +104,10 @@ namespace Catan.Unity.Visuals.Controllers
 
         public void Dispose()
         {
-            _bus.Unsubscribe<ResourceCardVisualStateChangedUICommand>(OnResourceCardVisualStateChanged);
-            _bus.Unsubscribe<MultipleResourceCardVisualStateResetUICommand>(OnMultipleResourceCardsVisualStateChanged);
-            _bus.Unsubscribe<ResourceCardTypeVisualStateChangedUICommand>(OnResourceCardTypeVisualStateChanged);
-            _bus.Unsubscribe<ResourceCardToggledUICommand>(OnResourceCardToggled);
+            _bus.Unsubscribe<ResourceCardVisualStateChangedUIEvent>(OnResourceCardVisualStateChanged);
+            _bus.Unsubscribe<MultipleResourceCardVisualStateResetUIEvent>(OnMultipleResourceCardsVisualStateChanged);
+            _bus.Unsubscribe<ResourceCardTypeVisualStateChangedUIEvent>(OnResourceCardTypeVisualStateChanged);
+            _bus.Unsubscribe<ResourceCardToggledUIEvent>(OnResourceCardToggled);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Catan.Shared.Communication;
+﻿using Catan.Unity.Helpers;
 using Catan.Unity.Panels;
 
 namespace Catan.Unity.Phases.Binders
@@ -7,11 +7,13 @@ namespace Catan.Unity.Phases.Binders
     {
         protected ManagerUI UI;
         protected EventBus Bus;
+        protected HandlerEvents EventHandler;
 
-        public BaseBinder(ManagerUI ui, EventBus bus)
+        public BaseBinder(ManagerUI ui, EventBus bus, HandlerEvents eventHandler)
         {
             UI = ui;
             Bus = bus;
+            EventHandler = eventHandler;
         }
 
         public abstract void Bind();

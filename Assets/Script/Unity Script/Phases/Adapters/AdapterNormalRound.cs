@@ -128,15 +128,15 @@ namespace Catan.Unity.Phases.Adapters
 
             if (signal.IsToggled)
             {
-                EventBus.Publish(new ResourceCardVisualStateChangedUICommand(signal.VisualResourceCardId, signal.Location, Data.EnumResourceCardVisualState.None));
+                EventBus.Publish(new ResourceCardVisualStateChangedUIEvent(signal.VisualResourceCardId, signal.Location, Data.EnumResourceCardVisualState.None));
             }
 
             else
             {
-                EventBus.Publish(new ResourceCardVisualStateChangedUICommand(signal.VisualResourceCardId, signal.Location, Data.EnumResourceCardVisualState.Lifted));
+                EventBus.Publish(new ResourceCardVisualStateChangedUIEvent(signal.VisualResourceCardId, signal.Location, Data.EnumResourceCardVisualState.Lifted));
             }
 
-            EventBus.Publish(new ResourceCardToggledUICommand(signal.VisualResourceCardId));
+            EventBus.Publish(new ResourceCardToggledUIEvent(signal.VisualResourceCardId));
         }
 
         public override void OnExit()

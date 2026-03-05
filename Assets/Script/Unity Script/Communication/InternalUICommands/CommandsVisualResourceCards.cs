@@ -1,16 +1,16 @@
 ﻿using Catan.Shared.Data;
-using Catan.Shared.Interfaces;
 using Catan.Unity.Data;
+using Catan.Unity.Interfaces;
 
 namespace Catan.Unity.Communication.InternalUICommands
 {
-    public class ResourceCardVisualStateChangedUICommand : ICommand
+    public class ResourceCardVisualStateChangedUIEvent : IInternalUIEvents
     {
         public int VisualResourceCardId;
         public EnumResourceCardLocation Location;
         public EnumResourceCardVisualState State { get; }
 
-        public ResourceCardVisualStateChangedUICommand(int visualResourceCardId, EnumResourceCardLocation location, EnumResourceCardVisualState state)
+        public ResourceCardVisualStateChangedUIEvent(int visualResourceCardId, EnumResourceCardLocation location, EnumResourceCardVisualState state)
         {
             VisualResourceCardId = visualResourceCardId;
             Location = location;
@@ -18,12 +18,12 @@ namespace Catan.Unity.Communication.InternalUICommands
         }
     }
 
-    public class ResourceCardTypeVisualStateChangedUICommand : ICommand
+    public class ResourceCardTypeVisualStateChangedUIEvent : IInternalUIEvents
     {
         public EnumResourceTypes? Type { get; }
         public EnumResourceCardVisualState State { get; }
 
-        public ResourceCardTypeVisualStateChangedUICommand(
+        public ResourceCardTypeVisualStateChangedUIEvent(
             EnumResourceTypes? type,
             EnumResourceCardVisualState state)
         {
@@ -32,21 +32,21 @@ namespace Catan.Unity.Communication.InternalUICommands
         }
     }
 
-    public class MultipleResourceCardVisualStateResetUICommand : ICommand
+    public class MultipleResourceCardVisualStateResetUIEvent : IInternalUIEvents
     {
         public EnumResourceCardLocation Location;
 
-        public MultipleResourceCardVisualStateResetUICommand(EnumResourceCardLocation location)
+        public MultipleResourceCardVisualStateResetUIEvent(EnumResourceCardLocation location)
         {
             Location = location;
         }
     }
 
-    public class ResourceCardToggledUICommand : ICommand
+    public class ResourceCardToggledUIEvent : IInternalUIEvents
     {
         public int VisualResourceCardId { get; }
         
-        public ResourceCardToggledUICommand(int visualResourceCardId)
+        public ResourceCardToggledUIEvent(int visualResourceCardId)
         {
             VisualResourceCardId = visualResourceCardId;
         }

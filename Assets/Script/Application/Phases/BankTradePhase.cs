@@ -38,7 +38,7 @@ namespace Catan.Application.Phases
             int amount = Facade.GetCurrentPlayerResourceAmount(signal.Type);
             bool possibleForPlayer = Facade.PlayerHasEnoughResources(amount, ratio);
 
-            return GameResult.Ok().AddDomainEvent(new BankTradeRatioChangedMessage(ratio, possibleForPlayer, _offered));
+            return GameResult.Ok().AddUIMessage(new BankTradeRatioChangedMessage(ratio, possibleForPlayer, _offered));
         }
 
         private GameResult HandleBankTrade(BankTradeDesiredResourceSelected signal)

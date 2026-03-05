@@ -34,7 +34,7 @@ namespace Catan.Unity.Phases.Adapters
 
         private void OnResourceSelected(ResourceSelectedEvent signal)
         {
-            EventBus.Publish(new MultipleResourceCardVisualStateResetUICommand(EnumResourceCardLocation.DesiredTrade));
+            EventBus.Publish(new MultipleResourceCardVisualStateResetUIEvent(EnumResourceCardLocation.DesiredTrade));
 
             if (signal.Type != null)
             {

@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Catan.Unity.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Catan.Shared.Communication
+namespace Catan.Unity.Helpers
 {
     public class EventBus
     {
@@ -12,10 +13,10 @@ namespace Catan.Shared.Communication
         {
             public object Target;
             public Delegate Callback;
-            public Action<object> Wrapper;
+            public Action<IInternalUIEvents> Wrapper;
         }
 
-        public void Subscribe<T>(Action<T> callback)
+        public void Subscribe<T>(Action<T> callback) where T : IInternalUIEvents
         {
             var type = typeof(T);
 
@@ -35,7 +36,7 @@ namespace Catan.Shared.Communication
             });
         }
 
-        public void Unsubscribe<T>(Action<T> callback)
+        public void Unsubscribe<T>(Action<T> callback) where T : IInternalUIEvents
         {
             var type = typeof(T);
 
@@ -51,7 +52,7 @@ namespace Catan.Shared.Communication
                 _subscribers.Remove(type);
         }
 
-        public void Publish(object signal)
+        public void Publish(IInternalUIEvents signal)
         {
             var signalType = signal.GetType();
 
