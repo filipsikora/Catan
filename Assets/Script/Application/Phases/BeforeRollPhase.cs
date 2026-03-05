@@ -1,41 +1,57 @@
 ﻿using Catan.Application.Controllers;
-using Catan.Shared.Communication;
+using Catan.Application.Interfaces;
+using Catan.Application.UIMessages;
+using Catan.Core.Results;
 using Catan.Shared.Communication.Commands;
-using Catan.Shared.Communication.Events;
 using Catan.Shared.Data;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Catan.Application.Phases
 {
     public class BeforeRollPhase : BasePhase
     {
-        public BeforeRollPhase(Facade facade, EventBus bus, PhaseTransitionController phaseTransition) : base(facade, bus, phaseTransition) { }
-
-        public override void Enter() { }
-
-        public override void Handle(object command)
+        public BeforeRollPhase(Facade facade) : base(facade) { }
+        
+        public override GameResult Handle(object command)
         {
             switch (command)
             {
                 case RollDiceCommand c:
-                    HandleRollDice(c);
-                    break;
+                    return HandleRollDice(c);
 
                 case ShowDevelopmentCardsCommand c:
-                    PhaseTransition.ChangePhase(EnumGamePhases.DevelopmentCards);
-                    break;
+                    return GameResult.Ok(EnumGamePhases.DevelopmentCards);
 
                 case VertexClickedCommand:
                 case EdgeClickedCommand:
                 case HexClickedCommand:
-                    HandleInvalidClick();
-                    break;
+                    return HandleInvalidClick();
+
+                default:
+                    return GameResult.Fail();
             }
         }
 
-        private void HandleRollDice(RollDiceCommand signal)
+        private GameResult HandleRollDice(RollDiceCommand signal)
         {
             var result = Facade.UseRollDice();
+
+            var logList = GetLogList(result);
+
+            return GameResult.Ok(result.NextPhase.Value).AddUIMessagesList(logList);
+        }
+
+        private GameResult HandleInvalidClick()
+        {
+            var playerId = Facade.GetCurrentPlayerId();
+
+            return GameResult.Ok().AddUIMessage(new ActionRejectedMessage(playerId, ConditionFailureReason.NotRolledYet));
+        }
+
+        private List<IUIMessages> GetLogList(ResultRollDice result)
+        {
+            List<IUIMessages> logList = new();
 
             var byPlayer = result.Distributions.GroupBy(d => new { d.PlayerId, d.PlayerName });
 
@@ -48,17 +64,10 @@ namespace Catan.Application.Phases
 
                 var text = $"{playerGroup.Key.PlayerName}: {string.Join(", ", resources)}";
 
-                Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, text));
+                logList.Add(new LogMessageMessage(EnumLogTypes.Info, text));
             }
 
-            TransitionPhase(result);
-        }
-
-        private void HandleInvalidClick()
-        {
-            var playerId = Facade.GetCurrentPlayerId();
-
-            Bus.Publish(new ActionRejectedEvent(playerId, ConditionFailureReason.NotRolledYet));
+            return logList;
         }
     }
 }

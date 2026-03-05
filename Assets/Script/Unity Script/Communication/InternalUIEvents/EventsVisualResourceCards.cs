@@ -1,8 +1,9 @@
 ﻿using Catan.Shared.Data;
+using Catan.Unity.Interfaces;
 
 namespace Catan.Unity.Communication.InternalUIEvents
 {
-    public class ResourceCardClickedUIEvent
+    public class ResourceCardClickedUIEvent : IInternalUIEvents
     {
         public int VisualResourceCardId { get; }
         public EnumResourceTypes Type { get; }
@@ -20,7 +21,7 @@ namespace Catan.Unity.Communication.InternalUIEvents
         }
     }
 
-    public class ResourceCardDestroyedUIEvent
+    public class ResourceCardDestroyedUIEvent : IInternalUIEvents
     {
         public int VisualResourceCardId { get; }
 

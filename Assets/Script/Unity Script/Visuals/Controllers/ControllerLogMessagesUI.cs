@@ -1,5 +1,5 @@
-﻿using Catan.Shared.Communication;
-using Catan.Shared.Communication.Events;
+﻿using Catan.Application.UIMessages;
+using Catan.Shared.Communication;
 using Catan.Shared.Data;
 using Catan.Unity.Panels;
 using System;
@@ -10,7 +10,7 @@ namespace Catan.Unity.Visuals.Controllers
     public class ControllerLogMessagesUI
     {
         private readonly EventBus _bus;
-        private readonly Dictionary<EnumLogTypes, Action<LogMessageEvent>> _handlers;
+        private readonly Dictionary<EnumLogTypes, Action<LogMessageMessage>> _handlers;
         private LogsUI _panel;
 
         public ControllerLogMessagesUI(EventBus bus, LogsUI panel)

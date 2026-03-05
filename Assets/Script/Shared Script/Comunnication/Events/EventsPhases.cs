@@ -3,15 +3,7 @@ using Catan.Shared.Data;
 
 namespace Catan.Shared.Communication.Events
 {
-    public sealed class PhaseChangedEvent
-    {
-        public EnumGamePhases Phase { get; }
 
-        public PhaseChangedEvent(EnumGamePhases phase)
-        {
-            Phase = phase;
-        }
-    }
 
     public class ReturnToNormalRoundEvent { }
 

@@ -1,6 +1,6 @@
-﻿using Catan.Shared.Communication;
-using Catan.Shared.Communication.Events;
-using Catan.Application.Controllers;
+﻿using Catan.Application.Controllers;
+using Catan.Application.Interfaces;
+using Catan.Application.UIMessages;
 
 namespace Catan.Application.Phases
 {
@@ -9,14 +9,14 @@ namespace Catan.Application.Phases
         protected int? SelectedVertexId;
         protected int? SelectedEdgeId;
 
-        protected BaseBuildPhase(Facade facade, EventBus bus, PhaseTransitionController phaseTransition) : base(facade, bus, phaseTransition) { }
+        protected BaseBuildPhase(Facade facade) : base(facade) { }
 
-        protected void ResetSelection()
+        protected IUIMessages ResetSelection()
         {
             SelectedVertexId = null;
             SelectedEdgeId = null;
 
-            Bus.Publish(new BuildOptionsSentEvent(false, false, false));
+            return new BuildOptionsSentMessage(false, false, false);
         }
     }
 }

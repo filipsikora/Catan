@@ -1,6 +1,8 @@
-﻿namespace Catan.Unity.Communication.InternalUIEvents
+﻿using Catan.Unity.Interfaces;
+
+namespace Catan.Unity.Communication.InternalUIEvents
 {
-    public class VillagePlacedUIEvent
+    public class VillagePlacedUIEvent : IInternalUIEvents
     {
         public int VertexId;
         public int OwnerId;
@@ -11,7 +13,7 @@
             OwnerId = ownerId;
         }
     }
-    public class RoadPlacedUIEvent
+    public class RoadPlacedUIEvent : IInternalUIEvents
     {
         public int EdgeId;
         public int OwnerId;
@@ -24,7 +26,7 @@
         }
     }
 
-    public class TownPlacedUIEvent
+    public class TownPlacedUIEvent : IInternalUIEvents
     {
         public int VertexId;
         public int OwnerId;

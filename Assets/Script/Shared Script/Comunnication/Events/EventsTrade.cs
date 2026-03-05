@@ -31,12 +31,5 @@ namespace Catan.Shared.Communication.Events
         }
     }
 
-    public class PlayerSelectedToDiscardEvent
-    {
-        public int PlayerId;
-        public PlayerSelectedToDiscardEvent(int playerId)
-        {
-            PlayerId = playerId;
-        }
-    }
+
 }

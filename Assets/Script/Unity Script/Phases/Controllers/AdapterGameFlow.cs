@@ -1,6 +1,5 @@
 ﻿using Catan.Application.Controllers;
 using Catan.Shared.Communication;
-using Catan.Shared.Communication.Events;
 using Catan.Shared.Data;
 using Catan.Unity.Panels;
 using Catan.Unity.Phases.Adapters;
@@ -23,13 +22,11 @@ namespace Catan.Unity.Phases.Controllers
             _phases = phases;
             _facade = facade;
             _board = board;
-
-            bus.Subscribe<PhaseChangedEvent>(OnPhaseChanged);
         }
 
-        private void OnPhaseChanged(PhaseChangedEvent signal)
+        public void ChangePhase(EnumGamePhases nextPhase)
         {
-            switch (signal.Phase)
+            switch (nextPhase)
             {
                 case EnumGamePhases.BankTrade:
                     _phases.TransitionTo(new AdapterBankTrade(_ui, _bus, _facade));
@@ -81,7 +78,6 @@ namespace Catan.Unity.Phases.Controllers
 
                 case EnumGamePhases.FirstRoundsBuilding:
                     _phases.TransitionTo(new AdapterFirstRoundsBuilding(_ui, _bus, _facade, _board));
-                    UnityEngine.Debug.Log("chuj adapter");
                     break;
             }
         }

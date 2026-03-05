@@ -1,6 +1,8 @@
-﻿using Catan.Application.Controllers;
-using Catan.Shared.Communication;
-using Catan.Shared.Communication.Events;
+﻿#nullable enable
+using Catan.Application.Controllers;
+using Catan.Application.Interfaces;
+using Catan.Application.UIMessages;
+using Catan.Core.DomainEvents;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Data;
 
@@ -11,44 +13,41 @@ namespace Catan.Application.Phases
         private bool villagePlaced = false;
         private bool roadPlaced = false;
 
-        public FirstRoundsBuildingPhase(Facade facade, EventBus bus, PhaseTransitionController phaseTransition) : base(facade, bus, phaseTransition) { }
+        public FirstRoundsBuildingPhase(Facade facade) : base(facade) { }
 
-        public override void Enter()
+        public override IUIMessages? Enter()
         {
-            Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, "Select a vertex to build your free village, then select an edge to build a free road", 4));
+            return new LogMessageMessage(EnumLogTypes.Info, "Select a vertex to build your free village, then select an edge to build a free road", 4);
         }
 
-        public override void Handle(object command)
+        public override GameResult Handle(object command)
         {
             switch (command)
             {
                 case VertexClickedCommand c:
-                    HandleVertexClicked(c);
-                    break;
+                    return HandleVertexClicked(c);
 
                 case EdgeClickedCommand c:
-                    HandleEdgeClicked(c);
-                    break;
+                    return HandleEdgeClicked(c);
 
                 case BuildVillageCommand c:
-                    HandleBuildVillage(c);
-                    break;
+                    return HandleBuildVillage(c);
 
                 case BuildRoadCommand c:
-                    HandleBuildRoad(c);
-                    break;
+                    return HandleBuildRoad(c);
 
                 case EndTurnCommand c:
-                    HandleTurnEnded(c);
-                    break;
+                    return HandleTurnEnded(c);
+
+                default:
+                    return GameResult.Fail();
             }
         }
 
-        private void HandleVertexClicked(VertexClickedCommand signal)
+        private GameResult HandleVertexClicked(VertexClickedCommand signal)
         {
-
             if (villagePlaced)
-                return;
+                return GameResult.Fail().AddUIMessage(new LogMessageMessage(EnumLogTypes.Info, "Build a road now"));
 
             SelectedVertexId = signal.VertexId;
 
@@ -56,17 +55,16 @@ namespace Catan.Application.Phases
             bool road = false;
             bool town = false;
 
-            Bus.Publish(new VertexHighlightedEvent(signal.VertexId));
-            Bus.Publish(new BuildOptionsSentEvent(village, road, town));
+            return GameResult.Ok().AddUIMessage(new VertexHighlightedMessage(signal.VertexId)).AddUIMessage(new BuildOptionsSentMessage(village, road, town));
         }
 
-        private void HandleEdgeClicked(EdgeClickedCommand signal)
+        private GameResult HandleEdgeClicked(EdgeClickedCommand signal)
         {
             if (!villagePlaced)
-                return;
+                return GameResult.Fail().AddUIMessage(new LogMessageMessage(EnumLogTypes.Info, "Build a village first"));
 
             if (roadPlaced)
-                return;
+                return GameResult.Fail().AddUIMessage(new LogMessageMessage(EnumLogTypes.Info, "Finish turn now"));
 
             SelectedEdgeId = signal.EdgeId;
 
@@ -74,52 +72,49 @@ namespace Catan.Application.Phases
             bool road = true;
             bool town = false;
 
-            Bus.Publish(new EdgeHighlightedEvent(signal.EdgeId));
-            Bus.Publish(new BuildOptionsSentEvent(village, road, town));
+            return GameResult.Ok().AddUIMessage(new EdgeHighlightedMessage(signal.EdgeId)).AddUIMessage(new BuildOptionsSentMessage(village, road, town));
         }
 
-        private void HandleBuildVillage(BuildVillageCommand signal)
+        private GameResult HandleBuildVillage(BuildVillageCommand signal)
         {
             int id = SelectedVertexId.Value;
             var result = Facade.UseBuildInitialVillage(id);
 
-            ResetSelection();
+            var selectionMessage = ResetSelection();
 
             if (!result.Success)
             {
-                Bus.Publish(new ActionRejectedEvent(result.PlayerId, result.Reason));
-                return;
+                return GameResult.Fail().AddUIMessage((new ActionRejectedMessage(result.PlayerId, result.Reason)));
             }
 
             villagePlaced = true;
-            Bus.Publish(new VillagePlacedEvent(id));
+
+            return GameResult.Ok().AddDomainEvent(new VillagePlacedEvent(id)).AddUIMessage(selectionMessage);
         }
 
-        private void HandleBuildRoad(BuildRoadCommand signal)
+        private GameResult HandleBuildRoad(BuildRoadCommand signal)
         {
             int id = SelectedEdgeId.Value;
             var vertexId = Facade.GetLastPlacedVillagePositionId();
-
             var result = Facade.UseBuildInitialRoad(id, vertexId);
 
-            ResetSelection();
+            var selectionMessage = ResetSelection();
 
             if (!result.Success)
             {
-                Bus.Publish(new ActionRejectedEvent(result.PlayerId, result.Reason));
-                return;
+                return GameResult.Fail().AddUIMessage((new ActionRejectedMessage(result.PlayerId, result.Reason)));
             }
 
             roadPlaced = true;
-            Bus.Publish(new RoadPlacedEvent(id));
+
+            return GameResult.Ok().AddDomainEvent(new RoadPlacedEvent(id)).AddUIMessage(selectionMessage);
         }
 
-        private void HandleTurnEnded(EndTurnCommand signal)
+        private GameResult HandleTurnEnded(EndTurnCommand signal)
         {
             var result = Facade.UseFinishTurn();
 
-            TransitionPhase(result);
-
+            return GameResult.Ok(result.NextPhase);
         }
     }
 }

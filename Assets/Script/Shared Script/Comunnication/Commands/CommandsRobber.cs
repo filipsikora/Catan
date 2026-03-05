@@ -22,4 +22,6 @@ namespace Catan.Shared.Communication.Commands
             Type = type;
         }
     }
+
+    public sealed class TryGetDiscardingVictimCommand : ICommand { }
 }

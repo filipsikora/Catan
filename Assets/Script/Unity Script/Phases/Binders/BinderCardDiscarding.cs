@@ -2,7 +2,6 @@
 using Catan.Shared.Communication.Commands;
 using Catan.Unity.Data;
 using Catan.Unity.Panels;
-using UnityEngine;
 
 namespace Catan.Unity.Phases.Binders
 {
@@ -12,11 +11,8 @@ namespace Catan.Unity.Phases.Binders
 
         public override void Bind()
         {
-            Debug.Log("chuj bind");
-
             UI.CardDiscardPanel.Bind(EnumCardSelectorDiscardUIButtons.ConfirmDiscard, () =>
             {
-                Debug.Log("chuj zbindowane");
                 Bus.Publish(new DiscardingAcceptedCommand());
             });
         }

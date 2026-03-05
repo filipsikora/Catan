@@ -1,7 +1,7 @@
 ﻿using Catan.Application.Controllers;
-using Catan.Shared.Communication;
+using Catan.Application.UIMessages;
+using Catan.Core.DomainEvents;
 using Catan.Shared.Communication.Commands;
-using Catan.Shared.Communication.Events;
 using Catan.Shared.Data;
 
 namespace Catan.Application.Phases
@@ -10,29 +10,27 @@ namespace Catan.Application.Phases
     {
         private EnumResourceTypes? _offered;
 
-        public BankTradePhase(Facade facade, EventBus bus, PhaseTransitionController phaseTransition) : base(facade, bus, phaseTransition) { }
+        public BankTradePhase(Facade facade) : base(facade) { }
 
-        public override void Enter() { }
-
-        public override void Handle(object command)
+        public override GameResult Handle(object command)
         {
             switch (command)
             {
                 case BankTradeOfferedResourceSelected c:
-                    HandleOfferedResourceSelected(c);
-                    break;
+                    return HandleOfferedResourceSelected(c);
 
                 case BankTradeCanceledCommand c:
-                    PhaseTransition.ChangePhase(EnumGamePhases.NormalRound);
-                    break;
+                    return GameResult.Ok(EnumGamePhases.NormalRound);
 
                 case BankTradeDesiredResourceSelected c:
-                    HandleBankTrade(c);
-                    break;
+                    return HandleBankTrade(c);
+
+                default:
+                    return GameResult.Fail();
             }
         }
 
-        private void HandleOfferedResourceSelected(BankTradeOfferedResourceSelected signal)
+        private GameResult HandleOfferedResourceSelected(BankTradeOfferedResourceSelected signal)
         {
             _offered = signal.Type;
             var ratio = Facade.GetCurrentPlayerTradeRatio(signal.Type);
@@ -40,26 +38,24 @@ namespace Catan.Application.Phases
             int amount = Facade.GetCurrentPlayerResourceAmount(signal.Type);
             bool possibleForPlayer = Facade.PlayerHasEnoughResources(amount, ratio);
 
-            Bus.Publish(new BankTradeRatioChangedEvent(ratio, possibleForPlayer, _offered));
+            return GameResult.Ok().AddDomainEvent(new BankTradeRatioChangedMessage(ratio, possibleForPlayer, _offered));
         }
 
-        private void HandleBankTrade(BankTradeDesiredResourceSelected signal)
+        private GameResult HandleBankTrade(BankTradeDesiredResourceSelected signal)
         {
             var desired = signal.Type;
 
             if (_offered == null || desired == null)
-                return;
+                return GameResult.Fail();
 
             var result = Facade.UseBankTrade(_offered.Value, desired.Value);
             
             if (!result.Success)
             {
-                Bus.Publish(new ActionRejectedEvent(result.PlayerId, result.Reason));
+                return GameResult.Fail().AddUIMessage(new ActionRejectedMessage(result.PlayerId, result.Reason));
             }
 
-            Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, $"player{result.PlayerId} trade {result.Ratio} {result.Offered} for 1 {result.Desired}"));
-
-            TransitionPhase(result);
+            return GameResult.Ok(result.NextPhase).AddUIMessage(new LogMessageMessage(EnumLogTypes.Info, $"player{result.PlayerId} trade {result.Ratio} {result.Offered} for 1 {result.Desired}"));
         }
     }
 }

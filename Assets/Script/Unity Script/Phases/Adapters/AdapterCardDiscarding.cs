@@ -1,7 +1,7 @@
 ﻿using Catan.Application.Controllers;
+using Catan.Application.UIMessages;
 using Catan.Core.Snapshots;
 using Catan.Shared.Communication.Commands;
-using Catan.Shared.Communication.Events;
 using Catan.Unity.Communication.InternalUICommands;
 using Catan.Unity.Communication.InternalUIEvents;
 using Catan.Unity.Panels;
@@ -28,11 +28,9 @@ namespace Catan.Unity.Phases.Adapters
             VisualsUI.SetMainAndPlayerUIVisibility(false, UI.MainUIPanel, UI.PlayerUIPanel);
             UI.CardDiscardPanel.Show();
 
-            EventBus.Subscribe<SelectionChangedEvent>(OnAcceptedDiscardVisibilityChanged);
-            EventBus.Subscribe<PlayerSelectedToDiscardEvent>(OnPlayerChosen);
+            EventBus.Subscribe<SelectionChangedMessage>(OnAcceptedDiscardVisibilityChanged);
+            EventBus.Subscribe<PlayerSelectedToDiscardMessage>(OnPlayerChosen);
             EventBus.Subscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
-
-            EventBus.Publish(new RequestCardDiscardingStartCommand());
 
             _turnData = Facade.GetTurnData();
         }
@@ -57,13 +55,13 @@ namespace Catan.Unity.Phases.Adapters
             EventBus.Publish(new ResourceCardToggledUICommand(signal.VisualResourceCardId));
         }
 
-        private void OnPlayerChosen(PlayerSelectedToDiscardEvent signal)
+        private void OnPlayerChosen(PlayerSelectedToDiscardMessage signal)
         {
             var currentPlayerResources = Facade.GetPlayersCards(signal.PlayerId);
             UI.CardDiscardPanel.ShowForPlayer(currentPlayerResources);
         }
 
-        private void OnAcceptedDiscardVisibilityChanged(SelectionChangedEvent signal)
+        private void OnAcceptedDiscardVisibilityChanged(SelectionChangedMessage signal)
         {
             UI.CardDiscardPanel.ConfirmDiscardButton.gameObject.SetActive(signal.ActionAvailable);
         }
@@ -74,8 +72,8 @@ namespace Catan.Unity.Phases.Adapters
 
             EventBus.Publish(new PlayerStateChangedUIEvent(_turnData.PlayerId));
 
-            EventBus.Unsubscribe<SelectionChangedEvent>(OnAcceptedDiscardVisibilityChanged);
-            EventBus.Unsubscribe<PlayerSelectedToDiscardEvent>(OnPlayerChosen);
+            EventBus.Unsubscribe<SelectionChangedMessage>(OnAcceptedDiscardVisibilityChanged);
+            EventBus.Unsubscribe<PlayerSelectedToDiscardMessage>(OnPlayerChosen);
             EventBus.Unsubscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
 
             UI.CardDiscardPanel.gameObject.SetActive(false);

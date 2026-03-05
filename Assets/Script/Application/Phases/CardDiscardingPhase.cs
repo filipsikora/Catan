@@ -1,8 +1,8 @@
 ﻿using Catan.Application.Controllers;
+using Catan.Application.Interfaces;
+using Catan.Application.UIMessages;
 using Catan.Core.Models;
-using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
-using Catan.Shared.Communication.Events;
 using Catan.Shared.Data;
 
 namespace Catan.Application.Phases
@@ -12,47 +12,32 @@ namespace Catan.Application.Phases
         private ResourceCostOrStock _resourcesSelected = new();
         private int _currentDiscardingPlayerId;
 
-        public CardDiscardingPhase(Facade facade, EventBus bus, PhaseTransitionController phaseTransition) : base(facade, bus, phaseTransition) { }
+        public CardDiscardingPhase(Facade facade) : base(facade) { }
 
-        public override void Enter()
+        public override IUIMessages Enter()
         {
-            ProceedToNextPlayer();
+            _currentDiscardingPlayerId = Facade.GetNextToDiscardId();
+            _resourcesSelected = new ResourceCostOrStock();
+
+            return new PlayerSelectedToDiscardMessage(_currentDiscardingPlayerId);
         }
 
-        public override void Handle(object command)
+        public override GameResult Handle(object command)
         {
             switch (command)
             {
                 case ResourceCardSelectedCommand c:
-                    HandleResourceSelectionChanged(c);
-                    break;
+                    return HandleResourceSelectionChanged(c);
 
                 case DiscardingAcceptedCommand c:
-                    HandleDiscardingAccepted(c);
-                    break;
+                    return HandleDiscardingAccepted(c);
 
-                case RequestCardDiscardingStartCommand c:
-                    ProceedToNextPlayer();
-                    break;
+                default:
+                    return GameResult.Fail();
             }
         }
 
-        private void ProceedToNextPlayer()
-        {
-            if (Facade.GetNextPhaseAfterDiscarding() != null)
-            {
-                PhaseTransition.ChangePhase(EnumGamePhases.RobberPlacing);
-
-                return;
-            }
-
-            _currentDiscardingPlayerId = Facade.GetNextToDiscardId();
-            _resourcesSelected = new ResourceCostOrStock();
-
-            Bus.Publish(new PlayerSelectedToDiscardEvent(_currentDiscardingPlayerId));
-        }
-
-        private void HandleResourceSelectionChanged(ResourceCardSelectedCommand signal)
+        private GameResult HandleResourceSelectionChanged(ResourceCardSelectedCommand signal)
         {
             if (!signal.IsSelected)
             {
@@ -66,21 +51,32 @@ namespace Catan.Application.Phases
 
             var canDiscard = Facade.CanPlayerDiscard(_resourcesSelected, _currentDiscardingPlayerId);
 
-            Bus.Publish(new SelectionChangedEvent(canDiscard));
+            return GameResult.Ok().AddUIMessage(new SelectionChangedMessage(canDiscard));
         }
 
-        private void HandleDiscardingAccepted(DiscardingAcceptedCommand signal)
+        private GameResult HandleDiscardingAccepted(DiscardingAcceptedCommand signal)
         {
             var result = Facade.UseDiscard(_currentDiscardingPlayerId, _resourcesSelected);
-            
+
             if (!result.Success)
             {
-                Bus.Publish(new ActionRejectedEvent(_currentDiscardingPlayerId, result.Reason));
-                
-                return;
+                return GameResult.Fail().AddUIMessage(new ActionRejectedMessage(_currentDiscardingPlayerId, result.Reason));
             }
 
-            ProceedToNextPlayer();
+            return ProceedToNextPlayer();
+        }
+
+        private GameResult ProceedToNextPlayer()
+        {
+            if (Facade.GetNextPhaseAfterDiscarding() != null)
+            {
+                return GameResult.Ok(EnumGamePhases.RobberPlacing);
+            }
+
+            _currentDiscardingPlayerId = Facade.GetNextToDiscardId();
+            _resourcesSelected = new ResourceCostOrStock();
+
+            return GameResult.Ok().AddUIMessage(new PlayerSelectedToDiscardMessage(_currentDiscardingPlayerId));
         }
     }
 }

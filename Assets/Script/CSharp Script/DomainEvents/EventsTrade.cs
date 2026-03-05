@@ -1,15 +1,15 @@
-﻿using Catan.Core.Results;
+﻿using Catan.Core.Interfaces;
 using Catan.Shared.Data;
 
-namespace Catan.Shared.Communication.Events
+namespace Catan.Core.DomainEvents
 {
-    public sealed class BankTradeRatioChangedEvent
+    public sealed class BankTradeRatioChangedMessage : IDomainEvent
     {
         public int Ratio { get; }
         public bool PossibleForPlayer { get; }
         public EnumResourceTypes? Resource { get; }
 
-        public BankTradeRatioChangedEvent(int ratio, bool possibleForPlayer, EnumResourceTypes? resource)
+        public BankTradeRatioChangedMessage(int ratio, bool possibleForPlayer, EnumResourceTypes? resource)
         {
             Ratio = ratio;
             PossibleForPlayer = possibleForPlayer;

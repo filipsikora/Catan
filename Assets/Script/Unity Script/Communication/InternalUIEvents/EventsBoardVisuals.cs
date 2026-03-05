@@ -1,4 +1,6 @@
-﻿namespace Catan.Unity.Communication.InternalUIEvents
+﻿using Catan.Unity.Interfaces;
+
+namespace Catan.Unity.Communication.InternalUIEvents
 {
-    public class PositionsResetUIEvent { }
+    public class PositionsResetUIEvent : IInternalUIEvents { }
 }
