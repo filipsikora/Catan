@@ -1,38 +1,36 @@
 ﻿using Catan.Application.Controllers;
-using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
-using Catan.Shared.Communication.Events;
+using Catan.Application.UIMessages;
 
 namespace Catan.Application.Phases
 {
     public class CardStealingPhase : BasePhase
     {
-        public CardStealingPhase(Facade facade, EventBus bus, PhaseTransitionController phaseTransition) : base(facade, bus, phaseTransition) { }
+        public CardStealingPhase(Facade facade) : base(facade) { }
 
-        public override void Enter() { }
-
-        public override void Handle(object command)
+        public override GameResult Handle(object command) 
         {
             switch (command)
             {
                 case StolenCardSelectedCommand c:
-                    HandleSteal(c);
-                    break;
+                    return HandleSteal(c);
+
+                default:
+                    return GameResult.Fail();
             }
         }
 
-        private void HandleSteal(StolenCardSelectedCommand signal)
+        private GameResult HandleSteal(StolenCardSelectedCommand signal)
         {
             var victimId = Facade.GetVictimId();
             var result = Facade.UseSteal(victimId, signal.Type);
 
             if (!result.Success) 
             {
-                Bus.Publish(new ActionRejectedEvent(result.VictimId, result.Reason));
-                return;
+                return GameResult.Fail().AddUIMessage(new ActionRejectedMessage(result.VictimId, result.Reason));
             }
 
-            PhaseTransition.ChangePhase(Facade.GetNextPhaseFromAfterRoll());
+            return GameResult.Ok(result.NextPhase);
         }
     }
 }

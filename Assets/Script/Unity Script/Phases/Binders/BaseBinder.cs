@@ -7,13 +7,13 @@ namespace Catan.Unity.Phases.Binders
     {
         protected ManagerUI UI;
         protected EventBus Bus;
-        protected HandlerEvents EventHandler;
+        protected HandlerEvents EventsHandler;
 
         public BaseBinder(ManagerUI ui, EventBus bus, HandlerEvents eventHandler)
         {
             UI = ui;
             Bus = bus;
-            EventHandler = eventHandler;
+            EventsHandler = eventHandler;
         }
 
         public abstract void Bind();

@@ -1,6 +1,8 @@
-﻿namespace Catan.Shared.Communication.Events
+﻿using Catan.Core.Interfaces;
+
+namespace Catan.Core.DomainEvents
 {
-    public class DevelopmentCardBoughtEvent
+    public sealed class DevelopmentCardBoughtEvent : IDomainEvent
     {
         public int CardId;
         public DevelopmentCardBoughtEvent(int cardId)

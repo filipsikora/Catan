@@ -1,48 +1,46 @@
 ﻿using Catan.Application.Controllers;
-using Catan.Shared.Communication;
+using Catan.Application.UIMessages;
 using Catan.Shared.Communication.Commands;
-using Catan.Shared.Communication.Events;
 using Catan.Shared.Data;
 
 namespace Catan.Application.Phases
 {
     public class DevelopmentCardsPhase : BasePhase
     {
-        public DevelopmentCardsPhase(Facade facade, EventBus bus, PhaseTransitionController phaseTransition) : base(facade, bus, phaseTransition) { }
+        public DevelopmentCardsPhase(Facade facade) : base(facade) { }
 
-        public override void Enter() { }
-
-        public override void Handle(object command)
+        public override GameResult Handle(object command)
         {
             switch (command)
             {
                 case DevelopmentCardClickedCommand c:
-                    HandlePlayDevCard(c);
-                    break;
+                    return HandlePlayDevCard(c);
 
                 case DevelopmentCardsCanceledCommand c:
-                    PhaseTransition.ChangePhase(Facade.GetNextPhaseFromAfterRoll());
-                    break;
+                    return GameResult.Ok(Facade.GetNextPhaseFromAfterRoll());
+
+                default:
+                    return GameResult.Fail();
             }
         }
 
-        private void HandlePlayDevCard(DevelopmentCardClickedCommand signal)
+        private GameResult HandlePlayDevCard(DevelopmentCardClickedCommand signal)
         {
             var result = Facade.UseDevCard(signal.DevelopmentCardId);
             var playerId = Facade.GetCurrentPlayerId();
 
             if (!result.Success)
             {
-                Bus.Publish(new ActionRejectedEvent(playerId, result.Reason));
-
                 if (result.Reason == ConditionFailureReason.NoBuildingsAvailable)
-                    Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, "No roads available"));
+                    return GameResult.Fail().AddUIMessage(new LogMessageMessage(EnumLogTypes.Info, "No roads available"));
 
                 if (result.Reason == ConditionFailureReason.NotEnoughResourcesInBank)
-                    Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, "No resources in bank"));
+                    return GameResult.Fail().AddUIMessage(new LogMessageMessage(EnumLogTypes.Info, "No resources in bank"));
+
+                return GameResult.Fail().AddUIMessage(new ActionRejectedMessage(playerId, result.Reason));
             }
 
-            TransitionPhase(result);
+            return GameResult.Ok(result.NextPhase);
         }
     }
 }

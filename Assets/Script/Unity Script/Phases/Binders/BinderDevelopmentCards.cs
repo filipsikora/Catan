@@ -1,26 +1,19 @@
-﻿using Catan.Shared.Communication;
+﻿using Catan.Unity.Helpers;
 using Catan.Shared.Communication.Commands;
 using Catan.Unity.Data;
 using Catan.Unity.Panels;
-using UnityEngine;
 
 namespace Catan.Unity.Phases.Binders
 {
     public class BinderDevelopmentCards : BaseBinder
     {
-        public BinderDevelopmentCards(ManagerUI ui, EventBus bus) : base(ui, bus)
-        {
-            Debug.Log("Dev Cards Binder constructor");
-        }
+        public BinderDevelopmentCards(ManagerUI ui, EventBus bus, HandlerEvents eventsHandler) : base(ui, bus, eventsHandler) { }
 
         public override void Bind()
         {
-            Debug.Log("DevCards Binded");
-
             UI.DevelopmentCardsPanel.Bind(EnumDevelopmentCardsUIButtons.CancelDevelopmentCards, () =>
             {
-                Debug.Log("DevCards Binded");
-                Bus.Publish(new DevelopmentCardsCanceledCommand());
+                EventsHandler.Execute(new DevelopmentCardsCanceledCommand());
             });
         }
 

@@ -1,5 +1,5 @@
-﻿using Catan.Application.UIMessages;
-using Catan.Shared.Communication;
+﻿using Catan.Unity.Communication.InternalUIEvents;
+using Catan.Unity.Helpers;
 using Catan.Shared.Data;
 using Catan.Unity.Panels;
 using System;
@@ -18,10 +18,10 @@ namespace Catan.Unity.Visuals.Controllers
             _bus = bus;
             _panel = panel;
 
-            _bus.Subscribe<LogMessageEvent>(OnLogMessageReceived);
-            _bus.Subscribe<ActionRejectedEvent>(OnActionRejectedReceived);
+            _bus.Subscribe<LogMessageMessage>(OnLogMessageReceived);
+            _bus.Subscribe<ActionRejectedMessage>(OnActionRejectedReceived);
 
-            _handlers = new Dictionary<EnumLogTypes, Action<LogMessageEvent>>
+            _handlers = new Dictionary<EnumLogTypes, Action<LogMessageMessage>>
             {
                 {EnumLogTypes.Info, e => _panel.AddInfo(e.Message, e.Time) },
                 {EnumLogTypes.Error, e => _panel.AddError(e.Message) },
@@ -29,7 +29,7 @@ namespace Catan.Unity.Visuals.Controllers
             };
         }
 
-        private void OnLogMessageReceived(LogMessageEvent signal)
+        private void OnLogMessageReceived(LogMessageMessage signal)
         {
             if (_handlers.TryGetValue(signal.Type, out var handler))
             {
@@ -37,15 +37,15 @@ namespace Catan.Unity.Visuals.Controllers
             }
         }
 
-        private void OnActionRejectedReceived(ActionRejectedEvent signal)
+        private void OnActionRejectedReceived(ActionRejectedMessage signal)
         {
             _panel.AddError(signal.Reason.ToString());
         }
 
         public void Dispose()
         {
-            _bus.Unsubscribe<LogMessageEvent>(OnLogMessageReceived);
-            _bus.Unsubscribe<ActionRejectedEvent>(OnActionRejectedReceived);
+            _bus.Unsubscribe<LogMessageMessage>(OnLogMessageReceived);
+            _bus.Unsubscribe<ActionRejectedMessage>(OnActionRejectedReceived);
         }
     }
 }

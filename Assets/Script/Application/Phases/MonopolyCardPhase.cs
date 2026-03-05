@@ -1,7 +1,6 @@
 ﻿using Catan.Application.Controllers;
-using Catan.Shared.Communication;
+using Catan.Application.UIMessages;
 using Catan.Shared.Communication.Commands;
-using Catan.Shared.Communication.Events;
 using Catan.Shared.Data;
 
 namespace Catan.Application.Phases
@@ -10,25 +9,24 @@ namespace Catan.Application.Phases
     {
         private EnumResourceTypes? _type;
 
-        public MonopolyCardPhase(Facade facade, EventBus bus, PhaseTransitionController phaseTransition) : base(facade, bus, phaseTransition) { }
+        public MonopolyCardPhase(Facade facade) : base(facade) { }
 
-        public override void Enter() { }
-
-        public override void Handle(object command)
+        public override GameResult Handle(object command)
         {
             switch (command)
             {
                 case StolenCardSelectedCommand c:
-                    HandleResourceSelected(c);
-                    break;
+                    return HandleResourceSelected(c);
 
                 case CardSelectionAcceptedCommand c:
-                    HandleResourceAccepted(c);
-                    break;
+                    return HandleResourceAccepted(c);
+
+                default:
+                    return GameResult.Fail();
             }
         }
 
-        private void HandleResourceSelected(StolenCardSelectedCommand signal)
+        private GameResult HandleResourceSelected(StolenCardSelectedCommand signal)
         {
             if (_type == signal.Type)
             {
@@ -41,20 +39,19 @@ namespace Catan.Application.Phases
 
             bool hasSelected = _type != null;
 
-            Bus.Publish(new ResourceSelectedEvent(hasSelected, signal.Type));
+            return GameResult.Ok().AddUIMessage(new ResourceSelectedMessage(hasSelected, signal.Type));
         }
 
-        private void HandleResourceAccepted(CardSelectionAcceptedCommand signal)
+        private GameResult HandleResourceAccepted(CardSelectionAcceptedCommand signal)
         {
             var result = Facade.UseMonopolyCard(_type.Value);
 
             if (!result.Success)
             {
-                Bus.Publish(new ActionRejectedEvent(result.ThiefId, result.Reason));
-                return;
+                return GameResult.Fail().AddUIMessage(new ActionRejectedMessage(result.ThiefId, result.Reason));
             }
 
-            TransitionPhase(result);
+            return GameResult.Ok(result.NextPhase);
         }
     }
 }

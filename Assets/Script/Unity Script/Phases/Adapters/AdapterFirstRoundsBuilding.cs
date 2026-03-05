@@ -1,7 +1,6 @@
 ﻿using Catan.Application.Controllers;
 using Catan.Core.Snapshots;
-using Catan.Shared.Communication;
-using Catan.Shared.Communication.Events;
+using Catan.Unity.Helpers;
 using Catan.Unity.Communication.InternalUIEvents;
 using Catan.Unity.Panels;
 using Catan.Unity.Phases.Binders;
@@ -16,14 +15,14 @@ namespace Catan.Unity.Phases.Adapters
         private TurnDataSnapshot _turnDataSnapshot;
         private VisualsBoard _board;
 
-        public AdapterFirstRoundsBuilding(ManagerUI ui, EventBus bus, Facade facade, VisualsBoard board) : base(ui, bus, facade)
+        public AdapterFirstRoundsBuilding(ManagerUI ui, EventBus bus, Facade facade, VisualsBoard board, HandlerEvents eventsHandler) : base(ui, bus, facade, eventsHandler)
         {
             _board = board;
         }
 
         public override void OnEnter()
         {
-            _binder = new BinderFirstRoundBuildings(UI, EventBus);
+            _binder = new BinderFirstRoundBuildings(UI, EventBus, EventsHandler);
             _binder.Bind();
 
             _turnDataSnapshot = Facade.GetTurnData();
@@ -32,29 +31,25 @@ namespace Catan.Unity.Phases.Adapters
 
             UI.UpdateTurnCounter(_turnDataSnapshot.TurnNumber);
 
-            EventBus.Subscribe<VertexHighlightedEvent>(OnVertexClicked);
-            EventBus.Subscribe<EdgeHighlightedEvent>(OnEdgeClicked);
-            EventBus.Subscribe<BuildOptionsSentEvent>(OnPositionClicked);
+            EventBus.Subscribe<VertexHighlightedUIEvent>(OnVertexClicked);
+            EventBus.Subscribe<EdgeHighlightedUIEvent>(OnEdgeClicked);
+            EventBus.Subscribe<BuildOptionsSentUIEvent>(OnPositionClicked);
 
-            EventBus.Subscribe<VillagePlacedEvent>(OnVillagePlaced);
-            EventBus.Subscribe<RoadPlacedEvent>(OnRoadPlaced);
+            EventBus.Subscribe<VillagePlacedUIEvent>(OnVillagePlaced);
+            EventBus.Subscribe<RoadPlacedUIEvent>(OnRoadPlaced);
 
             EventBus.Publish(new PlayerStateChangedUIEvent(_turnDataSnapshot.PlayerId));
-
-            UnityEngine.Debug.Log("chuj onenter");
         }
 
-        private void OnVertexClicked(VertexHighlightedEvent signal)
+        private void OnVertexClicked(VertexHighlightedUIEvent signal)
         {
-            UnityEngine.Debug.Log("chuj w adapterze");
-
             EventBus.Publish(new PositionsResetUIEvent());
 
             var vertexObj = _board.GetVertexObject(signal.VertexId);
             _board.SetVertexVisual(vertexObj, Color.yellow);
         }
 
-        private void OnEdgeClicked(EdgeHighlightedEvent signal)
+        private void OnEdgeClicked(EdgeHighlightedUIEvent signal)
         {
             EventBus.Publish(new PositionsResetUIEvent());
 
@@ -62,20 +57,20 @@ namespace Catan.Unity.Phases.Adapters
             _board.SetEdgeVisual(edgeObj, Color.yellow);
         }
 
-        private void OnPositionClicked(BuildOptionsSentEvent signal)
+        private void OnPositionClicked(BuildOptionsSentUIEvent signal)
         {
             UI.MainUIPanel.BuildFreeVillageButton.gameObject.SetActive(signal.CanBuildVillage);
             UI.MainUIPanel.BuildFreeRoadButton.gameObject.SetActive(signal.CanBuildRoad);
         }
 
-        private void OnVillagePlaced(VillagePlacedEvent signal)
+        private void OnVillagePlaced(VillagePlacedUIEvent signal)
         {
             EventBus.Publish(new PositionsResetUIEvent());
             EventBus.Publish(new VillagePlacedUIEvent(signal.VertexId, _turnDataSnapshot.PlayerId));
             EventBus.Publish(new PlayerStateChangedUIEvent(_turnDataSnapshot.PlayerId));
         }
 
-        private void OnRoadPlaced(RoadPlacedEvent signal)
+        private void OnRoadPlaced(RoadPlacedUIEvent signal)
         {
             UI.MainUIPanel.NextTurnButton.gameObject.SetActive(true);
 
@@ -90,12 +85,12 @@ namespace Catan.Unity.Phases.Adapters
 
             EventBus.Publish(new PositionsResetUIEvent());
 
-            EventBus.Unsubscribe<VertexHighlightedEvent>(OnVertexClicked);
-            EventBus.Unsubscribe<EdgeHighlightedEvent>(OnEdgeClicked);
-            EventBus.Unsubscribe<BuildOptionsSentEvent>(OnPositionClicked);
+            EventBus.Unsubscribe<VertexHighlightedUIEvent>(OnVertexClicked);
+            EventBus.Unsubscribe<EdgeHighlightedUIEvent>(OnEdgeClicked);
+            EventBus.Unsubscribe<BuildOptionsSentUIEvent>(OnPositionClicked);
 
-            EventBus.Unsubscribe<VillagePlacedEvent>(OnVillagePlaced);
-            EventBus.Unsubscribe<RoadPlacedEvent>(OnRoadPlaced);
+            EventBus.Unsubscribe<VillagePlacedUIEvent>(OnVillagePlaced);
+            EventBus.Unsubscribe<RoadPlacedUIEvent>(OnRoadPlaced);
         }
     }
 }

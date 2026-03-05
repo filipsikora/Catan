@@ -1,5 +1,5 @@
 ﻿using Catan.Application.Controllers;
-using Catan.Shared.Communication;
+using Catan.Unity.Helpers;
 using Catan.Unity.Communication.InternalUIEvents;
 using Catan.Unity.Panels;
 using Catan.Unity.Phases.Binders;
@@ -11,13 +11,13 @@ namespace Catan.Unity.Phases.Adapters
     {
         private BinderDevelopmentCards _binder;
 
-        public AdapterDevelopmentCards(ManagerUI ui, EventBus bus, Facade facade) : base(ui, bus, facade) { }
+        public AdapterDevelopmentCards(ManagerUI ui, EventBus bus, Facade facade, HandlerEvents eventsHandler) : base(ui, bus, facade, eventsHandler) { }
 
         public override void OnEnter()
         {
             UI.DevelopmentCardsPanel.gameObject.SetActive(true);
 
-            _binder = new BinderDevelopmentCards(UI, EventBus);
+            _binder = new BinderDevelopmentCards(UI, EventBus, EventsHandler);
             _binder.Bind();
 
             VisualsUI.SetMainAndPlayerUIVisibility(false, UI.MainUIPanel, UI.PlayerUIPanel);

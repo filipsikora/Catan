@@ -11,16 +11,16 @@ namespace Catan.Unity.Phases.Adapters
         protected ManagerUI UI;
         protected Facade Facade;
         protected EventBus EventBus;
-        protected HandlerEvents EventHandler;
+        protected HandlerEvents EventsHandler;
 
         internal AdapterPhaseTransition? Handler;
 
-        public BasePhaseAdapter(ManagerUI ui, Facade facade, EventBus bus, HandlerEvents eventHandler)
+        public BasePhaseAdapter(ManagerUI ui, EventBus bus, Facade facade, HandlerEvents eventHandler)
         {
             UI = ui;
             Facade = facade;
             EventBus = bus;
-            EventHandler = eventHandler;
+            EventsHandler = eventHandler;
         }
 
         public virtual void OnEnter() { }

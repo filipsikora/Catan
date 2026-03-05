@@ -1,5 +1,5 @@
 ﻿using Catan.Application.Controllers;
-using Catan.Shared.Communication;
+using Catan.Unity.Helpers;
 using Catan.Unity.Communication.InternalUIEvents;
 using Catan.Unity.Panels;
 

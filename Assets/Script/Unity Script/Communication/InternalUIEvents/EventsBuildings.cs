@@ -37,4 +37,18 @@ namespace Catan.Unity.Communication.InternalUIEvents
             OwnerId = ownerId;
         }
     }
+
+    public sealed class BuildOptionsSentUIEvent : IInternalUIEvents
+    {
+        public bool CanBuildVillage { get; }
+        public bool CanBuildRoad { get; }
+        public bool CanUpgradeVillage { get; }
+
+        public BuildOptionsSentUIEvent(bool canVillage, bool canRoad, bool canTown)
+        {
+            CanBuildVillage = canVillage;
+            CanBuildRoad = canRoad;
+            CanUpgradeVillage = canTown;
+        }
+    }
 }

@@ -13,7 +13,7 @@ namespace Catan.Unity.Phases.Binders
         {
             UI.BankTradePanel.Bind(EnumBankTradeUIButtons.CancelBankTrade, () =>
             {
-                EventHandler.Execute(new BankTradeCanceledCommand());
+                EventsHandler.Execute(new BankTradeCanceledCommand());
             });
         }
 

@@ -231,6 +231,8 @@ namespace Catan.Unity
         unity: fix dependencies in controllers and adapters
 
         delete wrapper from eventbus?
+
+        resetselection return send in gameresult
         */
     }
 }

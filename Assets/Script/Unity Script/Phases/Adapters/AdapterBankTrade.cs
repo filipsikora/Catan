@@ -16,11 +16,11 @@ namespace Catan.Unity.Phases.Adapters
     {
         private BinderBankTrade _binder;
 
-        public AdapterBankTrade(ManagerUI ui, Facade facade, EventBus bus, HandlerEvents eventHandler) : base(ui, facade, bus, eventHandler) { }
+        public AdapterBankTrade(ManagerUI ui, EventBus bus, Facade facade, HandlerEvents eventHandler) : base(ui,bus, facade, eventHandler) { }
 
         public override void OnEnter()
         {
-            _binder = new BinderBankTrade(UI, EventBus, EventHandler);
+            _binder = new BinderBankTrade(UI, EventBus, EventsHandler);
             _binder.Bind();
 
             UI.BankTradePanel.gameObject.SetActive(true);
@@ -46,13 +46,13 @@ namespace Catan.Unity.Phases.Adapters
 
             if (signal.Location == EnumResourceCardLocation.OfferedTrade)
             {
-                EventHandler.Execute(new BankTradeOfferedResourceSelected(signal.Type));
+                EventsHandler.Execute(new BankTradeOfferedResourceSelected(signal.Type));
                 EventBus.Publish(new ResourceCardVisualStateChangedUIEvent(signal.VisualResourceCardId, signal.Location, EnumResourceCardVisualState.Highlighted));
             }
 
             else
             {
-                EventHandler.Execute(new BankTradeDesiredResourceSelected(signal.Type));
+                EventsHandler.Execute(new BankTradeDesiredResourceSelected(signal.Type));
             }
         }
 

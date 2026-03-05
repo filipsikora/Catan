@@ -1,5 +1,5 @@
 ﻿using Catan.Application.Controllers;
-using Catan.Shared.Communication;
+using Catan.Unity.Helpers;
 using Catan.Shared.Data;
 using Catan.Unity.Panels;
 using Catan.Unity.Phases.Adapters;
@@ -14,14 +14,16 @@ namespace Catan.Unity.Phases.Controllers
         private readonly EventBus _bus;
         private readonly Facade _facade;
         private readonly VisualsBoard _board;
+        private readonly HandlerEvents _eventsHandler;
 
-        public AdapterGameFlow(ManagerUI ui, EventBus bus, Facade facade, AdapterPhaseTransition phases, VisualsBoard board)
+        public AdapterGameFlow(ManagerUI ui, EventBus bus, Facade facade, AdapterPhaseTransition phases, VisualsBoard board, HandlerEvents eventsHandler)
         {
             _ui = ui;
             _bus = bus;
             _phases = phases;
             _facade = facade;
             _board = board;
+            _eventsHandler = eventsHandler;
         }
 
         public void ChangePhase(EnumGamePhases nextPhase)
@@ -29,7 +31,7 @@ namespace Catan.Unity.Phases.Controllers
             switch (nextPhase)
             {
                 case EnumGamePhases.BankTrade:
-                    _phases.TransitionTo(new AdapterBankTrade(_ui, _bus, _facade));
+                    _phases.TransitionTo(new AdapterBankTrade(_ui, _bus, _facade, _eventsHandler));
                     break;
 
                 case EnumGamePhases.NormalRound:
@@ -37,7 +39,7 @@ namespace Catan.Unity.Phases.Controllers
                     break;
 
                 case EnumGamePhases.BeforeRoll:
-                    _phases.TransitionTo(new AdapterBeforeRoll(_ui, _bus, _facade));
+                    _phases.TransitionTo(new AdapterBeforeRoll(_ui, _bus, _facade, _eventsHandler));
                     break;
 
                 case EnumGamePhases.TradeOffer:

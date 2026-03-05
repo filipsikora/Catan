@@ -1,8 +1,8 @@
-﻿using Catan.Shared.Communication;
-using Catan.Unity.Communication.InternalUICommands;
+﻿using Catan.Unity.Helpers;
 using Catan.Unity.Visuals.Models;
 using Catan.Unity.Data;
 using System.Collections.Generic;
+using Catan.Unity.Communication.InternalUIEvents;
 
 namespace Catan.Unity.Visuals.Controllers
 {
