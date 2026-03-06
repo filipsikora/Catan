@@ -84,12 +84,12 @@ namespace Catan.Application.Phases
 
             if (!result.Success)
             {
-                return GameResult.Fail().AddUIMessage((new ActionRejectedMessage(result.PlayerId, result.Reason)));
+                return GameResult.Fail().AddUIMessage(new ActionRejectedMessage(result.PlayerId, result.Reason));
             }
 
             villagePlaced = true;
 
-            return GameResult.Ok().AddDomainEvent(new VillagePlacedEvent(id)).AddUIMessage(selectionMessage);
+            return GameResult.Ok().AddDomainEvent(new VillagePlacedEvent(id, Facade.GetCurrentPlayerId())).AddUIMessage(selectionMessage);
         }
 
         private GameResult HandleBuildRoad(BuildRoadCommand signal)
@@ -107,7 +107,7 @@ namespace Catan.Application.Phases
 
             roadPlaced = true;
 
-            return GameResult.Ok().AddDomainEvent(new RoadPlacedEvent(id)).AddUIMessage(selectionMessage);
+            return GameResult.Ok().AddDomainEvent(new RoadPlacedEvent(id, Facade.GetCurrentPlayerId())).AddUIMessage(selectionMessage);
         }
 
         private GameResult HandleTurnEnded(EndTurnCommand signal)

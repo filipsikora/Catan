@@ -1,13 +1,11 @@
 ﻿using Catan.Application.Controllers;
 using Catan.Core.Snapshots;
-using Catan.Shared.Communication;
-using Catan.Shared.Communication.Events;
+using Catan.Unity.Helpers;
 using Catan.Unity.Communication.InternalUIEvents;
 using Catan.Unity.Data;
 using Catan.Unity.Panels;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
-using UnityEngine;
 
 namespace Catan.Unity.Phases.Adapters
 {
@@ -16,13 +14,11 @@ namespace Catan.Unity.Phases.Adapters
         private BinderNormalRound _binder;
         private TurnDataSnapshot _turnDataSnapshot;
 
-        private VisualsBoard _board;
-
-        public AdapterRoadBuilding(ManagerUI ui, EventBus bus, Facade facade, VisualsBoard board) : base(ui, bus, facade) { }
+        public AdapterRoadBuilding(ManagerUI ui, EventBus bus, Facade facade, HandlerEvents eventsHandler) : base(ui, bus, facade, eventsHandler) { }
 
         public override void OnEnter()
         {
-            _binder = new BinderNormalRound(UI, EventBus);
+            _binder = new BinderNormalRound(UI, EventBus, EventsHandler);
             _binder.Bind();
 
             _turnDataSnapshot = Facade.GetTurnData();
@@ -31,31 +27,21 @@ namespace Catan.Unity.Phases.Adapters
             VisualsUI.MakeAllChildrenVisible(UI.MainUIPanel.ButtonsContainer, false);
 
 
-            EventBus.Subscribe<RoadPlacedEvent>(OnRoadPlaced);
+            EventBus.Subscribe<RoadPlacedUIEvent>(OnRoadPlaced);
 
-            EventBus.Subscribe<EdgeHighlightedEvent>(OnEdgeClicked);
-            EventBus.Subscribe<BuildOptionsSentEvent>(OnPositionClicked);
+            EventBus.Subscribe<BuildOptionsSentUIEvent>(OnPositionClicked);
         }
 
-        private void OnEdgeClicked(EdgeHighlightedEvent signal)
-        {
-            EventBus.Publish(new PositionsResetUIEvent());
-
-            var edgeObj = _board.GetEdgeObject(signal.EdgeId);
-            _board.SetEdgeVisual(edgeObj, Color.yellow);
-        }
-
-        private void OnPositionClicked(BuildOptionsSentEvent signal)
+        private void OnPositionClicked(BuildOptionsSentUIEvent signal)
         {
             UI.MainUIPanel.SetButtonVisibility(EnumMainUIButtons.BuildVillage, signal.CanBuildVillage);
             UI.MainUIPanel.SetButtonVisibility(EnumMainUIButtons.BuildRoad, signal.CanBuildRoad);
             UI.MainUIPanel.SetButtonVisibility(EnumMainUIButtons.UpgradeVillage, signal.CanUpgradeVillage);
         }
 
-        private void OnRoadPlaced(RoadPlacedEvent signal)
+        private void OnRoadPlaced(RoadPlacedUIEvent signal)
         {
             EventBus.Publish(new PositionsResetUIEvent());
-            EventBus.Publish(new RoadPlacedUIEvent(signal.EdgeId, _turnDataSnapshot.PlayerId));
             EventBus.Publish(new PlayerStateChangedUIEvent(_turnDataSnapshot.PlayerId));
         }
 
@@ -63,10 +49,9 @@ namespace Catan.Unity.Phases.Adapters
         {
             VisualsUI.SetParentVisibility(UI.PlayerUIPanel, true);
 
-            EventBus.Unsubscribe<RoadPlacedEvent>(OnRoadPlaced);
+            EventBus.Unsubscribe<RoadPlacedUIEvent>(OnRoadPlaced);
 
-            EventBus.Unsubscribe<EdgeHighlightedEvent>(OnEdgeClicked);
-            EventBus.Unsubscribe<BuildOptionsSentEvent>(OnPositionClicked);
+            EventBus.Unsubscribe<BuildOptionsSentUIEvent>(OnPositionClicked);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Catan.Shared.Data;
 using Catan.Unity.Interfaces;
+using System.Collections.Generic;
 
 namespace Catan.Unity.Communication.InternalUIEvents
 {
@@ -27,6 +28,16 @@ namespace Catan.Unity.Communication.InternalUIEvents
         public StolenCardSelectedUIEvent(EnumResourceTypes type)
         {
             Type = type;
+        }
+    }
+
+    public sealed class PotentialVictimsFoundUIEvent : IInternalUIEvents
+    {
+        public List<int> VictimsIds { get; }
+
+        public PotentialVictimsFoundUIEvent(List<int> victimsIds)
+        {
+            VictimsIds = victimsIds;
         }
     }
 }

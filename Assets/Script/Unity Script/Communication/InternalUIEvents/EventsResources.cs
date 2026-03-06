@@ -16,10 +16,19 @@ namespace Catan.Unity.Communication.InternalUIEvents
     {
         public EnumResourceTypes? Type { get; }
         public bool Selected { get; }
-        public ResourceSelectedUIEvent(bool selected, EnumResourceTypes type)
+        public ResourceSelectedUIEvent(bool selected, EnumResourceTypes? type)
         {
             Type = type;
             Selected = selected;
+        }
+    }
+
+    public sealed class DesiredCardsChangedUIEvent : IInternalUIEvents
+    {
+        public bool HasDesired { get; }
+        public DesiredCardsChangedUIEvent(bool hasDesired)
+        {
+            HasDesired = hasDesired;
         }
     }
 }

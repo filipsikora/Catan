@@ -1,8 +1,7 @@
 ﻿using Catan.Application.Controllers;
 using Catan.Core.Snapshots;
-using Catan.Shared.Communication;
+using Catan.Unity.Helpers;
 using Catan.Shared.Communication.Commands;
-using Catan.Shared.Communication.Events;
 using Catan.Unity.Communication.InternalUIEvents;
 using Catan.Unity.Panels;
 using Catan.Unity.Phases.Binders;
@@ -15,13 +14,13 @@ namespace Catan.Unity.Phases.Adapters
         BinderCardSelection _binder;
         TurnDataSnapshot _turnData;
 
-        public AdapterYearOfPlentyCard(ManagerUI ui, EventBus bus, Facade facade) : base(ui, bus, facade) { }
+        public AdapterYearOfPlentyCard(ManagerUI ui, EventBus bus, Facade facade, HandlerEvents eventsHandler) : base(ui, bus, facade, eventsHandler) { }
 
         public override void OnEnter()
         {
             UI.CardSelectorPanel.gameObject.SetActive(true);
 
-            _binder = new BinderCardSelection(UI, EventBus);
+            _binder = new BinderCardSelection(UI, EventBus, EventsHandler);
             _binder.Bind();
 
             _turnData = Facade.GetTurnData();
@@ -30,10 +29,10 @@ namespace Catan.Unity.Phases.Adapters
             UI.CardSelectorPanel.Show("Choose two resources to get for free");
 
             EventBus.Subscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
-            EventBus.Subscribe<SelectionChangedEvent>(OnDesiredCardsChanged);
+            EventBus.Subscribe<SelectionChangedUIEvent>(OnDesiredCardsChanged);
         }
 
-        private void OnDesiredCardsChanged(SelectionChangedEvent signal)
+        private void OnDesiredCardsChanged(SelectionChangedUIEvent signal)
         {
             UI.CardSelectorPanel.AcceptCardsButton.gameObject.SetActive(signal.ActionAvailable);
         }
@@ -42,12 +41,12 @@ namespace Catan.Unity.Phases.Adapters
         {
             if (signal.IsLeftClicked)
             {
-                EventBus.Publish(new ResourceCardSelectedCommand(true, signal.Type));
+                EventsHandler.Execute(new ResourceCardSelectedCommand(true, signal.Type));
             }
 
             else
             {
-                EventBus.Publish(new ResourceCardSelectedCommand(false, signal.Type));
+                EventsHandler.Execute(new ResourceCardSelectedCommand(false, signal.Type));
             }
         }
 
@@ -62,7 +61,7 @@ namespace Catan.Unity.Phases.Adapters
             EventBus.Publish(new PlayerStateChangedUIEvent(_turnData.PlayerId));
 
             EventBus.Unsubscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
-            EventBus.Unsubscribe<SelectionChangedEvent>(OnDesiredCardsChanged);
+            EventBus.Unsubscribe<SelectionChangedUIEvent>(OnDesiredCardsChanged);
         }
     }
 }

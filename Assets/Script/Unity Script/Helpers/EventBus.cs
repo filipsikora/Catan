@@ -7,14 +7,7 @@ namespace Catan.Unity.Helpers
 {
     public class EventBus
     {
-        private readonly Dictionary<Type, List<Subscription>> _subscribers = new();
-
-        private class Subscription
-        {
-            public object Target;
-            public Delegate Callback;
-            public Action<IInternalUIEvents> Wrapper;
-        }
+        private readonly Dictionary<Type, List<Delegate>> _subscribers = new();
 
         public void Subscribe<T>(Action<T> callback) where T : IInternalUIEvents
         {
@@ -22,18 +15,11 @@ namespace Catan.Unity.Helpers
 
             if (!_subscribers.TryGetValue(type, out var list))
             {
-                list = new List<Subscription>();
+                list = new List<Delegate>();
                 _subscribers[type] = list;
             }
 
-            var wrapper = new Action<object>(obj => callback((T)obj));
-
-            list.Add(new Subscription
-            {
-                Target = callback.Target,
-                Callback = callback,
-                Wrapper = wrapper
-            });
+            list.Add(callback);
         }
 
         public void Unsubscribe<T>(Action<T> callback) where T : IInternalUIEvents
@@ -43,10 +29,7 @@ namespace Catan.Unity.Helpers
             if (!_subscribers.TryGetValue(type, out var list))
                 return;
 
-            list.RemoveAll(sub =>
-                sub.Callback == (Delegate)callback &&
-                sub.Target == callback.Target
-            );
+            list.Remove(callback);
 
             if (list.Count == 0)
                 _subscribers.Remove(type);
@@ -55,8 +38,6 @@ namespace Catan.Unity.Helpers
         public void Publish(IInternalUIEvents signal)
         {
             var signalType = signal.GetType();
-
-            var subscribersSnapshot = _subscribers.ToArray();
 
             foreach (var (subscribedType, list) in subscribersSnapshot)
             {

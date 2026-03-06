@@ -1,7 +1,7 @@
 ﻿using Catan.Application.Interfaces;
 using Catan.Shared.Data;
 
-namespace Catan.Core.DomainEvents
+namespace Catan.Application.UIMessages
 {
     public sealed class BankTradeRatioChangedMessage : IUIMessages
     {

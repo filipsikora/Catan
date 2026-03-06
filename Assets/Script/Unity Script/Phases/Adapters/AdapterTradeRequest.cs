@@ -1,6 +1,6 @@
 ﻿using Catan.Application.Controllers;
 using Catan.Core.Snapshots;
-using Catan.Shared.Communication;
+using Catan.Unity.Helpers;
 using Catan.Unity.Panels;
 using Catan.Unity.Phases.Adapters;
 using Catan.Unity.Phases.Binders;
@@ -13,13 +13,13 @@ namespace Catan.Unity.Phases.Controllers
         private BinderTradeRequest _binder;
         private TradeOfferedSnapshot _tradeOfferSnapshot;
 
-        public AdapterTradeRequest(ManagerUI ui, EventBus bus, Facade facade) : base(ui, bus, facade) { }
+        public AdapterTradeRequest(ManagerUI ui, EventBus bus, Facade facade, HandlerEvents eventsHandler) : base(ui, bus, facade, eventsHandler) { }
 
         public override void OnEnter()
         {
             UI.TradeRequestPanel.gameObject.SetActive(true);
 
-            _binder = new BinderTradeRequest(UI, EventBus);
+            _binder = new BinderTradeRequest(UI, EventBus, EventsHandler);
             _binder.Bind();
 
             _tradeOfferSnapshot = Facade.GetTradeOfferData();

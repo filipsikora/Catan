@@ -1,5 +1,6 @@
 ﻿using Catan.Unity.Helpers;
 using Catan.Unity.Communication.InternalUIEvents;
+using UnityEngine;
 
 namespace Catan.Unity.Visuals.Controllers
 {
@@ -14,9 +15,32 @@ namespace Catan.Unity.Visuals.Controllers
             _board = board;
 
             _bus.Subscribe<PositionsResetUIEvent>(OnAllPositionsReset);
+            _bus.Subscribe<VertexHighlightedUIEvent>(OnVertexHighlighted);
+            _bus.Subscribe<EdgeHighlightedUIEvent>(OnEdgeClicked);
         }
 
-        public void OnAllPositionsReset(PositionsResetUIEvent signal)
+        private void OnAllPositionsReset(PositionsResetUIEvent signal)
+        {
+            ResetAllPositions();
+        }
+
+        private void OnVertexHighlighted(VertexHighlightedUIEvent signal)
+        {
+            ResetAllPositions();
+
+            var vertexObject = _board.GetVertexObject(signal.VertexId);
+            _board.SetVertexVisual(vertexObject, Color.yellow);
+        }
+
+        private void OnEdgeClicked(EdgeHighlightedUIEvent signal)
+        {
+            ResetAllPositions();
+
+            var edgeObject = _board.GetEdgeObject(signal.EdgeId);
+            _board.SetEdgeVisual(edgeObject, Color.yellow);
+        }
+
+        private void ResetAllPositions()
         {
             foreach (var vertexId in _board.GetVerticesIds())
             {

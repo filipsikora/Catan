@@ -22,4 +22,13 @@ namespace Catan.Application.UIMessages
             ActionAvailable = actionAvailable;
         }
     }
+
+    public sealed class DesiredCardsChangedMessage : IUIMessages
+    {
+        public bool HasDesired { get; }
+        public DesiredCardsChangedMessage(bool hasDesired)
+        {
+            HasDesired = hasDesired;
+        }
+    }
 }

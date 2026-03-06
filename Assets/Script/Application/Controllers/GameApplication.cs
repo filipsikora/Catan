@@ -2,7 +2,6 @@
 using Catan.Application.Controllers;
 using Catan.Application.Interfaces;
 using Catan.Application.Phases;
-using Catan.Application.UIMessages;
 using Catan.Shared.Data;
 using Catan.Shared.Interfaces;
 
@@ -31,8 +30,6 @@ namespace Catan.Application
 
                 if (UImessages != null)
                     result.AddUIMessage(UImessages);
-
-                result.AddUIMessage(new PhaseChangedMessage(nextPhase));
             }
 
             return result;
@@ -46,15 +43,15 @@ namespace Catan.Application
                 EnumGamePhases.FirstRoundsBuilding => new FirstRoundsBuildingPhase(Facade),
                 EnumGamePhases.BankTrade => new BankTradePhase(Facade),
                 EnumGamePhases.CardDiscarding => new CardDiscardingPhase(Facade),
-                EnumGamePhases.CardStealing => new CardStealingPhase(_facade, _bus, this),
-                EnumGamePhases.RobberPlacing => new RobberPlacingPhase(_facade, _bus, this),
-                EnumGamePhases.DevelopmentCards => new DevelopmentCardsPhase(_facade, _bus, this),
-                EnumGamePhases.MonopolyCard => new MonopolyCardPhase(_facade, _bus, this),
-                EnumGamePhases.NormalRound => new NormalRoundPhase(_facade, _bus, this),
-                EnumGamePhases.RoadBuilding => new RoadBuildingPhase(_facade, _bus, this),
-                EnumGamePhases.TradeOffer => new TradeOfferPhase(_facade, _bus, this),
-                EnumGamePhases.TradeRequest => new TradeRequestPhase(_facade, _bus, this),
-                EnumGamePhases.YearOfPlentyCard => new YearOfPlentyCardPhase(_facade, _bus, this)
+                EnumGamePhases.CardStealing => new CardStealingPhase(Facade),
+                EnumGamePhases.RobberPlacing => new RobberPlacingPhase(Facade),
+                EnumGamePhases.DevelopmentCards => new DevelopmentCardsPhase(Facade),
+                EnumGamePhases.MonopolyCard => new MonopolyCardPhase(Facade),
+                EnumGamePhases.NormalRound => new NormalRoundPhase(Facade),
+                EnumGamePhases.RoadBuilding => new RoadBuildingPhase(Facade),
+                EnumGamePhases.TradeOffer => new TradeOfferPhase(Facade),
+                EnumGamePhases.TradeRequest => new TradeRequestPhase(Facade),
+                EnumGamePhases.YearOfPlentyCard => new YearOfPlentyCardPhase(Facade)
             };
         }
     }

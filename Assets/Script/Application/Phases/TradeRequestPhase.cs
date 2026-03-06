@@ -1,44 +1,39 @@
-﻿using Catan.Shared.Communication;
-using Catan.Shared.Communication.Commands;
-using Catan.Shared.Communication.Events;
+﻿using Catan.Shared.Communication.Commands;
 using Catan.Application.Controllers;
 using Catan.Shared.Data;
+using Catan.Application.UIMessages;
 
 namespace Catan.Application.Phases
 {
     public class TradeRequestPhase : BasePhase
     {
-        public TradeRequestPhase(Facade facade, EventBus bus, PhaseTransitionController phaseTransition) : base(facade, bus, phaseTransition) { }
+        public TradeRequestPhase(Facade facade) : base(facade) { }
 
-        public override void Enter() { }
-
-        public override void Handle(object command)
+        public override GameResult Handle(object command)
         {
             switch (command)
             {
                 case RefuseTradeRequestCommand c:
-                    PhaseTransition.ChangePhase(EnumGamePhases.NormalRound);
-                    break;
+                    return GameResult.Ok(EnumGamePhases.NormalRound);
 
                 case AcceptTradeRequestCommand c:
-                    HandleTradeAccepted(c);
-                    break;
+                    return HandleTradeAccepted(c);
+
+                default:
+                    return GameResult.Fail();
             }
         }
 
-        private void HandleTradeAccepted(AcceptTradeRequestCommand signal)
+        private GameResult HandleTradeAccepted(AcceptTradeRequestCommand signal)
         {
             var result = Facade.UseReactToTrade();
 
             if (!result.Success)
             {
-                Bus.Publish(new ActionRejectedEvent(result.BuyerId, result.Reason));
-                return;
+                return GameResult.Fail().AddUIMessage(new ActionRejectedMessage(result.BuyerId, result.Reason));
             }
 
-            Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, "Trade accepted"));
-
-            TransitionPhase(result);
+            return GameResult.Ok(result.NextPhase).AddUIMessage(new LogMessageMessage(EnumLogTypes.Info, "Trade accepted"));
         }
     }
 }

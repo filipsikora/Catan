@@ -3,7 +3,6 @@ using Catan.Application.UIMessages;
 using Catan.Core.DomainEvents;
 using Catan.Core.Models;
 using Catan.Shared.Communication.Commands;
-using Catan.Shared.Communication.Events;
 using Catan.Shared.Data;
 
 namespace Catan.Application.Phases
@@ -111,7 +110,7 @@ namespace Catan.Application.Phases
                 return GameResult.Fail().AddUIMessage(new ActionRejectedMessage(result.PlayerId, result.Reason));
             }
             
-            return GameResult.Ok().AddDomainEvent(new VillagePlacedEvent(id));
+            return GameResult.Ok().AddDomainEvent(new VillagePlacedEvent(id, Facade.GetCurrentPlayerId()));
         }
 
         private GameResult HandleRoadRequested(BuildRoadCommand signal)
@@ -126,7 +125,7 @@ namespace Catan.Application.Phases
                 return GameResult.Fail().AddUIMessage(new ActionRejectedMessage(result.PlayerId, result.Reason));
             }
 
-            return GameResult.Ok().AddDomainEvent(new RoadPlacedEvent(id));
+            return GameResult.Ok().AddDomainEvent(new RoadPlacedEvent(id, Facade.GetCurrentPlayerId()));
         }
 
         private GameResult HandleTownRequested(UpgradeVillageCommand signal)
@@ -141,7 +140,7 @@ namespace Catan.Application.Phases
                 return GameResult.Fail().AddUIMessage(new ActionRejectedMessage(result.PlayerId, result.Reason));
             }
 
-            return GameResult.Ok().AddDomainEvent(new TownPlacedEvent(id));
+            return GameResult.Ok().AddDomainEvent(new TownPlacedEvent(id, Facade.GetCurrentPlayerId()));
         }
 
         private GameResult HandleTradeRequested(OfferTradeCommand signal)

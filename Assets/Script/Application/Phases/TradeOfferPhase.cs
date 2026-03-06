@@ -1,9 +1,8 @@
-﻿using Catan.Shared.Communication;
-using Catan.Shared.Communication.Commands;
-using Catan.Shared.Communication.Events;
+﻿using Catan.Shared.Communication.Commands;
 using Catan.Core.Models;
 using Catan.Application.Controllers;
 using Catan.Shared.Data;
+using Catan.Application.UIMessages;
 
 namespace Catan.Application.Phases
 {
@@ -11,29 +10,27 @@ namespace Catan.Application.Phases
     {
         private readonly ResourceCostOrStock _cardsDesired = new();
 
-        public TradeOfferPhase(Facade facade, EventBus bus, PhaseTransitionController phaseTransition) : base(facade, bus, phaseTransition) { }
+        public TradeOfferPhase(Facade facade) : base(facade) { }
 
-        public override void Enter() { }
-
-        public override void Handle(object command)
+        public override GameResult Handle(object command)
         {
             switch (command)
             {
                 case ResourceCardSelectedCommand c:
-                    HandleResourceCardClicked(c);
-                    break;
+                    return HandleResourceCardClicked(c);
 
                 case TradeOfferCanceledCommand c:
-                    PhaseTransition.ChangePhase(EnumGamePhases.NormalRound);
-                    break;
+                    return GameResult.Ok(EnumGamePhases.NormalRound);
 
                 case TradePartnerChosenCommand c:
-                    HandleTradePartnerChosen(c);
-                    break;
+                    return HandleTradePartnerChosen(c);
+
+                default:
+                    return GameResult.Fail();
             }
         }
 
-        private void HandleResourceCardClicked(ResourceCardSelectedCommand signal)
+        private GameResult HandleResourceCardClicked(ResourceCardSelectedCommand signal)
         {
             if (signal.IsSelected)
             { 
@@ -47,21 +44,20 @@ namespace Catan.Application.Phases
 
             bool hasDesired = Facade.CheckIfCardsSelected(_cardsDesired);
 
-            Bus.Publish(new DesiredCardsChangedEvent(hasDesired));
+            return GameResult.Ok().AddUIMessage(new DesiredCardsChangedMessage(hasDesired));
         }
 
-        private void HandleTradePartnerChosen(TradePartnerChosenCommand signal)
+        private GameResult HandleTradePartnerChosen(TradePartnerChosenCommand signal)
         {
             var buyerId = signal.PlayerId;
             var result = Facade.UseOfferTrade(buyerId, _cardsDesired);
 
             if (!result.Success)
             {
-                Bus.Publish(new ActionRejectedEvent(result.SellerId, result.Reason));
-                return;
+                return GameResult.Fail().AddUIMessage(new ActionRejectedMessage(result.SellerId, result.Reason));
             }
 
-            TransitionPhase(result);
+            return GameResult.Ok(result.NextPhase);
         }
     }
 }

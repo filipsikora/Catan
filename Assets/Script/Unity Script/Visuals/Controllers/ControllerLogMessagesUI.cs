@@ -10,7 +10,7 @@ namespace Catan.Unity.Visuals.Controllers
     public class ControllerLogMessagesUI
     {
         private readonly EventBus _bus;
-        private readonly Dictionary<EnumLogTypes, Action<LogMessageMessage>> _handlers;
+        private readonly Dictionary<EnumLogTypes, Action<LogMessageUIEvent>> _handlers;
         private LogsUI _panel;
 
         public ControllerLogMessagesUI(EventBus bus, LogsUI panel)
@@ -18,10 +18,10 @@ namespace Catan.Unity.Visuals.Controllers
             _bus = bus;
             _panel = panel;
 
-            _bus.Subscribe<LogMessageMessage>(OnLogMessageReceived);
-            _bus.Subscribe<ActionRejectedMessage>(OnActionRejectedReceived);
+            _bus.Subscribe<LogMessageUIEvent>(OnLogMessageReceived);
+            _bus.Subscribe<ActionRejectedUIEvent>(OnActionRejectedReceived);
 
-            _handlers = new Dictionary<EnumLogTypes, Action<LogMessageMessage>>
+            _handlers = new Dictionary<EnumLogTypes, Action<LogMessageUIEvent>>
             {
                 {EnumLogTypes.Info, e => _panel.AddInfo(e.Message, e.Time) },
                 {EnumLogTypes.Error, e => _panel.AddError(e.Message) },
@@ -29,7 +29,7 @@ namespace Catan.Unity.Visuals.Controllers
             };
         }
 
-        private void OnLogMessageReceived(LogMessageMessage signal)
+        private void OnLogMessageReceived(LogMessageUIEvent signal)
         {
             if (_handlers.TryGetValue(signal.Type, out var handler))
             {
@@ -37,15 +37,15 @@ namespace Catan.Unity.Visuals.Controllers
             }
         }
 
-        private void OnActionRejectedReceived(ActionRejectedMessage signal)
+        private void OnActionRejectedReceived(ActionRejectedUIEvent signal)
         {
             _panel.AddError(signal.Reason.ToString());
         }
 
         public void Dispose()
         {
-            _bus.Unsubscribe<LogMessageMessage>(OnLogMessageReceived);
-            _bus.Unsubscribe<ActionRejectedMessage>(OnActionRejectedReceived);
+            _bus.Unsubscribe<LogMessageUIEvent>(OnLogMessageReceived);
+            _bus.Unsubscribe<ActionRejectedUIEvent>(OnActionRejectedReceived);
         }
     }
 }

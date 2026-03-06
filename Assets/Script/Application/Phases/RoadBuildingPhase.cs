@@ -1,44 +1,42 @@
 ﻿using Catan.Application.Controllers;
-using Catan.Shared.Communication;
+using Catan.Application.UIMessages;
+using Catan.Core.DomainEvents;
 using Catan.Shared.Communication.Commands;
-using Catan.Shared.Communication.Events;
-using Catan.Shared.Data;
 
 namespace Catan.Application.Phases
 {
     public class RoadBuildingPhase : BaseBuildPhase
     {
-        public RoadBuildingPhase(Facade facade, EventBus bus, PhaseTransitionController phaseTransition) : base(facade, bus, phaseTransition) { }
+        public RoadBuildingPhase(Facade facade) : base(facade) { }
 
-        public override void Enter() { }
-
-        public override void Handle(object command)
+        public override GameResult Handle(object command)
         {
             switch (command)
             {
                 case EdgeClickedCommand c:
-                    HandleEdgeClicked(c);
-                    break;
+                    return HandleEdgeClicked(c);
 
                 case BuildRoadCommand c:
-                    HandleRoadRequested(c);
-                    break;
+                    return HandleRoadRequested(c);
+
+                default:
+                    return GameResult.Fail();
             }
         }
 
-        private void HandleEdgeClicked(EdgeClickedCommand signal)
+        private GameResult HandleEdgeClicked(EdgeClickedCommand signal)
         {
             SelectedEdgeId = signal.EdgeId;
 
             var village = false;
             var road = true;
-            var town = false;   
+            var town = false;
 
-            Bus.Publish(new EdgeHighlightedEvent(signal.EdgeId));
-            Bus.Publish(new BuildOptionsSentEvent(village, road, town));
+            return GameResult.Ok().AddUIMessage(new EdgeHighlightedMessage(signal.EdgeId)).AddUIMessage(new BuildOptionsSentMessage(village, road, town));
+
         }
 
-        private void HandleRoadRequested(BuildRoadCommand signal)
+        private GameResult HandleRoadRequested(BuildRoadCommand signal)
         {
             var playerId = Facade.GetCurrentPlayerId();
             var id = SelectedEdgeId.Value;
@@ -48,13 +46,10 @@ namespace Catan.Application.Phases
 
             if (!result.Success)
             {
-                Bus.Publish(new ActionRejectedEvent(playerId, result.Reason));
-                return;
+                return GameResult.Fail().AddUIMessage(new ActionRejectedMessage(playerId, result.Reason));
             }
 
-            Bus.Publish(new RoadPlacedEvent(id));
-
-            TransitionPhase(result);
+            return GameResult.Ok(result.NextPhase).AddDomainEvent(new RoadPlacedEvent(id, Facade.GetCurrentPlayerId()));
         }
     }
 }

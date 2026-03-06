@@ -7,7 +7,6 @@ using Catan.Unity.Data;
 using Catan.Unity.Panels;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
-using UnityEngine;
 
 namespace Catan.Unity.Phases.Adapters
 {
@@ -16,12 +15,7 @@ namespace Catan.Unity.Phases.Adapters
         private BinderNormalRound _binder;
         private TurnDataSnapshot _turnDataSnapshot;
 
-        private VisualsBoard _board;
-
-        public AdapterNormalRound(ManagerUI ui, EventBus bus, Facade facade, VisualsBoard board, HandlerEvents eventsHandler) : base(ui, bus, facade, eventsHandler)
-        {
-            _board = board;
-        }
+        public AdapterNormalRound(ManagerUI ui, EventBus bus, Facade facade, HandlerEvents eventsHandler) : base(ui, bus, facade, eventsHandler) { }
 
         public override void OnEnter()
         {
@@ -32,8 +26,6 @@ namespace Catan.Unity.Phases.Adapters
 
             EventBus.Subscribe<SelectionChangedUIEvent>(OnTradePossible);
 
-            EventBus.Subscribe<VertexHighlightedUIEvent>(OnVertexClicked);
-            EventBus.Subscribe<EdgeHighlightedUIEvent>(OnEdgeClicked);
             EventBus.Subscribe<BuildOptionsSentUIEvent>(OnPositionClicked);
 
             EventBus.Subscribe<VillagePlacedUIEvent>(OnVillagePlaced);
@@ -66,22 +58,6 @@ namespace Catan.Unity.Phases.Adapters
             {
                 UI.HideTradeOfferButton();
             }
-        }
-
-        private void OnVertexClicked(VertexHighlightedUIEvent signal)
-        {
-            EventBus.Publish(new PositionsResetUIEvent());
-
-            var vertexObject = _board.GetVertexObject(signal.VertexId);
-            _board.SetVertexVisual(vertexObject, Color.yellow);
-        }
-
-        private void OnEdgeClicked(EdgeHighlightedUIEvent signal)
-        {
-            EventBus.Publish(new PositionsResetUIEvent());
-
-            var edgeObject = _board.GetEdgeObject(signal.EdgeId);
-            _board.SetEdgeVisual(edgeObject, Color.yellow);
         }
 
         private void OnPositionClicked(BuildOptionsSentUIEvent signal)
@@ -144,8 +120,6 @@ namespace Catan.Unity.Phases.Adapters
 
             EventBus.Unsubscribe<SelectionChangedUIEvent>(OnTradePossible);
 
-            EventBus.Unsubscribe<VertexHighlightedUIEvent>(OnVertexClicked);
-            EventBus.Unsubscribe<EdgeHighlightedUIEvent>(OnEdgeClicked);
             EventBus.Unsubscribe<BuildOptionsSentUIEvent>(OnPositionClicked);
 
             EventBus.Unsubscribe<VillagePlacedUIEvent>(OnVillagePlaced);

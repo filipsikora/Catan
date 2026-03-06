@@ -1,7 +1,8 @@
 ﻿using Catan.Application.Controllers;
-using Catan.Shared.Communication;
+using Catan.Application.Interfaces;
+using Catan.Application.UIMessages;
+using Catan.Core.DomainEvents;
 using Catan.Shared.Communication.Commands;
-using Catan.Shared.Communication.Events;
 using Catan.Shared.Data;
 using System.Collections.Generic;
 
@@ -11,71 +12,70 @@ namespace Catan.Application.Phases
     {
         private bool _clickableHexes = true;
 
-        public RobberPlacingPhase(Facade facade, EventBus bus, PhaseTransitionController phaseTransition) : base(facade, bus, phaseTransition) { }
+        public RobberPlacingPhase(Facade facade) : base(facade) { }
 
-        public override void Enter()
+        public override IUIMessages Enter()
         {
-            Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, "Choose a hex to block"));
+            return new LogMessageMessage(EnumLogTypes.Info, "Choose a hex to block");
         }
 
-        public override void Handle(object command)
+        public override GameResult Handle(object command)
         {
             switch (command)
             {
                 case HexClickedCommand c:
-                    HandleHexClicked(c);
-                    break;
+                    return HandleHexClicked(c);
 
                 case VictimChosenCommand c:
-                    VictimChosen(c);
-                    break;
+                    return VictimChosen(c);
+
+                default:
+                    return GameResult.Fail();
             }
         }
 
-        private void HandleHexClicked(HexClickedCommand signal)
+        private GameResult HandleHexClicked(HexClickedCommand signal)
         {
             if (!_clickableHexes)
-                return;
+                return GameResult.Fail();
 
             var hexId = signal.HexId;
             var result = Facade.UseBlockHex(hexId);
 
             if (!result.Success)
-                return;
+                return GameResult.Fail();
 
-            Bus.Publish(new RobberPlacedEvent(hexId));
 
-            HandleVictimsAfterBlocking(result.CanSteal, result.PotentialVictimsIds);
+            var gameResult = HandleVictimsAfterBlocking(result.CanSteal, result.PotentialVictimsIds);
 
             _clickableHexes = false;
+
+            return gameResult.AddDomainEvent(new RobberPlacedEvent(hexId));
         }
 
-        private void HandleVictimsAfterBlocking(bool canSteal, List<int> potentialVictimsIds)
+        private GameResult HandleVictimsAfterBlocking(bool canSteal, List<int> potentialVictimsIds)
         {
             if (!canSteal)
             {
-                Bus.Publish(new LogMessageEvent(EnumLogTypes.Info, "Noone to steal from"));
-                PhaseTransition.ChangePhase(EnumGamePhases.NormalRound);
+                return GameResult.Ok(EnumGamePhases.NormalRound).AddUIMessage(new LogMessageMessage(EnumLogTypes.Info, "Noone to steal from"));
             }
 
             else
             {
-                Bus.Publish(new PotentialVictimsFoundEvent(potentialVictimsIds));
+                return GameResult.Ok().AddUIMessage(new PotentialVictimsFoundMessage(potentialVictimsIds));
             }
         }
 
-        private void VictimChosen(VictimChosenCommand signal)
+        private GameResult VictimChosen(VictimChosenCommand signal)
         {
             var result = Facade.UseSelectVictim(signal.VictimId);
             
             if (!result.Success)
             {
-                Bus.Publish(new ActionRejectedEvent(Facade.GetCurrentPlayerId(), result.Reason));
-
-                return;
+                return GameResult.Fail().AddUIMessage(new ActionRejectedMessage(Facade.GetCurrentPlayerId(), result.Reason));
             }
 
-            TransitionPhase(result);
+            return GameResult.Ok(result.NextPhase);
         }
     }
 }
