@@ -1,4 +1,4 @@
-using Catan.Application.Snapshots;
+using Catan.Core.Snapshots;
 using Catan.Unity.Helpers;
 using Catan.Unity.Data;
 using Catan.Unity.Visuals;

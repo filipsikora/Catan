@@ -26,6 +26,16 @@ namespace Catan.Core.Rules
                 ConditionsResources.CanAfford(player.Resources, DevelopmentCard.Cost));
         }
 
+        public static ResultCondition CanPlayYearOfPlenty(ResourceCostOrStock bank, int number)
+        {
+            return ConditionsResources.HasAtLeastResourcesNumber(bank, number);
+        }
+
+        public static ResultCondition CanPlayRoadBuilding(Player player)
+        {
+            return ConditionsBuildings.HasAvailable<BuildingRoad>(player);
+        }
+
         public static ResultCondition YearOfPlentyPlayedRight(ResourceCostOrStock bank, ResourceCostOrStock requested)
         {
             return ResultCondition.Combine(

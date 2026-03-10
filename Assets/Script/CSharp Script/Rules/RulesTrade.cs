@@ -1,4 +1,5 @@
 ﻿using Catan.Core.Conditions;
+using Catan.Core.Engine;
 using Catan.Core.Models;
 using Catan.Core.Results;
 using Catan.Shared.Data;
@@ -24,14 +25,22 @@ namespace Catan.Core.Rules
                 ConditionsTrade.NotSamePLayer(seller.ID, buyer.ID));
         }
 
-        public static ResultCondition CanAcceptTrade(Player seller, Player buyer, ResourceCostOrStock offered, ResourceCostOrStock desired)
+        public static ResultCondition CanAcceptTrade(Player seller, Player buyer, ResourceCostOrStock offered, ResourceCostOrStock desired, PlayerTradeContext context)
         {
             return ResultCondition.Combine(
+                ConditionsTrade.TradeContextIsValid(context, buyer.ID, seller.ID, desired, offered),
                 ConditionsTrade.CostIsValid(offered),
                 ConditionsTrade.CostIsValid(desired),
                 ConditionsResources.CanAfford(buyer.Resources, desired),
                 ConditionsPlayer.PlayerExists(seller),
                 ConditionsTrade.NotSamePLayer(seller.ID, buyer.ID));
+        }
+
+        public static ResultCondition CanDraftTrade(Player seller, ResourceCostOrStock offered)
+        {
+            return ResultCondition.Combine(
+                ConditionsTrade.CostIsValid(offered),
+                ConditionsPlayer.PlayerExists(seller));
         }
     }
 }

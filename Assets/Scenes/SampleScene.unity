@@ -763,6 +763,7 @@ MonoBehaviour:
     Color: {r: 0.6627451, g: 0.6627451, b: 0.6627451, a: 1}
   - Type: 4
     Color: {r: 1, g: 0.6470588, b: 0, a: 1}
+  ClickHandler: {fileID: 1896637713}
 --- !u!4 &90698430
 Transform:
   m_ObjectHideFlags: 0
@@ -1882,6 +1883,8 @@ MonoBehaviour:
   DevelopmentCardsPanel: {fileID: 2052258778}
   CardSelectorPanel: {fileID: 687154980}
   LogsPanel: {fileID: 1368513055}
+  factoryResourceCards: {fileID: 2012681193}
+  factoryDevCards: {fileID: 1398680648}
 --- !u!4 &292578857
 Transform:
   m_ObjectHideFlags: 0
@@ -4696,7 +4699,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.000061035156, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &833774732

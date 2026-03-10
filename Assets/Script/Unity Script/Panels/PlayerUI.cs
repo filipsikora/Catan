@@ -3,7 +3,7 @@ using TMPro;
 using Catan.Unity.Helpers;
 using Catan.Shared.Data;
 using Catan.Unity.Visuals;
-using Catan.Application.Snapshots;
+using Catan.Core.Snapshots;
 
 namespace Catan.Unity.Panels
 {

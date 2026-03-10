@@ -1,5 +1,6 @@
 ﻿#nullable enable
-using Catan.Application.Snapshots;
+using Catan.Core.Snapshots;
+using Catan.Unity.Helpers;
 using Catan.Shared.Data;
 using Catan.Unity.Data;
 using Catan.Unity.Visuals.Models;
@@ -33,13 +34,13 @@ namespace Catan.Unity
         public Dictionary<int, VertexSnapshot> vertexLookup = new();
         public Dictionary<int, EdgeSnapshot> edgeLookup = new();
 
-        public void BuildMap(BoardSnapshot board)
+        public void BuildMap(BoardSnapshot board, EventBus bus)
         {
             vertexLookup = board.Vertices.ToDictionary(v => v.VertexId);
             edgeLookup = board.Edges.ToDictionary(e => e.EdgeId);
 
             DrawEdges(board);
-            DrawVertices(board);
+            DrawVertices(board, bus);
             DrawHexes(board);
             DrawPorts(board);
         }
@@ -116,7 +117,7 @@ namespace Catan.Unity
             }
         }
 
-        public void DrawVertices(BoardSnapshot board)
+        public void DrawVertices(BoardSnapshot board, EventBus bus)
         {
             float vertexHeight = 0.15f;
 

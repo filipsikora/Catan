@@ -2,25 +2,23 @@
 
 namespace Catan.Core.Results
 {
-    public sealed class ResultCondition
+    public sealed class ResultCondition : ResultBase
     {
-        public bool Success { get; }
         public ConditionFailureReason Reason { get; }
 
-        private ResultCondition(bool success, ConditionFailureReason reason)
+        private ResultCondition(bool success, ConditionFailureReason reason, EnumGamePhases? nextPhase) : base(success, nextPhase)
         {
-            Success = success;
             Reason = reason;
         }
 
-        public static ResultCondition Ok()
+        public static ResultCondition Ok(EnumGamePhases? nextPhase = null)
         {
-            return new(true, ConditionFailureReason.None);
+            return new(true, ConditionFailureReason.None, nextPhase);
         }
 
-        public static ResultCondition Fail(ConditionFailureReason reason)
+        public static ResultCondition Fail(ConditionFailureReason reason, EnumGamePhases? nextPhase = null)
         {
-            return new(false, reason);
+            return new(false, reason, nextPhase);
         }
 
         public static ResultCondition Combine(params ResultCondition[] conditions)

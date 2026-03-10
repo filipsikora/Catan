@@ -1,23 +1,19 @@
-﻿using Catan.Shared.Communication;
+﻿using Catan.Unity.Helpers;
 using Catan.Shared.Communication.Commands;
 using Catan.Unity.Data;
 using Catan.Unity.Panels;
-using UnityEngine;
 
 namespace Catan.Unity.Phases.Binders
 {
     public class BinderCardDiscarding : BaseBinder
     {
-        public BinderCardDiscarding(ManagerUI ui, EventBus bus) : base(ui, bus) { }
+        public BinderCardDiscarding(ManagerUI ui, EventBus bus, HandlerEvents eventsHandler) : base(ui, bus, eventsHandler) { }
 
         public override void Bind()
         {
-            Debug.Log("chuj bind");
-
             UI.CardDiscardPanel.Bind(EnumCardSelectorDiscardUIButtons.ConfirmDiscard, () =>
             {
-                Debug.Log("chuj zbindowane");
-                Bus.Publish(new DiscardingAcceptedCommand());
+                EventsHandler.Execute(new DiscardingAcceptedCommand());
             });
         }
 

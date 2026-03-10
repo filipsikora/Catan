@@ -1,10 +1,11 @@
-﻿using Catan.Application.Snapshots;
-using Catan.Core.Models;
+﻿using Catan.Core.Snapshots;
+using Catan.Shared.Communication;
+using Catan.Unity.Helpers;
+using Catan.Unity.Visuals.Controllers;
 using UnityEngine;
 
 namespace Catan.Unity.Panels
 {
-
     public class ManagerUI : MonoBehaviour
     {
         public MainUI MainUIPanel;
@@ -19,6 +20,15 @@ namespace Catan.Unity.Panels
         public DevelopmentCardsUI DevelopmentCardsPanel;
         public CardSelectorUI CardSelectorPanel;
         public LogsUI LogsPanel;
+
+        public FactoryResourceCards factoryResourceCards;
+        public FactoryDevelopmentCards factoryDevCards;
+
+        public void Initialize(HandlerEvents eventsHandler, ControllerResourceCards controller)
+        {
+            factoryResourceCards.Initialize(eventsHandler, controller);
+            factoryDevCards.Initialize(bus);
+        }
 
         public void UpdateTurnCounter(int turn) => MainUIPanel.UpdateTurnCounter(turn);
         public void UpdateRolledDice(int lastRoll) => MainUIPanel.UpdateRolledDice(lastRoll);

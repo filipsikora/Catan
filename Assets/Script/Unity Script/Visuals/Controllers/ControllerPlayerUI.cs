@@ -1,18 +1,18 @@
-﻿using Catan.Application.Queries.Players;
-using Catan.Shared.Communication;
+﻿using Catan.Application.Controllers;
+using Catan.Unity.Helpers;
 using Catan.Unity.Communication.InternalUIEvents;
 using Catan.Unity.Panels;
 
-namespace Vatan.Unity.Visuals.Controllers
+namespace Catan.Unity.Visuals.Controllers
 {
     public sealed class ControllerPlayerUI
     {
-        private readonly IPlayersQueryService _playersQuery;
         private readonly PlayerUI _playerUI;
+        private readonly Facade _facade;
 
-        public ControllerPlayerUI(IPlayersQueryService playersQuery, PlayerUI playerUI, EventBus bus)
+        public ControllerPlayerUI(Facade facade, PlayerUI playerUI, EventBus bus)
         {
-            _playersQuery = playersQuery;
+            _facade = facade;
             _playerUI = playerUI;
 
             bus.Subscribe<PlayerStateChangedUIEvent>(UpdatePlayerUI);
@@ -20,8 +20,8 @@ namespace Vatan.Unity.Visuals.Controllers
 
         public void UpdatePlayerUI(PlayerStateChangedUIEvent signal)
         {
-            var data = _playersQuery.GetPlayersData(signal.PlayerId);
-            var resources = _playersQuery.GetPlayersCards(signal.PlayerId);
+            var data = _facade.GetPlayersData(signal.PlayerId);
+            var resources = _facade.GetPlayersCards(signal.PlayerId);
 
             _playerUI.UpdatePlayerInfo(data, resources);
         }
