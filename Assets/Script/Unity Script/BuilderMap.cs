@@ -1,6 +1,6 @@
 ﻿#nullable enable
 using Catan.Core.Snapshots;
-using Catan.Shared.Communication;
+using Catan.Unity.Helpers;
 using Catan.Shared.Data;
 using Catan.Unity.Data;
 using Catan.Unity.Visuals.Models;

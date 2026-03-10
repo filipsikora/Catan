@@ -12,14 +12,18 @@ namespace Catan.Unity.Phases.Controllers
         private readonly ManagerUI _ui;
         private readonly EventBus _bus;
         private readonly Facade _facade;
-        private readonly HandlerEvents _eventsHandler;
+        private HandlerEvents _eventsHandler;
 
-        public AdapterGameFlow(ManagerUI ui, EventBus bus, Facade facade, AdapterPhaseTransition phases, HandlerEvents eventsHandler)
+        public AdapterGameFlow(ManagerUI ui, EventBus bus, Facade facade, AdapterPhaseTransition phases)
         {
             _ui = ui;
             _bus = bus;
             _phases = phases;
             _facade = facade;
+        }
+
+        public void Initialize(HandlerEvents eventsHandler)
+        {
             _eventsHandler = eventsHandler;
         }
 

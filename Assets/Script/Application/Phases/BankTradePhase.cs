@@ -1,6 +1,5 @@
 ﻿using Catan.Application.Controllers;
 using Catan.Application.UIMessages;
-using Catan.Core.DomainEvents;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Data;
 

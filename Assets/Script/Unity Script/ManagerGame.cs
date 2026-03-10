@@ -1,16 +1,14 @@
 ﻿#nullable enable
+using Catan.Application;
 using Catan.Application.Controllers;
 using Catan.Core;
 using Catan.Core.Engine;
 using Catan.Core.Queries.InMemory;
-using Catan.Shared.Communication;
-using Catan.Shared.Communication.Events;
 using Catan.Shared.Data;
 using Catan.Unity.Communication.InternalUIEvents;
 using Catan.Unity.Data;
 using Catan.Unity.Helpers;
 using Catan.Unity.Panels;
-using Catan.Unity.Phases.Adapters;
 using Catan.Unity.Phases.Controllers;
 using Catan.Unity.Visuals;
 using Catan.Unity.Visuals.Controllers;
@@ -25,8 +23,6 @@ namespace Catan.Unity
         public static ManagerGame Instance { get; private set; }
 
         public GameSession Session { get; set; }
-        public PhaseTransitionController PhaseTransition { get; set; }
-        public CommandReceiver CommandRouter { get; set; }
         public Facade Facade { get; set; }
 
         public Transform Board;
@@ -35,9 +31,11 @@ namespace Catan.Unity
         public ManagerUI UIManager;
 
         public EventBus EventBus { get; private set; }
-
         public AdapterPhaseTransition? AdapterPhaseTransition;
         public AdapterGameFlow AdapterGameFlow;
+        public HandlerCameraClicks ClickHandler;
+        public HandlerEvents EventsHandler;
+        public EventsTranslator EventsTranslator;
 
         public float Size = 1f;
         public Material WaterMaterial;
@@ -55,7 +53,7 @@ namespace Catan.Unity
         public List<RegistryDataResource> ResourceList;
         public Dictionary<EnumResourceTypes, Color> PortColorLookup { get; private set; }
 
-        public HandlerCameraClicks ClickHandler;
+        public GameApplication GameApplication;
 
         private void Awake()
         {
@@ -73,19 +71,11 @@ namespace Catan.Unity
             EventBus = new EventBus();
             AdapterPhaseTransition = new AdapterPhaseTransition();
             ClickHandler.Initialize(EventBus);
-
-            EventBus.Subscribe<StartGameRequestedEvent>(OnStartGameRequested);
         }
 
         void Start()
         {
-            var setup = new AdapterPlayerSetup(UIManager, EventBus);
-            setup.OnEnter();
-        }
-
-        private void OnStartGameRequested(StartGameRequestedEvent signal)
-        {
-            StartGame(signal.PlayerCount);
+            StartGame(2);
         }
 
         public void StartGame(int playerCount)
@@ -103,15 +93,16 @@ namespace Catan.Unity
             var turnsQuery = new InMemoryTurnsQueryService(Session);
 
             Facade = new Facade(Session, boardQuery, devCardsQuery, playersQuery, resourcesQuery, tradeQuery, turnsQuery);
-            PhaseTransition = new PhaseTransitionController(Facade, EventBus);
-            AdapterGameFlow = new AdapterGameFlow(UIManager, EventBus, Facade, AdapterPhaseTransition, BoardVisuals);
-            CommandRouter = new CommandReceiver(PhaseTransition, EventBus);
+            GameApplication = new GameApplication(Facade);
+            AdapterGameFlow = new AdapterGameFlow(UIManager, EventBus, Facade, AdapterPhaseTransition);
+            EventsTranslator = new EventsTranslator();
+            EventsHandler = new HandlerEvents(GameApplication, AdapterGameFlow, EventsTranslator, EventBus);
+
+            AdapterGameFlow.Initialize(EventsHandler);
 
             var controllerResourceCards = InitializeHelpers(Facade);
             InitializeBuilderMap(Facade);
-            UIManager.Initialize(EventBus, controllerResourceCards);
-
-            PhaseTransition.ChangePhase(EnumGamePhases.FirstRoundsBuilding);
+            UIManager.Initialize(EventsHandler, controllerResourceCards);
         }
 
         public void InitializeBuilderMap(Facade facade)
@@ -158,8 +149,6 @@ namespace Catan.Unity
         /*
         przesuwanie kart/tasowanie
 
-        wybor imienia i koloru
-
         5. auto register auto binder auto subscribe
 
         nullable cleanup
@@ -168,71 +157,33 @@ namespace Catan.Unity
 
         2. normal round onexit resetselection check
 
-        3. make safeguards into core not ui check
-
-        6. merge unity
-
         7. branch backend
-
-        8. split gamestate, add dtos and snapshots
-
-        dev cards internal event
 
         9. end game check
 
-        log for current player, aggregate
-
-        remove publish from visualdevcard
-
-        expand results ok/fail
-
-        remove eventbus from core
-
-        split rollandserve
-
-        generic vs type - buildingregistry + Type
-
         move rejection/logs to mapper with switch based on result in adapter
-
-        make game private and initialized
-
-        add none to enums
-
-        remove models from logic rounds
 
         iscurrentplayercheck
 
         remove data from shared, add queries
 
-        controllers discarding
-
-        controller highlighting
-
-        remove models from data
-
-        dev cards lists in game -> dev cards id lists in game
-
         determine random and extract it from game
 
         location burdel
 
-        phasecontext gamestate
-
-        adapter check
-
-        spanshot in core, application queries through facade
-
         selectvictim failure check
-
-        cant play year of plenty if bank has <2 cards
 
         currentplayer fix + conditions revision
 
         unity: fix dependencies in controllers and adapters
 
-        delete wrapper from eventbus?
-
         resetselection return send in gameresult
+
+        visualsUI split
+
+        DI fix factories
+
+        merge ui and domain events
         */
     }
 }

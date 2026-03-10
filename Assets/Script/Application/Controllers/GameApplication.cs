@@ -9,13 +9,13 @@ namespace Catan.Application
 {
     public class GameApplication
     {
-        public BasePhase? Current { get; set; }
+        public BasePhase Current { get; set; }
         public Facade Facade { get; }
 
         public GameApplication(Facade facade)
         {
             Facade = facade;
-            Current = null;
+            Current = CreateApplicationPhase(EnumGamePhases.FirstRoundsBuilding);
         }
 
         public GameResult Execute(ICommand command)

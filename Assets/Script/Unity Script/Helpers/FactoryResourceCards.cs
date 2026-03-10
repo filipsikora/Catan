@@ -15,7 +15,7 @@ namespace Catan.Unity.Helpers
         private EventBus _bus;
         private ControllerResourceCards _controllerResourceCards;
 
-        public void Initialize(EventBus bus, ControllerResourceCards controllerResourceCards)
+        public void Initialize(HandlerEvents eventsHandler, ControllerResourceCards controllerResourceCards)
         {
             _bus = bus;
             _controllerResourceCards = controllerResourceCards;
