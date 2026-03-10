@@ -184,6 +184,8 @@ namespace Catan.Unity
         DI fix factories
 
         merge ui and domain events
+
+        uievent published -> execute?
         */
     }
 }

@@ -1,7 +1,6 @@
 ﻿using EventBus = Catan.Unity.Helpers.EventBus;
 using Catan.Shared.Communication.Commands;
 using Catan.Unity.Communication.InternalUIEvents;
-using Catan.Unity.Communication.InternalUICommands;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
 using Catan.Application.Controllers;
