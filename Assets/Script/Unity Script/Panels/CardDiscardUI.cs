@@ -6,7 +6,7 @@ using Catan.Unity.Helpers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Catan.Application.Snapshots;
+using Catan.Core.Snapshots;
 
 namespace Catan.Unity.Panels
 {

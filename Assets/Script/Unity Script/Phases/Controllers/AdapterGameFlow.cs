@@ -1,6 +1,7 @@
-﻿using Catan.Shared.Communication;
-using Catan.Shared.Communication.Events;
+﻿using Catan.Application.Controllers;
+using Catan.Unity.Helpers;
 using Catan.Shared.Data;
+using Catan.Unity.Panels;
 using Catan.Unity.Phases.Adapters;
 
 namespace Catan.Unity.Phases.Controllers
@@ -8,67 +9,78 @@ namespace Catan.Unity.Phases.Controllers
     public sealed class AdapterGameFlow
     {
         private readonly AdapterPhaseTransition _phases;
+        private readonly ManagerUI _ui;
+        private readonly EventBus _bus;
+        private readonly Facade _facade;
+        private HandlerEvents _eventsHandler;
 
-        public AdapterGameFlow(EventBus bus, AdapterPhaseTransition phases)
+        public AdapterGameFlow(ManagerUI ui, EventBus bus, Facade facade, AdapterPhaseTransition phases)
         {
+            _ui = ui;
+            _bus = bus;
             _phases = phases;
-            bus.Subscribe<PhaseChangedEvent>(OnPhaseChanged);
+            _facade = facade;
         }
 
-        private void OnPhaseChanged(PhaseChangedEvent signal)
+        public void Initialize(HandlerEvents eventsHandler)
         {
-            switch (signal.Phase)
+            _eventsHandler = eventsHandler;
+        }
+
+        public void ChangePhase(EnumGamePhases nextPhase)
+        {
+            switch (nextPhase)
             {
                 case EnumGamePhases.BankTrade:
-                    _phases.TransitionTo(new AdapterBankTrade());
+                    _phases.TransitionTo(new AdapterBankTrade(_ui, _bus, _facade, _eventsHandler));
                     break;
 
                 case EnumGamePhases.NormalRound:
-                    _phases.TransitionTo(new AdapterNormalRound());
+                    _phases.TransitionTo(new AdapterNormalRound(_ui, _bus, _facade, _eventsHandler));
                     break;
 
                 case EnumGamePhases.BeforeRoll:
-                    _phases.TransitionTo(new AdapterBeforeRoll());
+                    _phases.TransitionTo(new AdapterBeforeRoll(_ui, _bus, _facade, _eventsHandler));
                     break;
 
                 case EnumGamePhases.TradeOffer:
-                    _phases.TransitionTo(new AdapterTradeOffer());
+                    _phases.TransitionTo(new AdapterTradeOffer(_ui, _bus, _facade, _eventsHandler));
                     break;
 
                 case EnumGamePhases.TradeRequest:
-                    _phases.TransitionTo(new AdapterTradeRequest());
+                    _phases.TransitionTo(new AdapterTradeRequest(_ui, _bus, _facade, _eventsHandler));
                     break;
 
                 case EnumGamePhases.RobberPlacing:
-                    _phases.TransitionTo(new AdapterRobberPlacing());
+                    _phases.TransitionTo(new AdapterRobberPlacing(_ui, _bus, _facade, _eventsHandler));
                     break;
 
                 case EnumGamePhases.CardDiscarding:
-                    _phases.TransitionTo(new AdapterCardDiscarding());
+                    _phases.TransitionTo(new AdapterCardDiscarding(_ui, _bus, _facade, _eventsHandler));
                     break;
 
                 case EnumGamePhases.CardStealing:
-                    _phases.TransitionTo(new AdapterCardStealing());
+                    _phases.TransitionTo(new AdapterCardStealing(_ui, _bus, _facade, _eventsHandler));
                     break;
 
                 case EnumGamePhases.DevelopmentCards:
-                    _phases.TransitionTo(new AdapterDevelopmentCards());
+                    _phases.TransitionTo(new AdapterDevelopmentCards(_ui, _bus, _facade, _eventsHandler));
                     break;
 
                 case EnumGamePhases.MonopolyCard:
-                    _phases.TransitionTo(new AdapterMonopolyCard());
+                    _phases.TransitionTo(new AdapterMonopolyCard(_ui, _bus, _facade, _eventsHandler));
                     break;
 
                 case EnumGamePhases.YearOfPlentyCard:
-                    _phases.TransitionTo(new AdapterYearOfPlentyCard());
+                    _phases.TransitionTo(new AdapterYearOfPlentyCard(_ui, _bus, _facade, _eventsHandler));
                     break;
 
                 case EnumGamePhases.RoadBuilding:
-                    _phases.TransitionTo(new AdapterRoadBuilding());
+                    _phases.TransitionTo(new AdapterRoadBuilding(_ui, _bus, _facade, _eventsHandler));
                     break;
 
                 case EnumGamePhases.FirstRoundsBuilding:
-                    _phases.TransitionTo(new AdapterFirstRoundsBuilding());
+                    _phases.TransitionTo(new AdapterFirstRoundsBuilding(_ui, _bus, _facade, _eventsHandler));
                     break;
             }
         }

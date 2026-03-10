@@ -13,9 +13,10 @@ namespace Catan.Shared.Communication.Commands
     public class DevelopmentCardClickedCommand : ICommand
     {
         public int DevelopmentCardId;
-        public DevelopmentCardClickedCommand(int developmentCardId)
+        public DevelopmentCardClickedCommand(int devCardId)
         {
-            DevelopmentCardId = developmentCardId;
+            DevelopmentCardId = devCardId;
         }
+
     }
 }

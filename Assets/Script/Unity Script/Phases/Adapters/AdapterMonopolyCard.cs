@@ -1,11 +1,12 @@
 ﻿using Catan.Shared.Communication.Commands;
-using Catan.Shared.Communication.Events;
+using Catan.Unity.Helpers;
 using Catan.Shared.Data;
 using Catan.Unity.Communication.InternalUIEvents;
-using Catan.Unity.Communication.InternalUICommands;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
 using Catan.Unity.Data;
+using Catan.Unity.Panels;
+using Catan.Application.Controllers;
 
 namespace Catan.Unity.Phases.Adapters
 {
@@ -13,27 +14,29 @@ namespace Catan.Unity.Phases.Adapters
     {
         public BinderCardSelection _binder;
 
+        public AdapterMonopolyCard(ManagerUI ui, EventBus bus, Facade facade, HandlerEvents eventsHandler) : base(ui, bus, facade, eventsHandler) { }
+
         public override void OnEnter()
         {
-            _binder = new BinderCardSelection(UI, EventBus);
+            _binder = new BinderCardSelection(UI, EventBus, EventsHandler);
 
             VisualsUI.SetMainAndPlayerUIVisibility(false, UI.MainUIPanel, UI.PlayerUIPanel);
             UI.CardSelectorPanel.Show( "Choose resource to steal from the other players");
 
             _binder.Bind();
 
-            EventBus.Subscribe<ResourceSelectedEvent>(OnResourceSelected);
+            EventBus.Subscribe<ResourceSelectedUIEvent>(OnResourceSelected);
 
             EventBus.Subscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
         }
 
-        private void OnResourceSelected(ResourceSelectedEvent signal)
+        private void OnResourceSelected(ResourceSelectedUIEvent signal)
         {
-            EventBus.Publish(new MultipleResourceCardVisualStateResetUICommand(EnumResourceCardLocation.DesiredTrade));
+            EventBus.Publish(new MultipleResourceCardVisualStateResetUIEvent(EnumResourceCardLocation.DesiredTrade));
 
             if (signal.Type != null)
             {
-                EventBus.Publish(new ResourceCardTypeVisualStateChangedUICommand(signal.Type, EnumResourceCardVisualState.Highlighted));
+                EventBus.Publish(new ResourceCardTypeVisualStateChangedUIEvent(signal.Type, EnumResourceCardVisualState.Highlighted));
             }
 
             UI.CardSelectorPanel.AcceptCardsButton.gameObject.SetActive(signal.Selected);
@@ -44,14 +47,14 @@ namespace Catan.Unity.Phases.Adapters
             if (!signal.IsLeftClicked)
                 return;
 
-            EventBus.Publish(new StolenCardSelectedCommand(signal.Type));
+            EventsHandler.Execute(new StolenCardSelectedCommand(signal.Type));
         }
 
         public override void OnExit()
         {
             _binder.Unbind();
 
-            EventBus.Unsubscribe<ResourceSelectedEvent>(OnResourceSelected);
+            EventBus.Unsubscribe<ResourceSelectedUIEvent>(OnResourceSelected);
 
             EventBus.Unsubscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
 

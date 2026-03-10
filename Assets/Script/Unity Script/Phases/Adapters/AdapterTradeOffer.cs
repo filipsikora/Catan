@@ -1,6 +1,8 @@
-﻿using Catan.Shared.Communication.Commands;
-using Catan.Shared.Communication.Events;
+﻿using Catan.Application.Controllers;
+using Catan.Unity.Helpers;
+using Catan.Shared.Communication.Commands;
 using Catan.Unity.Communication.InternalUIEvents;
+using Catan.Unity.Panels;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
 
@@ -10,26 +12,28 @@ namespace Catan.Unity.Phases.Adapters
     {
         private BinderTradeOffer _binder;
 
+        public AdapterTradeOffer(ManagerUI ui, EventBus bus, Facade facade, HandlerEvents eventsHandler) : base(ui, bus, facade, eventsHandler) { }
+
         public override void OnEnter()
         {
             UI.TradeOfferPanel.gameObject.SetActive(true);
 
-            _binder = new BinderTradeOffer(UI, Manager.EventBus);
+            _binder = new BinderTradeOffer(UI, EventBus, EventsHandler);
             _binder.Bind();
 
-            var potentialPartnersData = Manager.PlayersQueryService.GetNotCurrentPlayersNames();
+            var potentialPartnersData = Facade.GetNotCurrentPlayersNames();
 
             VisualsUI.SetMainAndPlayerUIVisibility(false, UI.MainUIPanel, UI.PlayerUIPanel);
             UI.TradeOfferPanel.Show(potentialPartnersData);
 
             UI.TradeOfferPanel.PlayersButtonsContainer.gameObject.SetActive(false);
 
-            Manager.EventBus.Subscribe<DesiredCardsChangedEvent>(OnDesiredCardsChanged);
+            EventBus.Subscribe<DesiredCardsChangedUIEvent>(OnDesiredCardsChanged);
 
-            Manager.EventBus.Subscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
+            EventBus.Subscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
         }
 
-        private void OnDesiredCardsChanged(DesiredCardsChangedEvent signal)
+        private void OnDesiredCardsChanged(DesiredCardsChangedUIEvent signal)
         {
             UI.TradeOfferPanel.PlayersButtonsContainer.gameObject.SetActive(signal.HasDesired);
         }
@@ -39,23 +43,18 @@ namespace Catan.Unity.Phases.Adapters
             if (!signal.IsLeftClicked)
                 return;
 
-            var card = Manager.ControllerResourceCardsUI.GetVisualResourceCardById(signal.VisualResourceCardId);
-
-            if (card == null)
-                return;
-
-            if (card.Location == Shared.Data.EnumResourceCardLocation.DesiredTrade)
+            if (signal.Location == Shared.Data.EnumResourceCardLocation.DesiredTrade)
             {
-                EventBus.Publish(new ResourceCardSelectedCommand(true, card.Type));
+                EventsHandler.Execute(new ResourceCardSelectedCommand(true, signal.Type));
 
-                UI.TradeOfferPanel.DrawVisualResourceCardInReview(card.Type);
+                UI.TradeOfferPanel.DrawVisualResourceCardInReview(signal.Type);
             }
 
             else
             {
-                EventBus.Publish(new ResourceCardSelectedCommand(false, card.Type));
+                EventsHandler.Execute(new ResourceCardSelectedCommand(false, signal.Type));
 
-                UI.TradeOfferPanel.DestroyVisualResourceCardInReview(card.Type);
+                UI.TradeOfferPanel.DestroyVisualResourceCardInReview(signal.Type);
             }
         }
 
@@ -63,9 +62,9 @@ namespace Catan.Unity.Phases.Adapters
         {
             _binder.Unbind();
 
-            Manager.EventBus.Unsubscribe<DesiredCardsChangedEvent>(OnDesiredCardsChanged);
+            EventBus.Unsubscribe<DesiredCardsChangedUIEvent>(OnDesiredCardsChanged);
 
-            Manager.EventBus.Unsubscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
+            EventBus.Unsubscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
 
             VisualsUI.SetMainAndPlayerUIVisibility(true, UI.MainUIPanel, UI.PlayerUIPanel);
             UI.TradeOfferPanel.gameObject.SetActive(false);

@@ -1,4 +1,4 @@
-﻿using Catan.Shared.Communication;
+﻿using Catan.Unity.Helpers;
 using Catan.Shared.Communication.Commands;
 using Catan.Unity.Data;
 using Catan.Unity.Panels;
@@ -7,18 +7,18 @@ namespace Catan.Unity.Phases.Binders
 {
     public class BinderTradeRequest : BaseBinder
     {
-        public BinderTradeRequest(ManagerUI ui, EventBus bus) : base(ui, bus) { }
+        public BinderTradeRequest(ManagerUI ui, EventBus bus, HandlerEvents eventsHandler) : base(ui, bus, eventsHandler) { }
 
         public override void Bind()
         {
             UI.TradeRequestPanel.Bind(EnumTradeRequestUIButtons.AcceptTradeRequest, () =>
             {
-                Bus.Publish(new AcceptTradeRequestCommand());
+                EventsHandler.Execute(new AcceptTradeRequestCommand());
             });
 
             UI.TradeRequestPanel.Bind(EnumTradeRequestUIButtons.RefuseTradeRequest, () =>
             {
-                Bus.Publish(new RefuseTradeRequestCommand());
+                EventsHandler.Execute(new RefuseTradeRequestCommand());
             });
         }
 

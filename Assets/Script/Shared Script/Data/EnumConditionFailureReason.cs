@@ -22,6 +22,12 @@
         IsAlreadyOwned,
         InvalidResourceCost,
         HexAlreadyBlocked,
-        SamePlayer
+        SamePlayer,
+        VictimInvalid,
+        TradeContextInvalid,
+        DiscardContextInvalid,
+        NotRoadsLeft,
+        NotEnoughResourcesInBank,
+        NotEnoughResources
     }
 }

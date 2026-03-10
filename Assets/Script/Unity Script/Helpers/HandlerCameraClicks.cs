@@ -1,11 +1,14 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Catan.Unity.Visuals.Models;
+using Catan.Shared.Communication;
+using Catan.Shared.Communication.Commands;
 
 namespace Catan.Unity.Helpers
 {
     public class HandlerCameraClicks : MonoBehaviour
     {
+        private EventBus _bus;
         private Camera _cam;
 
         private void Awake()
@@ -13,34 +16,32 @@ namespace Catan.Unity.Helpers
             _cam = Camera.main;
         }
 
+        public void Initialize(EventBus bus)
+        {
+            _bus = bus;
+        }
+
         private void Update()
         {
             if (!Mouse.current.leftButton.wasPressedThisFrame)
                 return;
 
+            Debug.Log("Click detected");
+
             Vector2 mousePos = Mouse.current.position.ReadValue();
             Ray ray = _cam.ScreenPointToRay(mousePos);
+            int mask = LayerMask.GetMask("VertexLayer", "EdgeLayer", "HexLayer");
 
-            int vertexMask = LayerMask.GetMask("VertexLayer");
-            int edgeMask = LayerMask.GetMask("EdgeLayer");
-            int hexMask = LayerMask.GetMask("HexLayer");
-
-            if (Physics.Raycast(ray, out RaycastHit hit, 100f, vertexMask))
+            if (Physics.Raycast(ray, out var hit, 100f, mask))
             {
-                hit.collider.GetComponent<VisualVertex>()?.OnVertexClicked();
-                return;
-            }
+                if (hit.collider.TryGetComponent<VisualVertex>(out var v))
+                    _bus.Publish(new VertexClickedCommand(v.VertexId));
 
-            if (Physics.Raycast(ray, out hit, 100f, edgeMask))
-            {
-                hit.collider.GetComponent<VisualEdge>()?.OnEdgeClicked();
-                return;
-            }
+                else if (hit.collider.TryGetComponent<VisualEdge>(out var e))
+                    _bus.Publish(new EdgeClickedCommand(e.EdgeId));
 
-            if (Physics.Raycast(ray, out hit, 100f, hexMask))
-            {
-                hit.collider.GetComponent<VisualHex>()?.OnHexClicked();
-                return;
+                else if (hit.collider.TryGetComponent<VisualHex>(out var h))
+                    _bus.Publish(new HexClickedCommand(h.HexId));
             }
         }
     }

@@ -1,4 +1,4 @@
-using Catan.Application.Snapshots;
+using Catan.Core.Snapshots;
 using Catan.Shared.Communication;
 using Catan.Shared.Communication.Commands;
 using Catan.Shared.Data;
@@ -33,7 +33,7 @@ namespace Catan.Unity.Panels
             RegisterButton(EnumTradeOfferUIButtons.CancelTradeOffer, CancelTradeButton);
         }
 
-        public void Show(List<PlayerNameSnapshot> potentialPartnersData)
+        public void Show(IReadOnlyList<PlayerNameSnapshot> potentialPartnersData)
         {
             gameObject.SetActive(true);
 
