@@ -1,4 +1,4 @@
-﻿using Catan.Shared.Communication;
+﻿using Catan.Unity.Helpers;
 using Catan.Shared.Communication.Commands;
 using Catan.Unity.Data;
 using Catan.Unity.Panels;
@@ -7,48 +7,48 @@ namespace Catan.Unity.Phases.Binders
 {
     public class BinderNormalRound : BaseBinder
     {
-        public BinderNormalRound(ManagerUI ui, EventBus bus) : base(ui, bus) { }
+        public BinderNormalRound(ManagerUI ui, EventBus bus, HandlerEvents eventsHandler) : base(ui, bus, eventsHandler) { }
 
         public override void Bind()
         {
             UI.MainUIPanel.Bind(EnumMainUIButtons.OfferTrade, () =>
             {
-                Bus.Publish(new OfferTradeCommand());
+                EventsHandler.Execute(new OfferTradeCommand());
             });
 
             UI.MainUIPanel.Bind(EnumMainUIButtons.BankTrade, () =>
             {
-                Bus.Publish(new BankTradeCommand());
+                EventsHandler.Execute(new BankTradeCommand());
             });
 
             UI.MainUIPanel.Bind(EnumMainUIButtons.BuildVillage, () =>
             {
-                Bus.Publish(new BuildVillageCommand());
+                EventsHandler.Execute(new BuildVillageCommand());
             });
 
             UI.MainUIPanel.Bind(EnumMainUIButtons.BuildRoad, () =>
             {
-                Bus.Publish(new BuildRoadCommand());
+                EventsHandler.Execute(new BuildRoadCommand());
             });
 
             UI.MainUIPanel.Bind(EnumMainUIButtons.UpgradeVillage, () =>
             {
-                Bus.Publish(new UpgradeVillageCommand());
+                EventsHandler.Execute(new UpgradeVillageCommand());
             });
 
             UI.MainUIPanel.Bind(EnumMainUIButtons.DevelopmentCards, () =>
             {
-                Bus.Publish(new ShowDevelopmentCardsCommand());
+                EventsHandler.Execute(new ShowDevelopmentCardsCommand());
             });
 
             UI.MainUIPanel.Bind(EnumMainUIButtons.BuyDevelopmentCard, () =>
             {
-                Bus.Publish(new BuyDevelopmentCardCommand());
+                EventsHandler.Execute(new BuyDevelopmentCardCommand());
             });
 
             UI.MainUIPanel.Bind(EnumMainUIButtons.NextTurn, () =>
             {
-                Bus.Publish(new EndTurnCommand());
+                EventsHandler.Execute(new EndTurnCommand());
             });
         }
 

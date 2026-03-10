@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Catan.Shared.Communication.Commands;
-using Catan.Application.Snapshots;
+using Catan.Core.Snapshots;
 
 namespace Catan.Unity.Panels
 {
@@ -13,7 +13,7 @@ namespace Catan.Unity.Panels
         public Transform ButtonsContainer;
         public GameObject ButtonPlayerOptionPrefab;
 
-        public void Show(List<PlayerNameSnapshot> potentialVictimsData)
+        public void Show(IReadOnlyList<PlayerNameSnapshot> potentialVictimsData)
         {
             gameObject.SetActive(true);
 

@@ -2,6 +2,7 @@
 using Catan.Core.Engine;
 using Catan.Core.Models;
 using Catan.Core.Results;
+using System.Collections.Generic;
 
 namespace Catan.Core.Rules
 {
@@ -20,6 +21,13 @@ namespace Catan.Core.Rules
             return ResultCondition.Combine(
                 ConditionsMap.HexExists(hex),
                 ConditionsMap.IsNotBlocked(hex));
+        }
+
+        public static ResultCondition ValidVictim(Player victim, List<int> possibleVictimsIds)
+        {
+            return ResultCondition.Combine(
+                ConditionsPlayer.PlayerExists(victim),
+                ConditionsRobber.VictimPossible(possibleVictimsIds, victim));
         }
     }
 }

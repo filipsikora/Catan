@@ -1,4 +1,4 @@
-﻿using Catan.Shared.Communication;
+﻿using Catan.Unity.Helpers;
 using Catan.Unity.Data;
 using Catan.Unity.Communication.InternalUIEvents;
 

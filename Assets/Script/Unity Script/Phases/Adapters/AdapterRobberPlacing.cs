@@ -1,34 +1,31 @@
-﻿using Catan.Shared.Communication.Events;
+﻿using Catan.Application.Controllers;
+using Catan.Unity.Helpers;
 using Catan.Unity.Communication.InternalUIEvents;
+using Catan.Unity.Panels;
 using Catan.Unity.Visuals;
 
 namespace Catan.Unity.Phases.Adapters
 {
     public class AdapterRobberPlacing : BasePhaseAdapter
     {
+        public AdapterRobberPlacing(ManagerUI ui, EventBus bus, Facade facade, HandlerEvents eventsHandler) : base(ui, bus, facade, eventsHandler) { }
+
         public override void OnEnter()
         {
             VisualsUI.SetMainAndPlayerUIVisibility(false, UI.MainUIPanel, UI.PlayerUIPanel);
 
-            Manager.EventBus.Subscribe<RobberPlacedEvent>(OnRobberPlaced);
-            Manager.EventBus.Subscribe<PotentialVictimsFoundEvent>(OnPotentialVictimsFound);
+            EventBus.Subscribe<PotentialVictimsFoundUIEvent>(OnPotentialVictimsFound);
         }
 
-        private void OnRobberPlaced(RobberPlacedEvent signal)
+        private void OnPotentialVictimsFound(PotentialVictimsFoundUIEvent signal)
         {
-            EventBus.Publish(new RobberMovedUIEvent(signal.HexId));
-        }
-
-        private void OnPotentialVictimsFound(PotentialVictimsFoundEvent signal)
-        {
-            var potentialVictimsData = Manager.PlayersQueryService.GetSomePlayersNames(signal.VictimsIds);
+            var potentialVictimsData = Facade.GetSomePlayersNames(signal.VictimsIds);
             UI.VictimSelectorPanel.Show(potentialVictimsData);
         }
 
         public override void OnExit()
         {
-            Manager.EventBus.Unsubscribe<RobberPlacedEvent>(OnRobberPlaced);
-            Manager.EventBus.Unsubscribe<PotentialVictimsFoundEvent>(OnPotentialVictimsFound);
+            EventBus.Unsubscribe<PotentialVictimsFoundUIEvent>(OnPotentialVictimsFound);
 
             UI.VictimSelectorPanel.gameObject.SetActive(false);
         }

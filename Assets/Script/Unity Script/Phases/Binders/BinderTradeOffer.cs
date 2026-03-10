@@ -1,19 +1,19 @@
-﻿using Catan.Shared.Communication;
-using Catan.Shared.Communication.Commands;
+﻿using Catan.Shared.Communication.Commands;
 using Catan.Unity.Data;
+using Catan.Unity.Helpers;
 using Catan.Unity.Panels;
 
 namespace Catan.Unity.Phases.Binders
 {
     public class BinderTradeOffer : BaseBinder
     {
-        public BinderTradeOffer(ManagerUI ui, EventBus bus) : base(ui, bus) { }
+        public BinderTradeOffer(ManagerUI ui, EventBus bus, HandlerEvents eventsHandler) : base(ui, bus, eventsHandler) { }
 
         public override void Bind()
         {
             UI.TradeOfferPanel.Bind(EnumTradeOfferUIButtons.CancelTradeOffer, () =>
             {
-                Bus.Publish(new TradeOfferCanceledCommand());
+                EventsHandler.Execute(new TradeOfferCanceledCommand());
             });
         }
 

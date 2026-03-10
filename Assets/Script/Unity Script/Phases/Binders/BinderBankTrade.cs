@@ -1,4 +1,4 @@
-﻿using Catan.Shared.Communication;
+﻿using Catan.Unity.Helpers;
 using Catan.Shared.Communication.Commands;
 using Catan.Unity.Panels;
 using Catan.Unity.Data;
@@ -7,13 +7,13 @@ namespace Catan.Unity.Phases.Binders
 {
     public class BinderBankTrade : BaseBinder
     {
-        public BinderBankTrade(ManagerUI ui, EventBus bus) : base(ui, bus) { }
+        public BinderBankTrade(ManagerUI ui, EventBus bus, HandlerEvents eventHandler) : base(ui, bus, eventHandler) { }
 
         public override void Bind()
         {
             UI.BankTradePanel.Bind(EnumBankTradeUIButtons.CancelBankTrade, () =>
             {
-                Bus.Publish(new BankTradeCanceledCommand());
+                EventsHandler.Execute(new BankTradeCanceledCommand());
             });
         }
 

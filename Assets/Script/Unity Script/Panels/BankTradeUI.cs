@@ -3,7 +3,7 @@ using Catan.Unity.Helpers;
 using Catan.Unity.Visuals.Models;
 using Catan.Unity.Visuals;
 using Catan.Shared.Data;
-using Catan.Application.Snapshots;
+using Catan.Core.Snapshots;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;

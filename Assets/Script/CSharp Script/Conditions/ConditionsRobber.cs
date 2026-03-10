@@ -1,4 +1,5 @@
 ﻿using Catan.Core.Engine;
+using Catan.Core.Models;
 using Catan.Core.Results;
 using Catan.Shared.Data;
 using System.Collections.Generic;
@@ -35,6 +36,16 @@ namespace Catan.Core.Conditions
             }
 
             return ResultCondition.Ok();
+        }
+
+        public static ResultCondition VictimPossible(List<int> possibleVictimsIds, Player victim)
+        {
+            if (possibleVictimsIds.Contains(victim.ID))
+            {
+                return ResultCondition.Ok();
+            }
+
+            return ResultCondition.Fail(ConditionFailureReason.VictimInvalid);
         }
     }
 }

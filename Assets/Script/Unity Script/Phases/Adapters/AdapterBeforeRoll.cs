@@ -1,6 +1,9 @@
 ﻿using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
 using Catan.Unity.Communication.InternalUIEvents;
+using Catan.Unity.Panels;
+using Catan.Unity.Helpers;
+using Catan.Application.Controllers;
 
 namespace Catan.Unity.Phases.Adapters
 {
@@ -8,12 +11,14 @@ namespace Catan.Unity.Phases.Adapters
     {
         private BinderBeforeRoll _binder;
 
+        public AdapterBeforeRoll(ManagerUI ui, EventBus bus, Facade facade, HandlerEvents eventHandler) : base(ui, bus, facade, eventHandler) { }
+
         public override void OnEnter()
         {
-            _binder = new BinderBeforeRoll(UI, Manager.EventBus);
+            _binder = new BinderBeforeRoll(UI, EventBus, EventsHandler);
             _binder.Bind();
-
-            var turnData = Manager.TurnsQueryService.GetTurnData();
+            
+            var turnData = Facade.GetTurnData();
 
             EventBus.Publish(new PlayerStateChangedUIEvent(turnData.PlayerId));
 

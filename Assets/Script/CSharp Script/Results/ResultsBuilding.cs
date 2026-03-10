@@ -1,168 +1,155 @@
-﻿using Catan.Core.Models;
-using Catan.Shared.Data;
+﻿using Catan.Shared.Data;
 
 namespace Catan.Core.Results
 {
-    public sealed class ResultBuildInitialVillage
+    public sealed class ResultBuildInitialVillage : ResultBase
     {
-        public bool Success { get; }
         public ConditionFailureReason Reason { get; }
 
         public int PlayerId { get; }
-        public Vertex Vertex { get; }
+        public int VertexId { get; }
         public bool SecondVillage { get; }
 
-        public ResultBuildInitialVillage(bool success, ConditionFailureReason reason, int playerId, Vertex vertex)
+        private ResultBuildInitialVillage(bool success, ConditionFailureReason reason, int playerId, int vertexId, EnumGamePhases? nextPhase) : base(success, nextPhase)
         {
-            Success = success;
             Reason = reason;
             PlayerId = playerId;
-            Vertex = vertex;
+            VertexId = vertexId;
         }
 
-        public static ResultBuildInitialVillage Ok(int playerId, Vertex vertex)
+        public static ResultBuildInitialVillage Ok(int playerId, int vertexId, EnumGamePhases? nextPhase)
         {
-            return new ResultBuildInitialVillage(true, ConditionFailureReason.None, playerId, vertex);
+            return new ResultBuildInitialVillage(true, ConditionFailureReason.None, playerId, vertexId, nextPhase);
         }
 
-        public static ResultBuildInitialVillage Fail(ConditionFailureReason reason, int playerId, Vertex vertex)
+        public static ResultBuildInitialVillage Fail(ConditionFailureReason reason, int playerId, int vertexId)
         {
-            return new ResultBuildInitialVillage(false, reason, playerId, vertex);
+            return new ResultBuildInitialVillage(false, reason, playerId, vertexId, null);
         }
     }
 
-    public sealed class ResultBuildInitialRoad
+    public sealed class ResultBuildInitialRoad : ResultBase
     {
-        public bool Success { get; }
         public ConditionFailureReason Reason { get; }
 
         public int PlayerId { get; }
-        public Edge Edge { get; }
+        public int EdgeId { get; }
 
-        public ResultBuildInitialRoad(bool success, ConditionFailureReason reason, int playerId, Edge edge)
+        private ResultBuildInitialRoad(bool success, ConditionFailureReason reason, int playerId, int edgeId, EnumGamePhases? nextPhase) : base(success, nextPhase)
         {
-            Success = success;
             Reason = reason;
             PlayerId = playerId;
-            Edge = edge;
+            EdgeId = edgeId;
         }
 
-        public static ResultBuildInitialRoad Ok(int playerId, Edge edge)
+        public static ResultBuildInitialRoad Ok(int playerId, int edgeId, EnumGamePhases? nextPhase)
         {
-            return new ResultBuildInitialRoad(true, ConditionFailureReason.None, playerId, edge);
+            return new ResultBuildInitialRoad(true, ConditionFailureReason.None, playerId, edgeId, nextPhase);
         }
 
-        public static ResultBuildInitialRoad Fail(ConditionFailureReason reason, int playerId, Edge edge)
+        public static ResultBuildInitialRoad Fail(ConditionFailureReason reason, int playerId, int edgeId)
         {
-            return new ResultBuildInitialRoad(false, reason, playerId, edge);
+            return new ResultBuildInitialRoad(false, reason, playerId, edgeId, null);
         }
     }
 
-    public sealed class ResultBuildVillage
+    public sealed class ResultBuildVillage : ResultBase
     {
-        public bool Success { get;}
         public ConditionFailureReason Reason { get; }
 
         public int PlayerId { get; }
-        public Vertex Vertex { get; }
+        public int VertexId { get; }
 
-        public ResultBuildVillage(bool success, ConditionFailureReason reason, int playerId, Vertex vertex)
+        private ResultBuildVillage(bool success, ConditionFailureReason reason, int playerId, int vertexId, EnumGamePhases? nextPhase) : base(success, nextPhase)
         {
-            Success = success;
             Reason = reason;
             PlayerId = playerId;
-            Vertex = vertex;
+            VertexId = vertexId;
         }
 
-        public static ResultBuildVillage Ok(int playerId, Vertex vertex)
+        public static ResultBuildVillage Ok(int playerId, int vertexId, EnumGamePhases? nextPhase)
         {
-            return new ResultBuildVillage(true, ConditionFailureReason.None, playerId, vertex);
+            return new ResultBuildVillage(true, ConditionFailureReason.None, playerId, vertexId, nextPhase);
         }
 
-        public static ResultBuildVillage Fail(ConditionFailureReason reason, int playerId, Vertex vertex)
+        public static ResultBuildVillage Fail(ConditionFailureReason reason, int playerId, int vertexId)
         {
-            return new ResultBuildVillage(false, reason, playerId, vertex);
+            return new ResultBuildVillage(false, reason, playerId, vertexId, null);
         }
     }
 
-    public sealed class ResultBuildRoad
+    public sealed class ResultBuildRoad : ResultBase
     {
-        public bool Success { get; }
         public ConditionFailureReason Reason { get; }
 
         public int PlayerId { get; }
-        public Edge Edge { get; }
+        public int EdgeId { get; }
 
-        public ResultBuildRoad(bool success, ConditionFailureReason reason, int playerId, Edge edge)
+        private ResultBuildRoad(bool success, ConditionFailureReason reason, int playerId, int edgeId, EnumGamePhases? nextPhase) : base(success, nextPhase)
         {
-            Success = success;
             Reason = reason;
             PlayerId = playerId;
-            Edge = edge;
+            EdgeId = edgeId;
         }
 
-        public static ResultBuildRoad Ok(int playerId, Edge edge)
+        public static ResultBuildRoad Ok(int playerId, int edgeId, EnumGamePhases? nextPhase)
         {
-            return new ResultBuildRoad(true, ConditionFailureReason.None, playerId, edge);
+            return new ResultBuildRoad(true, ConditionFailureReason.None, playerId, edgeId, nextPhase);
         }
 
-        public static ResultBuildRoad Fail(ConditionFailureReason reason, int playerId, Edge edge)
+        public static ResultBuildRoad Fail(ConditionFailureReason reason, int playerId, int edgeId)
         {
-            return new ResultBuildRoad(false, reason, playerId, edge);
+            return new ResultBuildRoad(false, reason, playerId, edgeId, null);
         }
     }
 
-    public sealed class ResultUpgradeVillage
+    public sealed class ResultUpgradeVillage : ResultBase
     {
-        public bool Success { get;}
         public ConditionFailureReason Reason { get; }
 
         public int PlayerId { get; }
-        public Vertex Vertex { get; }
+        public int VertexId { get; }
 
-        public ResultUpgradeVillage(bool success, ConditionFailureReason reason, int playerId, Vertex vertex)
+        private ResultUpgradeVillage(bool success, ConditionFailureReason reason, int playerId, int vertexId, EnumGamePhases? nextPhase) : base(success, nextPhase)
         {
-            Success = success;
             Reason = reason;
             PlayerId = playerId;
-            Vertex = vertex;
+            VertexId = vertexId;
         }
 
-        public static ResultUpgradeVillage Ok(int playerId, Vertex vertex)
+        public static ResultUpgradeVillage Ok(int playerId, int vertexId, EnumGamePhases? nextPhase)
         {
-            return new ResultUpgradeVillage(true, ConditionFailureReason.None, playerId, vertex);
+            return new ResultUpgradeVillage(true, ConditionFailureReason.None, playerId, vertexId, nextPhase);
         }
 
-        public static ResultUpgradeVillage Fail(ConditionFailureReason reason, int playerId, Vertex vertex)
+        public static ResultUpgradeVillage Fail(ConditionFailureReason reason, int playerId, int vertexId)
         {
-            return new ResultUpgradeVillage(false, reason, playerId, vertex);
+            return new ResultUpgradeVillage(false, reason, playerId, vertexId, null);
         }
     }
 
-    public sealed class ResultBuildFreeRoad
+    public sealed class ResultBuildFreeRoad : ResultBase
     {
-        public bool Success { get; }
         public ConditionFailureReason Reason { get; }
 
         public int PlayerId { get; }
-        public Edge Edge { get; }
+        public int EdgeId { get; }
 
-        public ResultBuildFreeRoad(bool success, ConditionFailureReason reason, int playerId, Edge edge)
+        private ResultBuildFreeRoad(bool success, ConditionFailureReason reason, int playerId, int edgeId, EnumGamePhases? nextPhase) : base(success, nextPhase)
         {
-            Success = success;
             Reason = reason;
             PlayerId = playerId;
-            Edge = edge;
+            EdgeId = edgeId;
         }
 
-        public static ResultBuildFreeRoad Ok(int playerId, Edge edge)
+        public static ResultBuildFreeRoad Ok(int playerId, int edgeId, EnumGamePhases? nextPhase)
         {
-            return new ResultBuildFreeRoad(true, ConditionFailureReason.None, playerId, edge);
+            return new ResultBuildFreeRoad(true, ConditionFailureReason.None, playerId, edgeId, nextPhase);
         }
 
-        public static ResultBuildFreeRoad Fail(ConditionFailureReason reason, int playerId, Edge edge)
+        public static ResultBuildFreeRoad Fail(ConditionFailureReason reason, int playerId, int edgeId)
         {
-            return new ResultBuildFreeRoad(false, reason, playerId, edge);
+            return new ResultBuildFreeRoad(false, reason, playerId, edgeId, null);
         }
     }
 }

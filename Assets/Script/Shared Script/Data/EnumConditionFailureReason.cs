@@ -25,6 +25,9 @@
         SamePlayer,
         VictimInvalid,
         TradeContextInvalid,
-        DiscardContextInvalid
+        DiscardContextInvalid,
+        NotRoadsLeft,
+        NotEnoughResourcesInBank,
+        NotEnoughResources
     }
 }
