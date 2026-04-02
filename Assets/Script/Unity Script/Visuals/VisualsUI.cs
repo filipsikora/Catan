@@ -16,21 +16,6 @@ namespace Catan.Unity.Visuals
             }
         }
 
-        public static void MoveResourceCardUp(VisualResourceCard card)
-        {
-            Debug.Log($"{card} up");
-        }
-
-        public static void HighlightResourceCard(VisualResourceCard card)
-        {
-            Debug.Log($"{card} highlighted");
-        }
-
-        public static void ResetResourceCard(VisualResourceCard card)
-        {
-            Debug.Log($"{card} reset");
-        }
-
         public static void ResetResourceCardsInParent(Transform container)
         {
             foreach (Transform child in container)
@@ -40,7 +25,7 @@ namespace Catan.Unity.Visuals
                 if (card == null)
                     return;
 
-                ResetResourceCard(card);
+                card.Reset();
             }
         }
 
@@ -81,6 +66,7 @@ namespace Catan.Unity.Visuals
             ui.SetButtonVisibility(EnumMainUIButtons.BuildFreeVillage, visible);
             ui.SetButtonVisibility(EnumMainUIButtons.BuildFreeRoad, visible);
         }
+
         public static void SetMainAndPlayerUIVisibility(bool visible, MainUI mainUI, PlayerUI playerUI)
         {
             playerUI.gameObject.SetActive(visible);

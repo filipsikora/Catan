@@ -1,6 +1,6 @@
 ﻿using Catan.Application.Controllers;
 using Catan.Unity.Helpers;
-using Catan.Unity.Communication.InternalUIEvents;
+using Catan.Unity.InternalUIEvents;
 using Catan.Unity.Panels;
 
 namespace Catan.Unity.Visuals.Controllers

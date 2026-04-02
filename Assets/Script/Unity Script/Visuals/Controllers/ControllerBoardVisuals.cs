@@ -1,5 +1,5 @@
 ﻿using Catan.Unity.Helpers;
-using Catan.Unity.Communication.InternalUIEvents;
+using Catan.Unity.InternalUIEvents;
 using UnityEngine;
 
 namespace Catan.Unity.Visuals.Controllers

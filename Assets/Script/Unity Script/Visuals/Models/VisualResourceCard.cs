@@ -2,7 +2,7 @@ using Catan.Shared.Data;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Catan.Unity.Data;
-using Catan.Unity.Communication.InternalUIEvents;
+using Catan.Unity.InternalUIEvents;
 using Catan.Unity.Helpers;
 using Catan.Unity.Visuals.Controllers;
 
@@ -12,14 +12,14 @@ namespace Catan.Unity.Visuals.Models
     {
         public EnumResourceCardLocation Location;
         public int VisualResourceCardId;
-        public EnumResourceTypes Type;
+        public EnumResourceType Type;
         public EnumResourceCardVisualState State = EnumResourceCardVisualState.None;
         public bool IsToggled = false;
 
         private EventBus _bus;
         private ControllerResourceCards _controller;
 
-        public void Initialize(EnumResourceCardLocation location, int visualResourceCardId, EnumResourceTypes type, EventBus bus, ControllerResourceCards controller)
+        public void Initialize(EnumResourceCardLocation location, int visualResourceCardId, EnumResourceType type, EventBus bus, ControllerResourceCards controller)
         {
             Location = location;
             VisualResourceCardId = visualResourceCardId;
@@ -34,6 +34,21 @@ namespace Catan.Unity.Visuals.Models
             bool isLeftClicked = eventData.button == PointerEventData.InputButton.Left;
 
             _bus.Publish(new ResourceCardClickedUIEvent(VisualResourceCardId, Type, Location, isLeftClicked, IsToggled));
+        }
+
+        public void MoveUp()
+        {
+            Debug.Log($"{this} up");
+        }
+
+        public void Highlight()
+        {
+            Debug.Log($"{this} highlighted");
+        }
+
+        public void Reset()
+        {
+            Debug.Log($"{this} reset");
         }
 
         private void OnDestroy()

@@ -1,5 +1,5 @@
-﻿using Catan.Shared.Communication.Commands;
-using Catan.Unity.Communication.InternalUIEvents;
+﻿using Catan.Shared.Commands;
+using Catan.Unity.InternalUIEvents;
 using Catan.Unity.Phases.Adapters;
 using Catan.Core.Snapshots;
 using Catan.Unity.Panels;
@@ -14,20 +14,21 @@ namespace Catan.Unity.Phases.Controllers
         private PlayerResourcesSnapshot _victimResources;
         private int _thiefData;
 
-        public AdapterCardStealing(ManagerUI ui, EventBus bus, Facade facade, HandlerEvents eventsHandler) : base(ui, bus, facade, eventsHandler) { }
+        public AdapterCardStealing(ManagerUI ui, EventBus bus, HandlerEvents eventsHandler) : base(ui, bus, eventsHandler) { }
 
         public override void OnEnter()
         {
             EventBus.Subscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
 
             _victimName = Facade.GetVictimsName();
+
             ShowVictimsCards(_victimName.Id);
         }
 
         public void ShowVictimsCards(int victimId)
         {
-            _thiefData = Facade.GetCurrentPlayerId();
             _victimResources = Facade.GetPlayersCards(victimId);
+
             UI.CardTheftPanel.Show(_victimResources);
         }
 
@@ -41,8 +42,6 @@ namespace Catan.Unity.Phases.Controllers
 
         public override void OnExit()
         {
-            EventBus.Publish(new PlayerStateChangedUIEvent(_thiefData));
-
             EventBus.Unsubscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
 
             UI.CardTheftPanel.gameObject.SetActive(false);

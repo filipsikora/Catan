@@ -2,8 +2,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using Catan.Shared.Communication.Commands;
 using Catan.Core.Snapshots;
+using Catan.Unity.Helpers;
+using Catan.Unity.InternalUIEvents;
 
 namespace Catan.Unity.Panels
 {
@@ -12,6 +13,13 @@ namespace Catan.Unity.Panels
         public TextMeshProUGUI TitleText;
         public Transform ButtonsContainer;
         public GameObject ButtonPlayerOptionPrefab;
+
+        private EventBus _bus;
+
+        public void Initialize(EventBus bus)
+        {
+            _bus = bus;
+        }
 
         public void Show(IReadOnlyList<PlayerNameSnapshot> potentialVictimsData)
         {
@@ -29,7 +37,7 @@ namespace Catan.Unity.Panels
 
                 buttonObj.GetComponent<Button>().onClick.AddListener(() =>
                 {
-                    ManagerGame.Instance.EventBus.Publish(new VictimChosenCommand(victimData.Id));
+                    _bus.Publish(new PlayerClickedUIEvent(victimData.Id));
                     gameObject.SetActive(false);
                 });
             }

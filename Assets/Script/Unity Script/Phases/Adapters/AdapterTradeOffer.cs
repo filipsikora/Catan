@@ -1,7 +1,7 @@
 ﻿using Catan.Application.Controllers;
 using Catan.Unity.Helpers;
-using Catan.Shared.Communication.Commands;
-using Catan.Unity.Communication.InternalUIEvents;
+using Catan.Shared.Commands;
+using Catan.Unity.InternalUIEvents;
 using Catan.Unity.Panels;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
@@ -12,7 +12,7 @@ namespace Catan.Unity.Phases.Adapters
     {
         private BinderTradeOffer _binder;
 
-        public AdapterTradeOffer(ManagerUI ui, EventBus bus, Facade facade, HandlerEvents eventsHandler) : base(ui, bus, facade, eventsHandler) { }
+        public AdapterTradeOffer(ManagerUI ui, EventBus bus, HandlerEvents eventsHandler) : base(ui, bus, eventsHandler) { }
 
         public override void OnEnter()
         {
@@ -31,6 +31,8 @@ namespace Catan.Unity.Phases.Adapters
             EventBus.Subscribe<DesiredCardsChangedUIEvent>(OnDesiredCardsChanged);
 
             EventBus.Subscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
+
+            EventBus.Subscribe<PlayerClickedUIEvent>(OnPlayerChosen);
         }
 
         private void OnDesiredCardsChanged(DesiredCardsChangedUIEvent signal)
@@ -58,6 +60,11 @@ namespace Catan.Unity.Phases.Adapters
             }
         }
 
+        private void OnPlayerChosen(PlayerClickedUIEvent signal)
+        {
+            EventsHandler.Execute(new TradePartnerChosenCommand(signal.PlayerId));
+        }
+
         public override void OnExit()
         {
             _binder.Unbind();
@@ -65,6 +72,8 @@ namespace Catan.Unity.Phases.Adapters
             EventBus.Unsubscribe<DesiredCardsChangedUIEvent>(OnDesiredCardsChanged);
 
             EventBus.Unsubscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
+
+            EventBus.Unsubscribe<PlayerClickedUIEvent>(OnPlayerChosen);
 
             VisualsUI.SetMainAndPlayerUIVisibility(true, UI.MainUIPanel, UI.PlayerUIPanel);
             UI.TradeOfferPanel.gameObject.SetActive(false);

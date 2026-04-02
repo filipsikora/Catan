@@ -1,5 +1,4 @@
-﻿using Catan.Shared.Communication;
-using Catan.Shared.Data;
+﻿using Catan.Shared.Data;
 using Catan.Unity.Visuals.Controllers;
 using Catan.Unity.Visuals.Models;
 using System.Linq;
@@ -15,13 +14,13 @@ namespace Catan.Unity.Helpers
         private EventBus _bus;
         private ControllerResourceCards _controllerResourceCards;
 
-        public void Initialize(HandlerEvents eventsHandler, ControllerResourceCards controllerResourceCards)
+        public void Initialize(EventBus bus, ControllerResourceCards controllerResourceCards)
         {
             _bus = bus;
             _controllerResourceCards = controllerResourceCards;
         }
 
-        public VisualResourceCard DrawResourceCard(EnumResourceTypes type, EnumResourceCardLocation location, Transform parent, bool visible = true)
+        public VisualResourceCard DrawResourceCard(EnumResourceType type, EnumResourceCardLocation location, Transform parent, bool visible = true)
         {
             GameObject cardObject = Instantiate(ResourceCardPrefab, parent);
             var cardVisual = cardObject.GetComponent<VisualResourceCard>();

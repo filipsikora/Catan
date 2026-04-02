@@ -29,8 +29,6 @@ namespace Catan.Unity.Panels
 
         public void Show(ResourcesAvailabilitySnapshot resourcesAvailabilitySnapshot)
         {
-            gameObject.SetActive(true);
-
             VisualsUI.ClearContainer(OfferedCardsContainer);
             VisualsUI.ClearContainer(DesiredCardsContainer);
 

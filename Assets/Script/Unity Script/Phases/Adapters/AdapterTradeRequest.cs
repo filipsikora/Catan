@@ -13,7 +13,7 @@ namespace Catan.Unity.Phases.Controllers
         private BinderTradeRequest _binder;
         private TradeOfferedSnapshot _tradeOfferSnapshot;
 
-        public AdapterTradeRequest(ManagerUI ui, EventBus bus, Facade facade, HandlerEvents eventsHandler) : base(ui, bus, facade, eventsHandler) { }
+        public AdapterTradeRequest(ManagerUI ui, EventBus bus, HandlerEvents eventsHandler) : base(ui, bus, eventsHandler) { }
 
         public override void OnEnter()
         {

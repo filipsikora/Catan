@@ -1,9 +1,9 @@
-﻿using Catan.Application.Interfaces;
-using Catan.Application.UIMessages;
-using Catan.Core.DomainEvents;
-using Catan.Core.Interfaces;
-using Catan.Unity.Communication.InternalUIEvents;
+﻿using Catan.Unity.InternalUIEvents;
 using Catan.Unity.Interfaces;
+using Newtonsoft.Json.Linq;
+using Catan.Shared.Dtos;
+using Catan.Shared.Data;
+using System;
 
 namespace Catan.Unity.Helpers
 {
@@ -11,33 +11,43 @@ namespace Catan.Unity.Helpers
     {
         public EventsTranslator() { }
 
-        public IInternalUIEvents TranslateUIMessage(IUIMessages uiMessage)
+        public IInternalUIEvents TranslateUIMessage(UiMessageDto message)
         {
-            return uiMessage switch
+            var data = JToken.FromObject(message.Data);
+
+            return message.Type switch
             {
-                VertexHighlightedMessage m => new VertexHighlightedUIEvent(m.VertexId),
-                EdgeHighlightedMessage m => new EdgeHighlightedUIEvent(m.EdgeId),
-                BuildOptionsSentMessage m => new BuildOptionsSentUIEvent(m.CanBuildVillage, m.CanBuildRoad, m.CanUpgradeVillage),
-                LogMessageMessage m =>  new LogMessageUIEvent(m.Type, m.Message),
-                ActionRejectedMessage m => new ActionRejectedUIEvent(m.PlayerId, m.Reason),
-                ResourceSelectedMessage m => new ResourceSelectedUIEvent(m.Selected, m.Type),
-                SelectionChangedMessage m => new SelectionChangedUIEvent(m.ActionAvailable),
-                DesiredCardsChangedMessage m => new DesiredCardsChangedUIEvent(m.HasDesired),
-                PlayerSelectedToDiscardMessage m => new PlayerSelectedToDiscardUIEvent(m.PlayerId),
-                PotentialVictimsFoundMessage m => new PotentialVictimsFoundUIEvent(m.VictimsIds),
-                BankTradeRatioChangedMessage m => new BankTradeRatioChangedUIEvent(m.Ratio, m.PossibleForPlayer, m.Resource)
+                EnumUiMessages.VertexHighlightedMessage => new VertexHighlightedUIEvent(JsonHelper.GetInt(data, "vertexId")),
+                EnumUiMessages.EdgeHighlightedMessage => new EdgeHighlightedUIEvent(JsonHelper.GetInt(data, "edgeId")),
+                EnumUiMessages.BuildOptionsSentMessage => new BuildOptionsSentUIEvent
+                (JsonHelper.GetBool(data, "canBuildVillage"), JsonHelper.GetBool(data, "canBuildRoad"), JsonHelper.GetBool(data, "canUpgradeVillage")),
+                EnumUiMessages.LogMessageMessage =>  new LogMessageUIEvent(JsonHelper.GetEnum<EnumLogTypes>(data, "type"), JsonHelper.GetString(data, "message")),
+                EnumUiMessages.ActionRejectedMessage => new ActionRejectedUIEvent(JsonHelper.GetInt(data, "playerId"), JsonHelper.GetEnum<ConditionFailureReason>(data, "reason")),
+                EnumUiMessages.ResourceSelectedMessage => new ResourceSelectedUIEvent(JsonHelper.GetBool(data, "selected"), JsonHelper.GetNullableEnum<EnumResourceType>(data, "type")),
+                EnumUiMessages.SelectionChangedMessage => new SelectionChangedUIEvent(JsonHelper.GetBool(data, "actionAvailable")),
+                EnumUiMessages.DesiredCardsChangedMessage => new DesiredCardsChangedUIEvent(JsonHelper.GetBool(data, "hasDesired")),
+                EnumUiMessages.PlayerSelectedToDiscardMessage => new PlayerSelectedToDiscardUIEvent(JsonHelper.GetInt(data, "playerId")),
+                EnumUiMessages.PotentialVictimsFoundMessage => new PotentialVictimsFoundUIEvent(JsonHelper.GetIntList(data, "victimsIds")),
+                EnumUiMessages.BankTradeRatioChangedMessage => new BankTradeRatioChangedUIEvent(JsonHelper.GetInt
+                (data, "ratio"), JsonHelper.GetBool(data, "possibleForPlayer"), JsonHelper.GetNullableEnum<EnumResourceType>(data, "resource")),
+                EnumUiMessages.TurnNumberChangedMessage => new TurnNumberChangedUIEvent(JsonHelper.GetInt(data, "turnNumber")),
+                _ => throw new Exception($"Unknown UI message: {message.Type}")
             };
         }
 
-        public IInternalUIEvents TranslateDomainEvent(IDomainEvent domainEvent)
+        public IInternalUIEvents TranslateDomainEvent(DomainEventDto message)
         {
-            return domainEvent switch
+            var data = JToken.FromObject(message.Data);
+
+            return message.Type switch
             {
-                VillagePlacedEvent m => new VillagePlacedUIEvent(m.VertexId, m.OwnerId),
-                RoadPlacedEvent m => new RoadPlacedUIEvent(m.EdgeId, m.OwnerId),
-                TownPlacedEvent m => new TownPlacedUIEvent(m.VertexId, m.OwnerId),
-                DevelopmentCardBoughtEvent m => new DevelopmentCardBoughtUIEvent(m.CardId),
-                RobberPlacedEvent m => new RobberMovedUIEvent(m.HexId),
+                EnumDomainEvents.VillagePlacedEvent => new VillagePlacedUIEvent(JsonHelper.GetInt(data, "vertexId"), JsonHelper.GetInt(data, "ownerId")),
+                EnumDomainEvents.RoadPlacedEvent => new RoadPlacedUIEvent(JsonHelper.GetInt(data, "edgeId"), JsonHelper.GetInt(data, "ownerId")),
+                EnumDomainEvents.TownPlacedEvent => new TownPlacedUIEvent(JsonHelper.GetInt(data, "vertexId"), JsonHelper.GetInt(data, "ownerId")),
+                EnumDomainEvents.DevelopmentCardBoughtEvent => new DevelopmentCardBoughtUIEvent(JsonHelper.GetInt(data, "cardId")),
+                EnumDomainEvents.RobberPlacedEvent => new RobberMovedUIEvent(JsonHelper.GetInt(data, "hexId")),
+                EnumDomainEvents.PlayerStateChangedEvent => new PlayerStateChangedUIEvent(JsonHelper.GetInt(data, "playerId")),
+                _ => throw new Exception($"Unknown UI message: {message.Type}")
             };
         }
     }

@@ -1,7 +1,6 @@
 using Catan.Core.Snapshots;
-using Catan.Shared.Communication;
-using Catan.Shared.Communication.Commands;
 using Catan.Shared.Data;
+using Catan.Unity.InternalUIEvents;
 using Catan.Unity.Data;
 using Catan.Unity.Helpers;
 using Catan.Unity.Visuals;
@@ -26,11 +25,16 @@ namespace Catan.Unity.Panels
         public Button CancelTradeButton;
         public GameObject PlayerButtonPrefab;
 
-        private EventBus Bus => ManagerGame.Instance.EventBus;
+        private EventBus _bus;
 
         public void Awake()
         {
             RegisterButton(EnumTradeOfferUIButtons.CancelTradeOffer, CancelTradeButton);
+        }
+
+        public void Initialize(EventBus bus)
+        {
+            _bus = bus;
         }
 
         public void Show(IReadOnlyList<PlayerNameSnapshot> potentialPartnersData)
@@ -50,7 +54,7 @@ namespace Catan.Unity.Panels
             {
                 var buttonObj = Instantiate(PlayerButtonPrefab, PlayersButtonsContainer);
                 buttonObj.GetComponentInChildren<TextMeshProUGUI>().text = player.Name;
-                buttonObj.GetComponent<Button>().onClick.AddListener(() => Bus.Publish(new TradePartnerChosenCommand(player.Id)));
+                buttonObj.GetComponent<Button>().onClick.AddListener(() => _bus.Publish(new PlayerClickedUIEvent(player.Id)));
             }
         }
 

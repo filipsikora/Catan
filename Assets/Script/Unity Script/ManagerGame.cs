@@ -1,11 +1,7 @@
 ﻿#nullable enable
-using Catan.Application;
-using Catan.Application.Controllers;
-using Catan.Core;
-using Catan.Core.Engine;
-using Catan.Core.Queries.InMemory;
+using Catan.Shared.Commands;
 using Catan.Shared.Data;
-using Catan.Unity.Communication.InternalUIEvents;
+using Catan.Unity.InternalUIEvents;
 using Catan.Unity.Data;
 using Catan.Unity.Helpers;
 using Catan.Unity.Panels;
@@ -51,7 +47,7 @@ namespace Catan.Unity
 
         public List<FieldTypeMaterial> FieldMaterialsList;
         public List<RegistryDataResource> ResourceList;
-        public Dictionary<EnumResourceTypes, Color> PortColorLookup { get; private set; }
+        public Dictionary<EnumResourceType, Color> PortColorLookup { get; private set; }
 
         public GameApplication GameApplication;
 
@@ -73,14 +69,13 @@ namespace Catan.Unity
             ClickHandler.Initialize(EventBus);
         }
 
-        void Start()
-        {
-            StartGame(2);
-        }
+ //       void Start() startgame(2);
+
 
         public void StartGame(int playerCount)
         {
-            var game = new GameState(new HexMap());
+            var random = new UnityRandomProvider();
+            var game = new GameState(random, new HexMap(random));
             game.InitializeNewGame(playerCount, Size);
 
             Session = new GameSession(game);
@@ -102,7 +97,9 @@ namespace Catan.Unity
 
             var controllerResourceCards = InitializeHelpers(Facade);
             InitializeBuilderMap(Facade);
-            UIManager.Initialize(EventsHandler, controllerResourceCards);
+            UIManager.Initialize(EventBus, controllerResourceCards);
+
+            EventsHandler.Execute(new StartGameCommand());
         }
 
         public void InitializeBuilderMap(Facade facade)
@@ -129,14 +126,15 @@ namespace Catan.Unity
             EventBus.Publish(new RobberMovedUIEvent(desertHexId));
         }
 
-        public ControllerResourceCards InitializeHelpers(Facade facade)
+        public ControllerResourceCards InitializeHelpers()
         {
             var controllerResourceCards = new ControllerResourceCards(EventBus);
             new ControllerLogMessagesUI(EventBus, UIManager.LogsPanel);
             new ControllerPlayerUI(facade, UIManager.PlayerUIPanel, EventBus);
-            new ControllerPlacingBuildings(EventBus, BoardVisuals);
+            new ControllerPlacingBuildings(EventBus, BoardVisuals, Board, CubeVillagePrefab, CubeRoadPrefab, CubeTownPrefab);
             new ControllerPlacingRobber(EventBus, BoardVisuals);
             new ControllerBoardVisuals(EventBus, BoardVisuals);
+            new ControllerTurnVisuals(EventBus, UIManager.MainUIPanel);
 
             return controllerResourceCards;
         }
@@ -167,8 +165,6 @@ namespace Catan.Unity
 
         remove data from shared, add queries
 
-        determine random and extract it from game
-
         location burdel
 
         selectvictim failure check
@@ -181,11 +177,8 @@ namespace Catan.Unity
 
         visualsUI split
 
-        DI fix factories
+                determine random and extract it from game
 
-        merge ui and domain events
-
-        uievent published -> execute?
         */
     }
 }

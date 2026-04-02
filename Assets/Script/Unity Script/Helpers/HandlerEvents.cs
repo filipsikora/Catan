@@ -1,58 +1,69 @@
-﻿using Catan.Application;
-using Catan.Application.Interfaces;
-using Catan.Core.Interfaces;
-using Catan.Shared.Interfaces;
-using Catan.Unity.Phases.Controllers;
-using System.Collections.Generic;
+﻿using Catan.Shared.Data;
+using Newtonsoft.Json.Linq;
+using System.Threading.Tasks;
+using Catan.Shared.Dtos;
+using Catan.Unity.Networking;
+using System;
 
 namespace Catan.Unity.Helpers
 {
     public class HandlerEvents
     {
-        private GameApplication _gameApplication;
-        private AdapterGameFlow _gameFlow;
         private EventsTranslator _translator;
         private EventBus _bus;
 
-        public HandlerEvents(GameApplication gameApplication, AdapterGameFlow gameFlow, EventsTranslator translator, EventBus bus)
+        private GameClient _client;
+        private Guid _gameId;
+
+        public HandlerEvents(EventsTranslator translator, EventBus bus, GameClient client, Guid gameId)
         {
-            _gameApplication = gameApplication;
-            _gameFlow = gameFlow;
             _translator = translator;
             _bus = bus;
+            _client = client;
+            _gameId = gameId;
         }
 
-        public void Execute(ICommand command)
+        public async Task Execute(EnumCommandType type, object data)
         {
-            var result = _gameApplication.Execute(command);
-
-            var uiMessagesList = result.GetUIMessagesList();
-            var domainEventsList = result.GetDomainEventsList();
-
-            if (result.NextPhase != null)
-                _gameFlow.ChangePhase(result.NextPhase.Value);
-
-                PassDomainEvents(domainEventsList);
-                PassUIMessages(uiMessagesList);
-        }
-
-        private void PassUIMessages(IReadOnlyList<IUIMessages> uiMessagesList)
-        {
-            foreach (var uiMessage in uiMessagesList)
+            var dto = new CommandRequestDto
             {
-                var internalUIEvent = _translator.TranslateUIMessage(uiMessage);
+                Type = type,
+                Data = JObject.FromObject(data)
+            };
 
-                _bus.Publish(internalUIEvent);
+            CommandResponseDto response;
+
+            try
+            {
+                response = await _client.Send(_gameId, dto);
             }
-        }
 
-        private void PassDomainEvents(IReadOnlyList<IDomainEvent> domainEventsList)
-        {
-            foreach (var domainEvent in domainEventsList)
+            catch(Exception ex)
             {
-                var internalUIEvent = _translator.TranslateDomainEvent(domainEvent);
+                UnityEngine.Debug.LogError($"HTTP error: {ex.Message}");
+                return;
+            }
 
-                _bus.Publish(internalUIEvent);
+            if (!response.Success)
+            {
+                UnityEngine.Debug.LogWarning("Command failed");
+                return;
+            }
+
+            foreach (var message in response.UiMessages)
+            {
+                var jToken = message as JToken ?? JToken.FromObject(message);
+                var uiMessage = _translator.TranslateDomainEvent(jToken);
+
+                _bus.Publish(uiMessage);
+            }
+
+            foreach (var message in response.DomainMessages)
+            {
+                var jToken = message as JToken ?? JToken.FromObject(message);
+                var domainEvent = _translator.TranslateDomainEvent(jToken);
+
+                _bus.Publish(domainEvent);
             }
         }
     }

@@ -1,5 +1,4 @@
 ﻿using Catan.Core.Snapshots;
-using Catan.Shared.Communication;
 using Catan.Unity.Helpers;
 using Catan.Unity.Visuals.Controllers;
 using UnityEngine;
@@ -12,7 +11,6 @@ namespace Catan.Unity.Panels
         public PlayerUI PlayerUIPanel;
         public CardTheftUI CardTheftPanel;
         public VictimSelectionUI VictimSelectorPanel;
-        public GameObject PlayerSelectorPanel;
         public CardDiscardUI CardDiscardPanel;
         public TradeOfferUI TradeOfferPanel;
         public TradeRequestUI TradeRequestPanel;
@@ -24,10 +22,13 @@ namespace Catan.Unity.Panels
         public FactoryResourceCards factoryResourceCards;
         public FactoryDevelopmentCards factoryDevCards;
 
-        public void Initialize(HandlerEvents eventsHandler, ControllerResourceCards controller)
+        public void Initialize(EventBus bus, ControllerResourceCards controller)
         {
-            factoryResourceCards.Initialize(eventsHandler, controller);
+            factoryResourceCards.Initialize(bus, controller);
             factoryDevCards.Initialize(bus);
+            VictimSelectorPanel.Initialize(bus);
+            TradeOfferPanel.Initialize(bus);
+
         }
 
         public void UpdateTurnCounter(int turn) => MainUIPanel.UpdateTurnCounter(turn);

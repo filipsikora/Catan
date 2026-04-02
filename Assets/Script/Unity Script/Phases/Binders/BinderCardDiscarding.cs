@@ -1,5 +1,5 @@
 ﻿using Catan.Unity.Helpers;
-using Catan.Shared.Communication.Commands;
+using Catan.Shared.Commands;
 using Catan.Unity.Data;
 using Catan.Unity.Panels;
 

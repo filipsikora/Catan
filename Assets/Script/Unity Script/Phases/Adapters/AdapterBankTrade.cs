@@ -1,6 +1,6 @@
 ﻿using EventBus = Catan.Unity.Helpers.EventBus;
-using Catan.Shared.Communication.Commands;
-using Catan.Unity.Communication.InternalUIEvents;
+using Catan.Shared.Commands;
+using Catan.Unity.InternalUIEvents;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
 using Catan.Application.Controllers;
@@ -19,6 +19,8 @@ namespace Catan.Unity.Phases.Adapters
 
         public override void OnEnter()
         {
+            UI.BankTradePanel.gameObject.SetActive(true);
+
             _binder = new BinderBankTrade(UI, EventBus, EventsHandler);
             _binder.Bind();
 

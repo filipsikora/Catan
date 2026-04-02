@@ -1,7 +1,7 @@
-﻿using Catan.Shared.Communication.Commands;
+﻿using Catan.Shared.Commands;
 using Catan.Unity.Helpers;
 using Catan.Shared.Data;
-using Catan.Unity.Communication.InternalUIEvents;
+using Catan.Unity.InternalUIEvents;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
 using Catan.Unity.Data;
@@ -14,7 +14,7 @@ namespace Catan.Unity.Phases.Adapters
     {
         public BinderCardSelection _binder;
 
-        public AdapterMonopolyCard(ManagerUI ui, EventBus bus, Facade facade, HandlerEvents eventsHandler) : base(ui, bus, facade, eventsHandler) { }
+        public AdapterMonopolyCard(ManagerUI ui, EventBus bus, HandlerEvents eventsHandler) : base(ui, bus, eventsHandler) { }
 
         public override void OnEnter()
         {
