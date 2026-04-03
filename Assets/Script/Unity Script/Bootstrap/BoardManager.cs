@@ -1,15 +1,22 @@
-﻿using Catan.Unity.Visuals;
+﻿using Catan.Unity.Data;
+using System.Collections.Generic;
 using UnityEngine;
 
-namespace Catan.Unity.Bootstrap
+public class BoardManager : MonoBehaviour
 {
-    public class BoardManager : MonoBehaviour
-    {
-        public Transform Board;
-        public VisualsBoard BoardVisuals;
+    public Transform Board;
 
-        public GameObject HexTilePrefab;
-        public GameObject CubeVillagePrefab;
-        public GameObject 
-    }
+    public Material WaterMaterial;
+    public Material IdleGridMaterial;
+
+    public GameObject HexTilePrefab;
+    public GameObject HexNumberPrefab;
+    public GameObject CubeVillagePrefab;
+    public GameObject CubeRoadPrefab;
+    public GameObject CubeTownPrefab;
+    public GameObject CubeRobberPrefab;
+    public GameObject CubePortPrefab;
+
+    public List<FieldTypeMaterial> FieldMaterialsList;
+    public List<RegistryDataResource> ResourceList;
 }

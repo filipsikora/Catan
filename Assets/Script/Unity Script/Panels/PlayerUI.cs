@@ -3,7 +3,7 @@ using TMPro;
 using Catan.Unity.Helpers;
 using Catan.Shared.Data;
 using Catan.Unity.Visuals;
-using Catan.Core.Snapshots;
+using Catan.Shared.Dtos;
 
 namespace Catan.Unity.Panels
 {
@@ -17,34 +17,34 @@ namespace Catan.Unity.Panels
 
         public FactoryResourceCards ResourceCardFactory;
 
-        public void UpdatePlayerInfo(PlayerDataSnapshot dataSnapshot, PlayerResourcesSnapshot resourcesSnapshot)
+        public void UpdatePlayerInfo(PlayerDataDto dataDto, PlayerCardsDto cardsDto)
         {
-            UpdateTexts(dataSnapshot);
-            UpdateResourceCards(resourcesSnapshot);
+            UpdateTexts(dataDto);
+            UpdateResourceCards(cardsDto);
         }
 
-        public void UpdateTexts(PlayerDataSnapshot dataSnapshot)
+        public void UpdateTexts(PlayerDataDto dataDto)
         {
-            PlayerNameText.text = $"{dataSnapshot.Name}";
+            PlayerNameText.text = $"{dataDto.Name}";
 
             string buildingsInfo = "";
 
-            foreach (var (key, value) in dataSnapshot.BuildingsLeft)
-            {;
+            foreach (var (key, value) in dataDto.BuildingsLeft)
+            {
                 buildingsInfo += $"{key}: {value} available\n";
             }
 
             PlayerBuildingsText.text = buildingsInfo;
-            PlayerPointsText.text = $"{dataSnapshot.Name}: {dataSnapshot.Points} points, {dataSnapshot.Knights} knights, {dataSnapshot.VictoryPoints + dataSnapshot.ExtraPoints} extra points";
+            PlayerPointsText.text = $"{dataDto.Name}: {dataDto.Points} points, {dataDto.Knights} knights, {dataDto.VictoryPoints + dataDto.ExtraPoints} extra points";
         }
 
-        public void UpdateResourceCards(PlayerResourcesSnapshot resourcesSnapshot)
+        public void UpdateResourceCards(PlayerCardsDto cardsDto)
         {
             VisualsUI.ClearContainer(ResourceCardsPanel);
 
-            foreach (var entry in resourcesSnapshot.PlayerResources)
+            foreach (var entry in cardsDto.PlayerResources)
             {
-                EnumResourceTypes type = entry.Key;
+                EnumResourceType type = entry.Key;
                 int count = entry.Value;
 
                 for (int i = 0; i < count; i++)

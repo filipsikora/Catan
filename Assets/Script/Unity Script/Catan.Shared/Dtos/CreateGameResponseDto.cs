@@ -1,4 +1,6 @@
-﻿namespace Catan.Shared.Dtos
+﻿using System;
+
+namespace Catan.Shared.Dtos
 {
     public class CreateGameResponseDto
     {

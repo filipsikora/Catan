@@ -14,6 +14,7 @@
         PlayerSelectedToDiscardMessage,
         PotentialVictimsFoundMessage,
         BankTradeRatioChangedMessage,
-        TurnNumberChangedMessage
+        TurnNumberChangedMessage,
+        DiceRollChangedMessage
     }
 }

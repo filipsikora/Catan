@@ -15,11 +15,17 @@ namespace Catan.Unity.Visuals.Controllers
             _mainUI = mainUI;
 
             _bus.Subscribe<TurnNumberChangedUIEvent>(OnTurnNumberChanged);
+            _bus.Subscribe<DiceRollChangedUIEvent>(OnDiceRolled);
         }
 
         private void OnTurnNumberChanged(TurnNumberChangedUIEvent signal)
         {
             _mainUI.UpdateTurnCounter(signal.TurnNumber);
+        }
+
+        private void OnDiceRolled(DiceRollChangedUIEvent signal)
+        {
+            _mainUI.UpdateRolledDice(signal.RolledNumber);
         }
     }
 }

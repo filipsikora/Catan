@@ -21,7 +21,7 @@ namespace Catan.Unity.Helpers
                 EnumUiMessages.EdgeHighlightedMessage => new EdgeHighlightedUIEvent(JsonHelper.GetInt(data, "edgeId")),
                 EnumUiMessages.BuildOptionsSentMessage => new BuildOptionsSentUIEvent
                 (JsonHelper.GetBool(data, "canBuildVillage"), JsonHelper.GetBool(data, "canBuildRoad"), JsonHelper.GetBool(data, "canUpgradeVillage")),
-                EnumUiMessages.LogMessageMessage =>  new LogMessageUIEvent(JsonHelper.GetEnum<EnumLogTypes>(data, "type"), JsonHelper.GetString(data, "message")),
+                EnumUiMessages.LogMessageMessage => new LogMessageUIEvent(JsonHelper.GetEnum<EnumLogTypes>(data, "type"), JsonHelper.GetString(data, "message")),
                 EnumUiMessages.ActionRejectedMessage => new ActionRejectedUIEvent(JsonHelper.GetInt(data, "playerId"), JsonHelper.GetEnum<ConditionFailureReason>(data, "reason")),
                 EnumUiMessages.ResourceSelectedMessage => new ResourceSelectedUIEvent(JsonHelper.GetBool(data, "selected"), JsonHelper.GetNullableEnum<EnumResourceType>(data, "type")),
                 EnumUiMessages.SelectionChangedMessage => new SelectionChangedUIEvent(JsonHelper.GetBool(data, "actionAvailable")),
@@ -31,6 +31,7 @@ namespace Catan.Unity.Helpers
                 EnumUiMessages.BankTradeRatioChangedMessage => new BankTradeRatioChangedUIEvent(JsonHelper.GetInt
                 (data, "ratio"), JsonHelper.GetBool(data, "possibleForPlayer"), JsonHelper.GetNullableEnum<EnumResourceType>(data, "resource")),
                 EnumUiMessages.TurnNumberChangedMessage => new TurnNumberChangedUIEvent(JsonHelper.GetInt(data, "turnNumber")),
+                EnumUiMessages.DiceRollChangedMessage => new DiceRollChangedUIEvent(JsonHelper.GetInt(data, "rolledNumber")),
                 _ => throw new Exception($"Unknown UI message: {message.Type}")
             };
         }

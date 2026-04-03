@@ -11,7 +11,6 @@ namespace Catan.Unity.Phases.Controllers
     public class AdapterTradeRequest : BasePhaseAdapter
     {
         private BinderTradeRequest _binder;
-        private TradeOfferedSnapshot _tradeOfferSnapshot;
 
         public AdapterTradeRequest(ManagerUI ui, EventBus bus, HandlerEvents eventsHandler) : base(ui, bus, eventsHandler) { }
 
@@ -22,10 +21,10 @@ namespace Catan.Unity.Phases.Controllers
             _binder = new BinderTradeRequest(UI, EventBus, EventsHandler);
             _binder.Bind();
 
-            _tradeOfferSnapshot = Facade.GetTradeOfferData();
+            var tradeOfferSnapshot = Facade.GetTradeOfferData();
 
-            UI.TradeRequestPanel.AcceptTradeButton.gameObject.SetActive(_tradeOfferSnapshot.CanTrade);
-            UI.TradeRequestPanel.Show(_tradeOfferSnapshot.SellerName, _tradeOfferSnapshot.BuyerName, _tradeOfferSnapshot.Offered, _tradeOfferSnapshot.Desired);
+            UI.TradeRequestPanel.AcceptTradeButton.gameObject.SetActive(tradeOfferSnapshot.CanTrade);
+            UI.TradeRequestPanel.Show(tradeOfferSnapshot.SellerName, tradeOfferSnapshot.BuyerName, tradeOfferSnapshot.Offered, tradeOfferSnapshot.Desired);
 
             VisualsUI.SetMainAndPlayerUIVisibility(false, UI.MainUIPanel, UI.PlayerUIPanel);
         }

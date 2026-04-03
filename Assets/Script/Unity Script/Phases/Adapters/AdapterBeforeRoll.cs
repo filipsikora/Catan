@@ -1,9 +1,7 @@
 ﻿using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
-using Catan.Unity.InternalUIEvents;
 using Catan.Unity.Panels;
 using Catan.Unity.Helpers;
-using Catan.Application.Controllers;
 
 namespace Catan.Unity.Phases.Adapters
 {

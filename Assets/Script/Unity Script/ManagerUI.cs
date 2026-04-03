@@ -1,4 +1,4 @@
-﻿using Catan.Core.Snapshots;
+﻿using Catan.Shared.Dtos;
 using Catan.Unity.Helpers;
 using Catan.Unity.Visuals.Controllers;
 using UnityEngine;
@@ -37,6 +37,6 @@ namespace Catan.Unity.Panels
         public void ShowTradeOfferButton() => MainUIPanel.ShowTradeOfferButton();
         public void HideTradeOfferButton() => MainUIPanel.HideTradeOfferButton();
 
-        public void UpdatePlayerInfo(PlayerDataSnapshot dataSnapshot, PlayerResourcesSnapshot resourcesSnapshot) => PlayerUIPanel.UpdatePlayerInfo(dataSnapshot, resourcesSnapshot);
+        public void UpdatePlayerInfo(PlayerDataDto dataSnapshot, PlayerCardsDto cardsSnapshot) => PlayerUIPanel.UpdatePlayerInfo(dataSnapshot, cardsSnapshot);
     }
 }

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Catan.Shared.Dtos;
 using Catan.Unity.Networking;
 using System;
+using Catan.Unity.Phases.Controllers;
 
 namespace Catan.Unity.Helpers
 {
@@ -15,12 +16,15 @@ namespace Catan.Unity.Helpers
         private GameClient _client;
         private Guid _gameId;
 
-        public HandlerEvents(EventsTranslator translator, EventBus bus, GameClient client, Guid gameId)
+        private AdapterGameFlow _gameFlow;
+
+        public HandlerEvents(EventsTranslator translator, EventBus bus, GameClient client, Guid gameId, AdapterGameFlow gameFlow)
         {
             _translator = translator;
             _bus = bus;
             _client = client;
             _gameId = gameId;
+            _gameFlow = gameFlow;
         }
 
         public async Task Execute(EnumCommandType type, object data)
@@ -35,7 +39,7 @@ namespace Catan.Unity.Helpers
 
             try
             {
-                response = await _client.Send(_gameId, dto);
+                response = await _client.SendCommand(_gameId, dto);
             }
 
             catch(Exception ex)
@@ -49,6 +53,9 @@ namespace Catan.Unity.Helpers
                 UnityEngine.Debug.LogWarning("Command failed");
                 return;
             }
+
+            if (response.NextPhase != null)
+                _gameFlow.ChangePhase(response.NextPhase);
 
             foreach (var message in response.UiMessages)
             {

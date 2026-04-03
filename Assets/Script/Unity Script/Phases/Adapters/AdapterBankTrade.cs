@@ -1,9 +1,7 @@
 ﻿using EventBus = Catan.Unity.Helpers.EventBus;
-using Catan.Shared.Commands;
 using Catan.Unity.InternalUIEvents;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
-using Catan.Application.Controllers;
 using Catan.Unity.Panels;
 using Catan.Unity.Data;
 using Catan.Shared.Data;
@@ -15,7 +13,7 @@ namespace Catan.Unity.Phases.Adapters
     {
         private BinderBankTrade _binder;
 
-        public AdapterBankTrade(ManagerUI ui, EventBus bus, Facade facade, HandlerEvents eventHandler) : base(ui,bus, facade, eventHandler) { }
+        public AdapterBankTrade(ManagerUI ui, EventBus bus, HandlerEvents eventHandler) : base(ui,bus, eventHandler) { }
 
         public override void OnEnter()
         {

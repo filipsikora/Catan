@@ -10,8 +10,6 @@ namespace Catan.Unity.Phases.Controllers
 {
     public class AdapterCardStealing : BasePhaseAdapter
     {
-        private PlayerNameSnapshot _victimName;
-        private PlayerResourcesSnapshot _victimResources;
         private int _thiefData;
 
         public AdapterCardStealing(ManagerUI ui, EventBus bus, HandlerEvents eventsHandler) : base(ui, bus, eventsHandler) { }
@@ -20,16 +18,14 @@ namespace Catan.Unity.Phases.Controllers
         {
             EventBus.Subscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
 
-            _victimName = Facade.GetVictimsName();
-
-            ShowVictimsCards(_victimName.Id);
+            ShowVictimsCards();
         }
 
-        public void ShowVictimsCards(int victimId)
+        public void ShowVictimsCards()
         {
-            _victimResources = Facade.GetPlayersCards(victimId);
+            var victimResources = Facade.GetVictimsCards();
 
-            UI.CardTheftPanel.Show(_victimResources);
+            UI.CardTheftPanel.Show(victimResources);
         }
 
         private void OnResourceCardClicked(ResourceCardClickedUIEvent signal)

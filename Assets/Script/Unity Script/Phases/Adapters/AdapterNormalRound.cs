@@ -28,21 +28,13 @@ namespace Catan.Unity.Phases.Adapters
 
             EventBus.Subscribe<BuildOptionsSentUIEvent>(OnPositionClicked);
 
-            EventBus.Subscribe<VillagePlacedUIEvent>(OnVillagePlaced);
-            EventBus.Subscribe<RoadPlacedUIEvent>(OnRoadPlaced);
-            EventBus.Subscribe<TownPlacedUIEvent>(OnTownPlaced);
-
-            EventBus.Subscribe<DevelopmentCardBoughtUIEvent>(OnDevelopmentCardBought);
-
             EventBus.Subscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
 
             UI.HideTradeOfferButton();
-            VisualsUI.ResetResourceCardsInParent(UI.PlayerUIPanel.ResourceCardsPanel);
 
+            VisualsUI.ResetResourceCardsInParent(UI.PlayerUIPanel.ResourceCardsPanel);
             VisualsUI.SetMainAndPlayerUIVisibility(true, UI.MainUIPanel, UI.PlayerUIPanel);
             VisualsUI.ShowNextTurnUI(UI.MainUIPanel);
-
-            UI.MainUIPanel.UpdateRolledDice(_turnDataSnapshot.RolledNumber);
         }
 
         private void OnVertexClicked(VertexClickedUIEvent signal)

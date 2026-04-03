@@ -45,7 +45,7 @@ namespace Catan.Unity.Networking
             return result.GameId;
         }
 
-        public async Task<CommandResponseDto> Send(Guid gameId, CommandRequestDto dto)
+        public async Task<CommandResponseDto> SendCommand(Guid gameId, CommandRequestDto dto)
         {
             var json = JsonConvert.SerializeObject(dto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -64,6 +64,30 @@ namespace Catan.Unity.Networking
             var result = JsonConvert.DeserializeObject<CommandResponseDto>(responseJson) ?? throw new Exception("Failed to deserialize CommandResponseDto");
 
             return result;
+        }
+
+        public async Task<BoardDto> GetBoard(Guid gameId)
+        {
+            var response = await _http.GetAsync($"{_baseUrl}/{gameId}/queries/board");
+            var json = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<BoardDto>(json);
+        }
+
+        public async Task<PlayerDataDto> GetPlayerData(Guid gameId, int playerId)
+        {
+            var response = await _http.GetAsync($"{_baseUrl}/{gameId}/queries/player-data/{playerId}");
+            var json = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<PlayerDataDto>(json);
+        }
+
+        public async Task<PlayerCardsDto> GetPlayerCards(Guid gameId, int playerId)
+        {
+            var response = await _http.GetAsync($"{_baseUrl}/{gameId}/queries/player-cards/{playerId}");
+            var json = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<PlayerCardsDto>(json);
         }
     }
 }

@@ -1,6 +1,4 @@
 ﻿#nullable enable
-using Catan.Core.Snapshots;
-using Catan.Unity.Helpers;
 using Catan.Shared.Data;
 using Catan.Unity.Data;
 using Catan.Unity.Visuals.Models;
@@ -9,12 +7,12 @@ using System.Linq;
 using TMPro;
 using Unity.Helpers;
 using UnityEngine;
+using Catan.Shared.Dtos;
 
 namespace Catan.Unity
 {
     internal class BuilderMap
     {
-
         public float Size;
         public List<FieldTypeMaterial> FieldMaterialsList;
         public Material IdleGridMaterial;
@@ -31,21 +29,21 @@ namespace Catan.Unity
         public Dictionary<int, GameObject> EdgeObjects = new();
         public Dictionary<int, GameObject> HexObjects = new();
 
-        public Dictionary<int, VertexSnapshot> vertexLookup = new();
-        public Dictionary<int, EdgeSnapshot> edgeLookup = new();
+        public Dictionary<int, VertexDto> vertexLookup = new();
+        public Dictionary<int, EdgeDto> edgeLookup = new();
 
-        public void BuildMap(BoardSnapshot board, EventBus bus)
+        public void BuildMap(BoardDto board)
         {
             vertexLookup = board.Vertices.ToDictionary(v => v.VertexId);
             edgeLookup = board.Edges.ToDictionary(e => e.EdgeId);
 
             DrawEdges(board);
-            DrawVertices(board, bus);
+            DrawVertices(board);
             DrawHexes(board);
             DrawPorts(board);
         }
 
-        public void DrawHexes(BoardSnapshot board)
+        public void DrawHexes(BoardDto board)
         {
             foreach (var hex in board.Hexes)
             {
@@ -74,7 +72,7 @@ namespace Catan.Unity
             }
         }
 
-        public void DrawEdges(BoardSnapshot board)
+        public void DrawEdges(BoardDto board)
         {
             foreach (var edge in board.Edges)
             {
@@ -117,7 +115,7 @@ namespace Catan.Unity
             }
         }
 
-        public void DrawVertices(BoardSnapshot board, EventBus bus)
+        public void DrawVertices(BoardDto board)
         {
             float vertexHeight = 0.15f;
 
@@ -148,7 +146,7 @@ namespace Catan.Unity
             }
         }
 
-        public void DrawPorts(BoardSnapshot board)
+        public void DrawPorts(BoardDto board)
         {
             foreach (var port in board.Ports)
             {
@@ -180,7 +178,7 @@ namespace Catan.Unity
             }
         }
 
-        private Vector3 ResolveVertexPosition(VertexSnapshot v)
+        private Vector3 ResolveVertexPosition(VertexDto v)
         {
             var points = v.Corners.Select(c =>
                 HexLayout.GetCorner(c.HexQ, c.HexR, c.CornerIndex, Size)
