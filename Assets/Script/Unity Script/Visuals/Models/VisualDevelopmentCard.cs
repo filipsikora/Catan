@@ -1,10 +1,10 @@
-﻿using Catan.Core.Snapshots;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Catan.Shared.Data;
 using Catan.Unity.Helpers;
 using Catan.Unity.InternalUIEvents;
+using Catan.Shared.Dtos;
 
 namespace Catan.Unity.Visuals.Models
 {
@@ -23,12 +23,12 @@ namespace Catan.Unity.Visuals.Models
 
         private int _id { get; set; }
 
-        public void Initialize(DevelopmentCardSnapshot snapshot, EventBus bus)
+        public void Initialize(DevelopmentCardDto dto, EventBus bus)
         {
-            _id = snapshot.Id;
+            _id = dto.Id;
             _bus = bus;
 
-            SetupVisuals(snapshot.Type, snapshot.IsNew, snapshot.IsPlayable);
+            SetupVisuals(dto.Type, dto.IsNew, dto.IsPlayable);
         }
 
         public void OnCardClicked()

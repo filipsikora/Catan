@@ -1,10 +1,13 @@
-﻿using Catan.Application.Controllers;
-using Catan.Core.Snapshots;
+﻿using Catan.Shared.Data;
+using Catan.Shared.Dtos;
 using Catan.Unity.Helpers;
+using Catan.Unity.Networking;
 using Catan.Unity.Panels;
 using Catan.Unity.Phases.Adapters;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
+using System;
+using System.Threading.Tasks;
 
 namespace Catan.Unity.Phases.Controllers
 {
@@ -12,7 +15,7 @@ namespace Catan.Unity.Phases.Controllers
     {
         private BinderTradeRequest _binder;
 
-        public AdapterTradeRequest(ManagerUI ui, EventBus bus, HandlerEvents eventsHandler) : base(ui, bus, eventsHandler) { }
+        public AdapterTradeRequest(ManagerUI ui, EventBus bus, HandlerEvents eventHandler, GameClient client, Guid gameId) : base(ui, bus, eventHandler, client, gameId) { }
 
         public override void OnEnter()
         {
@@ -21,12 +24,17 @@ namespace Catan.Unity.Phases.Controllers
             _binder = new BinderTradeRequest(UI, EventBus, EventsHandler);
             _binder.Bind();
 
-            var tradeOfferSnapshot = Facade.GetTradeOfferData();
-
-            UI.TradeRequestPanel.AcceptTradeButton.gameObject.SetActive(tradeOfferSnapshot.CanTrade);
-            UI.TradeRequestPanel.Show(tradeOfferSnapshot.SellerName, tradeOfferSnapshot.BuyerName, tradeOfferSnapshot.Offered, tradeOfferSnapshot.Desired);
+            _ = LoadData();
 
             VisualsUI.SetMainAndPlayerUIVisibility(false, UI.MainUIPanel, UI.PlayerUIPanel);
+        }
+
+        private async Task LoadData()
+        {
+            var snapshot = await Client.SendQuery<TradeOfferedDto>(GameId, EnumQueryName.TradeOfferData);
+
+            UI.TradeRequestPanel.AcceptTradeButton.gameObject.SetActive(snapshot.CanTrade);
+            UI.TradeRequestPanel.Show(snapshot.SellerName, snapshot.BuyerName, snapshot.Offered, snapshot.Desired);
         }
 
         public override void OnExit()

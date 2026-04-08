@@ -1,8 +1,11 @@
-﻿using Catan.Unity.Helpers;
+﻿using Catan.Shared.Data;
+using Catan.Unity.Helpers;
 using Catan.Unity.InternalUIEvents;
+using Catan.Unity.Networking;
 using Catan.Unity.Panels;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
+using System;
 
 namespace Catan.Unity.Phases.Adapters
 {
@@ -10,7 +13,7 @@ namespace Catan.Unity.Phases.Adapters
     {
         BinderCardSelection _binder;
 
-        public AdapterYearOfPlentyCard(ManagerUI ui, EventBus bus, HandlerEvents eventsHandler) : base(ui, bus, eventsHandler) { }
+        public AdapterYearOfPlentyCard(ManagerUI ui, EventBus bus, HandlerEvents eventHandler, GameClient client, Guid gameId) : base(ui, bus, eventHandler, client, gameId) { }
 
         public override void OnEnter()
         {
@@ -35,12 +38,12 @@ namespace Catan.Unity.Phases.Adapters
         {
             if (signal.IsLeftClicked)
             {
-                EventsHandler.Execute(new ResourceCardSelectedCommand(true, signal.Type));
+                EventsHandler.Execute(EnumCommandType.ResourceCardSelectedCommand, new { IsToggled = true, Type = signal.Type });
             }
 
             else
             {
-                EventsHandler.Execute(new ResourceCardSelectedCommand(false, signal.Type));
+                EventsHandler.Execute(EnumCommandType.ResourceCardSelectedCommand, new { IsToggled = false, Type = signal.Type });
             }
         }
 

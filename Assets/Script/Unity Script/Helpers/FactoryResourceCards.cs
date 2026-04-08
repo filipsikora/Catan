@@ -13,11 +13,13 @@ namespace Catan.Unity.Helpers
         private int _nextVisualId = 0;
         private EventBus _bus;
         private ControllerResourceCards _controllerResourceCards;
+        private BoardManager _boardManager;
 
-        public void Initialize(EventBus bus, ControllerResourceCards controllerResourceCards)
+        public void Initialize(EventBus bus, ControllerResourceCards controllerResourceCards, BoardManager boardManager)
         {
             _bus = bus;
             _controllerResourceCards = controllerResourceCards;
+            _boardManager = boardManager;
         }
 
         public VisualResourceCard DrawResourceCard(EnumResourceType type, EnumResourceCardLocation location, Transform parent, bool visible = true)
@@ -33,7 +35,7 @@ namespace Catan.Unity.Helpers
             {
                 if (visible)
                 {
-                    var data = ManagerGame.Instance.ResourceList.First(r => r.Type == type);
+                    var data = _boardManager.ResourceList.First(r => r.Type == type);
                     image.color = data.Color;
                 }
 

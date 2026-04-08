@@ -1,4 +1,3 @@
-using Catan.Core.Snapshots;
 using Catan.Shared.Data;
 using Catan.Unity.InternalUIEvents;
 using Catan.Unity.Data;
@@ -11,6 +10,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Catan.Shared.Dtos;
 
 namespace Catan.Unity.Panels
 {
@@ -37,7 +37,7 @@ namespace Catan.Unity.Panels
             _bus = bus;
         }
 
-        public void Show(IReadOnlyList<PlayerNameSnapshot> potentialPartnersData)
+        public void Show(IReadOnlyList<PlayerNameDto> potentialPartnersData)
         {
             gameObject.SetActive(true);
 
@@ -45,7 +45,7 @@ namespace Catan.Unity.Panels
             VisualsUI.ClearContainer(CardsReviewContainer);
             VisualsUI.ClearContainer(PlayersButtonsContainer);
 
-            foreach (EnumResourceTypes type in Enum.GetValues(typeof(EnumResourceTypes)))
+            foreach (EnumResourceType type in Enum.GetValues(typeof(EnumResourceType)))
             {
                 CardFactory.DrawResourceCard(type, EnumResourceCardLocation.DesiredTrade, CardsChoiceContainer);
             }
@@ -58,12 +58,12 @@ namespace Catan.Unity.Panels
             }
         }
 
-        public void DrawVisualResourceCardInReview(EnumResourceTypes type)
+        public void DrawVisualResourceCardInReview(EnumResourceType type)
         {
             CardFactory.DrawResourceCard(type, EnumResourceCardLocation.ReviewTrade, CardsReviewContainer);
         }
 
-        public void DestroyVisualResourceCardInReview(EnumResourceTypes type)
+        public void DestroyVisualResourceCardInReview(EnumResourceType type)
         {
             VisualResourceCard card = CardsReviewContainer.GetComponentsInChildren<VisualResourceCard>().First(c => c.Type == type);
             Destroy(card.gameObject);

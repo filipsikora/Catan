@@ -1,10 +1,14 @@
-﻿using Catan.Application.Controllers;
+﻿using Catan.Shared.Data;
+using Catan.Shared.Dtos;
 using Catan.Unity.Helpers;
 using Catan.Unity.InternalUIEvents;
+using Catan.Unity.Networking;
 using Catan.Unity.Panels;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
-using Catan.Shared.Commands;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Catan.Unity.Phases.Adapters
 {
@@ -12,7 +16,7 @@ namespace Catan.Unity.Phases.Adapters
     {
         private BinderDevelopmentCards _binder;
 
-        public AdapterDevelopmentCards(ManagerUI ui, EventBus bus, HandlerEvents eventsHandler) : base(ui, bus, eventsHandler) { }
+        public AdapterDevelopmentCards(ManagerUI ui, EventBus bus, HandlerEvents eventHandler, GameClient client, Guid gameId) : base(ui, bus, eventHandler, client, gameId) { }
 
         public override void OnEnter()
         {
@@ -23,16 +27,20 @@ namespace Catan.Unity.Phases.Adapters
 
             VisualsUI.SetMainAndPlayerUIVisibility(false, UI.MainUIPanel, UI.PlayerUIPanel);
 
-            var currentPlayerDevCardsSnapshots = Facade.GetCurrentPlayerDevCards();
-
             EventBus.Subscribe<DevelopmentCardClickedUIEvent>(OnDevCardClicked);
 
-            UI.DevelopmentCardsPanel.Show(currentPlayerDevCardsSnapshots);
+            _ = LoadData();
         }
 
         private void OnDevCardClicked(DevelopmentCardClickedUIEvent signal)
         {
-            EventsHandler.Execute(new DevelopmentCardClickedPlayed(signal.CardId));
+            EventsHandler.Execute(EnumCommandType.DevelopmentCardClickedPlayedCommand, signal.CardId);
+        }
+
+        private async Task LoadData()
+        {
+            var snapshot = await EventsHandler.Query<List<DevelopmentCardDto>>(EnumQueryName.CurrentPlayerDevCards);
+            UI.DevelopmentCardsPanel.Show(snapshot);
         }
 
         public override void OnExit()

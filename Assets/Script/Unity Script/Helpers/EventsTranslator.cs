@@ -4,6 +4,8 @@ using Newtonsoft.Json.Linq;
 using Catan.Shared.Dtos;
 using Catan.Shared.Data;
 using System;
+using Catan.Shared.Dtos.UiMessages;
+using Catan.Shared.Dtos.DomainEvents;
 
 namespace Catan.Unity.Helpers
 {
@@ -13,43 +15,138 @@ namespace Catan.Unity.Helpers
 
         public IInternalUIEvents TranslateUIMessage(UiMessageDto message)
         {
-            var data = JToken.FromObject(message.Data);
+            var data = (JObject)message.Data;
 
-            return message.Type switch
+            switch (message.Type)
             {
-                EnumUiMessages.VertexHighlightedMessage => new VertexHighlightedUIEvent(JsonHelper.GetInt(data, "vertexId")),
-                EnumUiMessages.EdgeHighlightedMessage => new EdgeHighlightedUIEvent(JsonHelper.GetInt(data, "edgeId")),
-                EnumUiMessages.BuildOptionsSentMessage => new BuildOptionsSentUIEvent
-                (JsonHelper.GetBool(data, "canBuildVillage"), JsonHelper.GetBool(data, "canBuildRoad"), JsonHelper.GetBool(data, "canUpgradeVillage")),
-                EnumUiMessages.LogMessageMessage => new LogMessageUIEvent(JsonHelper.GetEnum<EnumLogTypes>(data, "type"), JsonHelper.GetString(data, "message")),
-                EnumUiMessages.ActionRejectedMessage => new ActionRejectedUIEvent(JsonHelper.GetInt(data, "playerId"), JsonHelper.GetEnum<ConditionFailureReason>(data, "reason")),
-                EnumUiMessages.ResourceSelectedMessage => new ResourceSelectedUIEvent(JsonHelper.GetBool(data, "selected"), JsonHelper.GetNullableEnum<EnumResourceType>(data, "type")),
-                EnumUiMessages.SelectionChangedMessage => new SelectionChangedUIEvent(JsonHelper.GetBool(data, "actionAvailable")),
-                EnumUiMessages.DesiredCardsChangedMessage => new DesiredCardsChangedUIEvent(JsonHelper.GetBool(data, "hasDesired")),
-                EnumUiMessages.PlayerSelectedToDiscardMessage => new PlayerSelectedToDiscardUIEvent(JsonHelper.GetInt(data, "playerId")),
-                EnumUiMessages.PotentialVictimsFoundMessage => new PotentialVictimsFoundUIEvent(JsonHelper.GetIntList(data, "victimsIds")),
-                EnumUiMessages.BankTradeRatioChangedMessage => new BankTradeRatioChangedUIEvent(JsonHelper.GetInt
-                (data, "ratio"), JsonHelper.GetBool(data, "possibleForPlayer"), JsonHelper.GetNullableEnum<EnumResourceType>(data, "resource")),
-                EnumUiMessages.TurnNumberChangedMessage => new TurnNumberChangedUIEvent(JsonHelper.GetInt(data, "turnNumber")),
-                EnumUiMessages.DiceRollChangedMessage => new DiceRollChangedUIEvent(JsonHelper.GetInt(data, "rolledNumber")),
-                _ => throw new Exception($"Unknown UI message: {message.Type}")
-            };
+                case EnumUiMessages.VertexHighlightedMessage:
+                    {
+                        var dto = data.ToObject<VertexHighlightedDto>();
+                        return new VertexHighlightedUIEvent(dto.VertexId);
+                    }
+
+                case EnumUiMessages.EdgeHighlightedMessage:
+                    {
+                        var dto = data.ToObject<EdgeHighlightedDto>();
+                        return new EdgeHighlightedUIEvent(dto.EdgeId);
+                    }
+
+                case EnumUiMessages.BuildOptionsSentMessage:
+                    {
+                        var dto = data.ToObject<BuildOptionsSentDto>();
+                        return new BuildOptionsSentUIEvent(dto.CanBuildVillage, dto.CanBuildRoad, dto.CanUpgradeVillage);
+                    }
+
+                case EnumUiMessages.LogMessageMessage:
+                    {
+                        var dto = data.ToObject<LogMessageDto>();
+                        return new LogMessageUIEvent(dto.Type, dto.Message);
+                    }
+
+                case EnumUiMessages.ActionRejectedMessage:
+                    {
+                        var dto = data.ToObject<ActionRejectedDto>();
+                        return new ActionRejectedUIEvent(dto.PlayerId, dto.Reason);
+                    }
+
+                case EnumUiMessages.ResourceSelectedMessage:
+                    {
+                        var dto = data.ToObject<ResourceSelectedDto>();
+                        return new ResourceSelectedUIEvent(dto.Selected, dto.Type);
+                    }
+
+                case EnumUiMessages.SelectionChangedMessage:
+                    {
+                        var dto = data.ToObject<SelectionChangedDto>();
+                        return new SelectionChangedUIEvent(dto.ActionAvailable);
+                    }
+
+                case EnumUiMessages.DesiredCardsChangedMessage:
+                    {
+                        var dto = data.ToObject<DesiredCardsChangedDto>();
+                        return new DesiredCardsChangedUIEvent(dto.HasDesired);
+                    }
+
+                case EnumUiMessages.PlayerSelectedToDiscardMessage:
+                    {
+                        var dto = data.ToObject<PlayerSelectedToDiscardDto>();
+                        return new PlayerSelectedToDiscardUIEvent(dto.PlayerId);
+                    }
+
+                case EnumUiMessages.PotentialVictimsFoundMessage:
+                    {
+                        var dto = data.ToObject<PotentialVictimsFoundDto>();
+                        return new PotentialVictimsFoundUIEvent(dto.VictimsIds);
+                    }
+
+                case EnumUiMessages.BankTradeRatioChangedMessage:
+                    {
+                        var dto = data.ToObject<BankTradeRatioChangedDto>();
+                        return new BankTradeRatioChangedUIEvent(dto.Ratio, dto.PossibleForPlayer, dto.Resource);
+                    }
+
+                case EnumUiMessages.TurnNumberChangedMessage:
+                    {
+                        var dto = data.ToObject<TurnNumberChangedDto>();
+                        return new TurnNumberChangedUIEvent(dto.NewTurnNumber);
+                    }
+
+                case EnumUiMessages.DiceRollChangedMessage:
+                    {
+                        var dto = data.ToObject<DiceRollChangedDto>();
+                        return new DiceRollChangedUIEvent(dto.RolledNumber);
+                    }
+
+                default:
+                    throw new Exception($"Unknown UI message: {message.Type}");
+            }
         }
 
         public IInternalUIEvents TranslateDomainEvent(DomainEventDto message)
         {
-            var data = JToken.FromObject(message.Data);
+            var data = (JObject)message.Data;
 
-            return message.Type switch
+            switch (message.Type)
             {
-                EnumDomainEvents.VillagePlacedEvent => new VillagePlacedUIEvent(JsonHelper.GetInt(data, "vertexId"), JsonHelper.GetInt(data, "ownerId")),
-                EnumDomainEvents.RoadPlacedEvent => new RoadPlacedUIEvent(JsonHelper.GetInt(data, "edgeId"), JsonHelper.GetInt(data, "ownerId")),
-                EnumDomainEvents.TownPlacedEvent => new TownPlacedUIEvent(JsonHelper.GetInt(data, "vertexId"), JsonHelper.GetInt(data, "ownerId")),
-                EnumDomainEvents.DevelopmentCardBoughtEvent => new DevelopmentCardBoughtUIEvent(JsonHelper.GetInt(data, "cardId")),
-                EnumDomainEvents.RobberPlacedEvent => new RobberMovedUIEvent(JsonHelper.GetInt(data, "hexId")),
-                EnumDomainEvents.PlayerStateChangedEvent => new PlayerStateChangedUIEvent(JsonHelper.GetInt(data, "playerId")),
-                _ => throw new Exception($"Unknown UI message: {message.Type}")
-            };
+                case EnumDomainEvents.VillagePlacedEvent:
+                    {
+                        var dto = data.ToObject<VillagePlacedDto>();
+                        return new VillagePlacedUIEvent(dto.VertexId, dto.OwnerId);
+                    }
+
+                case EnumDomainEvents.RoadPlacedEvent:
+                    {
+                        var dto = data.ToObject<RoadPlacedDto>();
+                        return new RoadPlacedUIEvent(dto.EdgeId, dto.OwnerId);
+                    }
+
+                case EnumDomainEvents.TownPlacedEvent:
+                    {
+                        var dto = data.ToObject<TownPlacedDto>();
+                        return new TownPlacedUIEvent(dto.VertexId, dto.OwnerId);
+                    }
+
+                case EnumDomainEvents.DevelopmentCardBoughtEvent:
+                    {
+                        var dto = data.ToObject<DevelopmentCardBoughtDto>();
+                        return new DevelopmentCardBoughtUIEvent(dto.CardId);
+                    }
+
+                case EnumDomainEvents.RobberPlacedEvent:
+                    {
+                        var dto = data.ToObject<RobberPlacedDto>();
+                        return new RobberMovedUIEvent(dto.HexId);
+                    }
+
+                case EnumDomainEvents.PlayerStateChangedEvent:
+                    {
+                        var dto = data.ToObject<PlayerStateChangedDto>();
+                        return new PlayerStateChangedUIEvent(dto.PlayerId);
+                    }
+
+                default:
+                    throw new Exception($"Unknown domain event: {message.Type}");
+            }
         }
     }
 }

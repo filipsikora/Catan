@@ -6,7 +6,7 @@ using Catan.Unity.Helpers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Catan.Core.Snapshots;
+using Catan.Shared.Dtos;
 
 namespace Catan.Unity.Panels
 {
@@ -30,7 +30,7 @@ namespace Catan.Unity.Panels
             gameObject.SetActive(true);
         }
 
-        public void ShowForPlayer(PlayerResourcesSnapshot playerResources)
+        public void ShowForPlayer(PlayerCardsDto playerResources)
         {
             VisualsUI.ClearContainer(CardsContainer);
             ConfirmDiscardButton.gameObject.SetActive(false);

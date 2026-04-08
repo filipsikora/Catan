@@ -1,8 +1,11 @@
-﻿using Catan.Unity.Helpers;
+﻿using Catan.Shared.Data;
+using Catan.Unity.Helpers;
 using Catan.Unity.InternalUIEvents;
+using Catan.Unity.Networking;
 using Catan.Unity.Panels;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
+using System;
 
 namespace Catan.Unity.Phases.Adapters
 {
@@ -10,7 +13,7 @@ namespace Catan.Unity.Phases.Adapters
     {
         public BinderFirstRoundBuildings _binder;
 
-        public AdapterFirstRoundsBuilding(ManagerUI ui, EventBus bus, HandlerEvents eventsHandler) : base(ui, bus, eventsHandler) { }
+        public AdapterFirstRoundsBuilding(ManagerUI ui, EventBus bus, HandlerEvents eventHandler, GameClient client, Guid gameId) : base(ui, bus, eventHandler, client, gameId) { }
 
         public override void OnEnter()
         {
@@ -29,12 +32,12 @@ namespace Catan.Unity.Phases.Adapters
 
         private void OnVertexClicked(VertexClickedUIEvent signal)
         {
-            EventsHandler.Execute(new VertexClickedCommand(signal.VertexId));
+            EventsHandler.Execute(EnumCommandType.VertexClickedCommand, signal.VertexId);
         }
 
         private void OnEdgeClicked(EdgeClickedUIEvent signal)
         {
-            EventsHandler.Execute(new EdgeClickedCommand(signal.EdgeId));
+            EventsHandler.Execute(EnumCommandType.EdgeClickedCommand, signal.EdgeId);
         }
 
         private void OnPositionClicked(BuildOptionsSentUIEvent signal)

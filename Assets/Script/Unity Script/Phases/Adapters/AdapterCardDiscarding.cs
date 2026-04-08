@@ -1,8 +1,13 @@
-﻿using Catan.Unity.InternalUIEvents;
+﻿using Catan.Shared.Data;
+using Catan.Shared.Dtos;
 using Catan.Unity.Helpers;
+using Catan.Unity.InternalUIEvents;
+using Catan.Unity.Networking;
 using Catan.Unity.Panels;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
+using System;
+using System.Threading.Tasks;
 using EventBus = Catan.Unity.Helpers.EventBus;
 
 namespace Catan.Unity.Phases.Adapters
@@ -11,7 +16,7 @@ namespace Catan.Unity.Phases.Adapters
     {
         private BinderCardDiscarding _binder;
 
-        public AdapterCardDiscarding(ManagerUI ui, EventBus bus, HandlerEvents eventsHandler) : base(ui, bus, eventsHandler) { }
+        public AdapterCardDiscarding(ManagerUI ui, EventBus bus, HandlerEvents eventHandler, GameClient client, Guid gameId) : base(ui, bus, eventHandler, client, gameId) { }
 
         public override void OnEnter()
         {
@@ -33,7 +38,7 @@ namespace Catan.Unity.Phases.Adapters
             if (!signal.IsLeftClicked)
                 return;
 
-            EventsHandler.Execute(new ResourceCardSelectedCommand(signal.IsToggled, signal.Type));
+            EventsHandler.Execute(EnumCommandType.ResourceCardSelectedCommand, new { signal.IsToggled, signal.Type });
 
             if (signal.IsToggled)
             {
@@ -50,13 +55,18 @@ namespace Catan.Unity.Phases.Adapters
 
         private void OnPlayerChosen(PlayerSelectedToDiscardUIEvent signal)
         {
-            var currentPlayerResources = Facade.GetPlayersCards(signal.PlayerId);
-            UI.CardDiscardPanel.ShowForPlayer(currentPlayerResources);
+            _ = LoadData(signal.PlayerId);
         }
 
         private void OnAcceptedDiscardVisibilityChanged(SelectionChangedUIEvent signal)
         {
             UI.CardDiscardPanel.ConfirmDiscardButton.gameObject.SetActive(signal.ActionAvailable);
+        }
+       
+        private async Task LoadData(int playerId)
+        {
+            var snapshot = await EventsHandler.Query<PlayerCardsDto>(EnumQueryName.PlayerCards, playerId);
+            UI.CardDiscardPanel.ShowForPlayer(snapshot);
         }
 
         public override void OnExit()

@@ -73,14 +73,14 @@ namespace Catan.Unity.Bootstrap
             }
 
             _phaseTransition = new AdapterPhaseTransition();
-            _gameFlow = new AdapterGameFlow(_uiManager, _bus, _phaseTransition);
+            _gameFlow = new AdapterGameFlow(_uiManager, _bus, _phaseTransition, _client, gameId);
 
             _eventsTranslator = new EventsTranslator();
 
             _eventsHandler = new HandlerEvents(_eventsTranslator, _bus, _client, gameId, _gameFlow);
 
 
-            var board = await _client.GetBoard(gameId);
+            var board = await _eventsHandler.Query<BoardDto>(EnumQueryName.Board);
 
             var desertHexId = InitializeBuilderMap(board);
             var controllerResourceCards = InitializeVisualControllers(gameId);
@@ -89,7 +89,7 @@ namespace Catan.Unity.Bootstrap
 
             _gameFlow.Initialize(_eventsHandler);
             _clickHandler.Initialize(_bus);
-            _uiManager.Initialize(_bus, controllerResourceCards);
+            _uiManager.Initialize(_bus, controllerResourceCards, _boardManager);
 
             
         }
@@ -122,7 +122,7 @@ namespace Catan.Unity.Bootstrap
             new ControllerLogMessagesUI(_bus, _uiManager.LogsPanel);
             new ControllerPlayerUI(_client, _uiManager.PlayerUIPanel, gameId, _bus);
             new ControllerPlacingBuildings(_bus, _visualsBoard, _boardManager.Board, _boardManager.CubeVillagePrefab, _boardManager.CubeRoadPrefab, _boardManager.CubeTownPrefab);
-            new ControllerPlacingRobber(_bus, _visualsBoard);
+            new ControllerPlacingRobber(_bus, _visualsBoard, _boardManager);
             new ControllerBoardVisuals(_bus, _visualsBoard);
             new ControllerTurnVisuals(_bus, _uiManager.MainUIPanel);
 

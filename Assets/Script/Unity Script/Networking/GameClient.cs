@@ -1,11 +1,13 @@
 ﻿using Catan.Shared.Data;
 using Catan.Shared.Dtos;
+using Catan.Unity.Helpers;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-
 
 namespace Catan.Unity.Networking
 {
@@ -66,28 +68,58 @@ namespace Catan.Unity.Networking
             return result;
         }
 
-        public async Task<BoardDto> GetBoard(Guid gameId)
+        public async Task<T> SendQuery<T>(Guid gameId, EnumQueryName queryName, object? data = null)
         {
-            var response = await _http.GetAsync($"{_baseUrl}/{gameId}/queries/board");
+            var queryString = MapperQueries.MapEnumQueryToString(queryName);
+            var url = $"{_baseUrl}/{gameId}/queries/{queryString}";
+
+            if (data != null)
+            {
+                var paramString = BuildQueryString(data);
+                url += $"?{paramString}";
+
+            }
+            var response = await _http.GetAsync(url);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+
+                throw new Exception($"HTTP error: {response.StatusCode} - {error}");
+            }
+
             var json = await response.Content.ReadAsStringAsync();
 
-            return JsonConvert.DeserializeObject<BoardDto>(json);
+            return JsonConvert.DeserializeObject<T>(json) ?? throw new Exception("Failed to deserialize query");
         }
 
-        public async Task<PlayerDataDto> GetPlayerData(Guid gameId, int playerId)
+        private string BuildQueryString(object data)
         {
-            var response = await _http.GetAsync($"{_baseUrl}/{gameId}/queries/player-data/{playerId}");
-            var json = await response.Content.ReadAsStringAsync();
+            var properties = data.GetType().GetProperties();
+            var parts = new List<string>();
 
-            return JsonConvert.DeserializeObject<PlayerDataDto>(json);
-        }
+            foreach (var prop in properties)
+            {
+                var value = prop.GetValue(data);
 
-        public async Task<PlayerCardsDto> GetPlayerCards(Guid gameId, int playerId)
-        {
-            var response = await _http.GetAsync($"{_baseUrl}/{gameId}/queries/player-cards/{playerId}");
-            var json = await response.Content.ReadAsStringAsync();
+                if (value == null)
+                    continue;
 
-            return JsonConvert.DeserializeObject<PlayerCardsDto>(json);
+                if (value is IEnumerable<int> list)
+                {
+                    foreach (var item in list)
+                    {
+                        parts.Add($"{prop.Name}={Uri.EscapeDataString(item.ToString())}");
+                    }
+                }
+
+                else
+                {
+                    parts.Add($"{prop.Name}={value}");
+                }
+            }
+
+            return string.Join("&", parts);
         }
     }
 }

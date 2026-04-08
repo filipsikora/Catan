@@ -24,8 +24,8 @@ namespace Catan.Unity.InternalUIEvents
 
     public class StolenCardSelectedUIEvent : IInternalUIEvents
     {
-        public EnumResourceTypes Type;
-        public StolenCardSelectedUIEvent(EnumResourceTypes type)
+        public EnumResourceType Type;
+        public StolenCardSelectedUIEvent(EnumResourceType type)
         {
             Type = type;
         }

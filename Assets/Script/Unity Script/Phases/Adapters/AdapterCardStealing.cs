@@ -1,18 +1,18 @@
-﻿using Catan.Shared.Commands;
-using Catan.Unity.InternalUIEvents;
-using Catan.Unity.Phases.Adapters;
-using Catan.Core.Snapshots;
-using Catan.Unity.Panels;
+﻿using Catan.Shared.Data;
+using Catan.Shared.Dtos;
 using Catan.Unity.Helpers;
-using Catan.Application.Controllers;
+using Catan.Unity.InternalUIEvents;
+using Catan.Unity.Networking;
+using Catan.Unity.Panels;
+using Catan.Unity.Phases.Adapters;
+using System;
+using System.Threading.Tasks;
 
 namespace Catan.Unity.Phases.Controllers
 {
     public class AdapterCardStealing : BasePhaseAdapter
     {
-        private int _thiefData;
-
-        public AdapterCardStealing(ManagerUI ui, EventBus bus, HandlerEvents eventsHandler) : base(ui, bus, eventsHandler) { }
+        public AdapterCardStealing(ManagerUI ui, EventBus bus, HandlerEvents eventHandler, GameClient client, Guid gameId) : base(ui, bus, eventHandler, client, gameId) { }
 
         public override void OnEnter()
         {
@@ -23,9 +23,7 @@ namespace Catan.Unity.Phases.Controllers
 
         public void ShowVictimsCards()
         {
-            var victimResources = Facade.GetVictimsCards();
-
-            UI.CardTheftPanel.Show(victimResources);
+            _ = LoadData();
         }
 
         private void OnResourceCardClicked(ResourceCardClickedUIEvent signal)
@@ -33,7 +31,13 @@ namespace Catan.Unity.Phases.Controllers
             if (!signal.IsLeftClicked)
                 return;
 
-            EventsHandler.Execute(new StolenCardSelectedCommand(signal.Type));
+            EventsHandler.Execute(EnumCommandType.StolenCardSelectedCommand, signal.Type);
+        }
+
+        private async Task LoadData()
+        {
+            var snapshot = await EventsHandler.Query<PlayerCardsDto>(EnumQueryName.VictimCards);
+            UI.CardTheftPanel.Show(snapshot);
         }
 
         public override void OnExit()

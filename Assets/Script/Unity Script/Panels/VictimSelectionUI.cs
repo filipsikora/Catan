@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using Catan.Core.Snapshots;
 using Catan.Unity.Helpers;
 using Catan.Unity.InternalUIEvents;
+using Catan.Shared.Dtos;
 
 namespace Catan.Unity.Panels
 {
@@ -21,7 +21,7 @@ namespace Catan.Unity.Panels
             _bus = bus;
         }
 
-        public void Show(IReadOnlyList<PlayerNameSnapshot> potentialVictimsData)
+        public void Show(IReadOnlyList<PlayerNameDto> potentialVictimsData)
         {
             gameObject.SetActive(true);
 

@@ -3,10 +3,10 @@ using Catan.Unity.Helpers;
 using Catan.Unity.Visuals.Models;
 using Catan.Unity.Visuals;
 using Catan.Shared.Data;
-using Catan.Core.Snapshots;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Catan.Shared.Dtos;
 
 namespace Catan.Unity.Panels
 {
@@ -27,7 +27,7 @@ namespace Catan.Unity.Panels
             RegisterButton(EnumBankTradeUIButtons.CancelBankTrade, CancelTradeButton);
         }
 
-        public void Show(ResourcesAvailabilitySnapshot resourcesAvailabilitySnapshot)
+        public void Show(ResourcesAvailabilityDto resourcesAvailabilitySnapshot)
         {
             VisualsUI.ClearContainer(OfferedCardsContainer);
             VisualsUI.ClearContainer(DesiredCardsContainer);
@@ -43,7 +43,7 @@ namespace Catan.Unity.Panels
             }
         }
 
-        public void UpdateTradeRatio(int ratio, bool possible, EnumResourceTypes? type)
+        public void UpdateTradeRatio(int ratio, bool possible, EnumResourceType? type)
         {
             string text;
 

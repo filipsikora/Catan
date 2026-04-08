@@ -1,15 +1,19 @@
-﻿using Catan.Application.Controllers;
+﻿using Catan.Shared.Data;
+using Catan.Shared.Dtos;
 using Catan.Unity.Helpers;
 using Catan.Unity.InternalUIEvents;
+using Catan.Unity.Networking;
 using Catan.Unity.Panels;
 using Catan.Unity.Visuals;
-using Catan.Shared.Commands;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Catan.Unity.Phases.Adapters
 {
     public class AdapterRobberPlacing : BasePhaseAdapter
     {
-        public AdapterRobberPlacing(ManagerUI ui, EventBus bus, HandlerEvents eventsHandler) : base(ui, bus, eventsHandler) { }
+        public AdapterRobberPlacing(ManagerUI ui, EventBus bus, HandlerEvents eventHandler, GameClient client, Guid gameId) : base(ui, bus, eventHandler, client, gameId) { }
 
         public override void OnEnter()
         {
@@ -24,20 +28,26 @@ namespace Catan.Unity.Phases.Adapters
 
         private void OnHexClicked(HexClickedUIEvent signal)
         {
-            EventsHandler.Execute(new HexClickedCommand(signal.HexId));
+            EventsHandler.Execute(EnumCommandType.HexClickedCommand, signal.HexId);
         }
 
         private void OnPotentialVictimsFound(PotentialVictimsFoundUIEvent signal)
         {
-            var potentialVictimsData = Facade.GetSomePlayersNames(signal.VictimsIds);
-            UI.VictimSelectorPanel.Show(potentialVictimsData);
+            _ = LoadData();
+
         }
 
         private void OnPlayerChosen(PlayerClickedUIEvent signal)
         {
-            EventsHandler.Execute(new VictimChosenCommand(signal.PlayerId));
+            EventsHandler.Execute(EnumCommandType.VictimChosenCommand, signal.PlayerId);
         }
 
+        private async Task LoadData()
+        {
+            var snapshot = await Client.SendQuery<List<PlayerNameDto>>(GameId, EnumQueryName.SomePlayersNames);
+            UI.VictimSelectorPanel.Show(snapshot);
+
+        }
 
         public override void OnExit()
         {

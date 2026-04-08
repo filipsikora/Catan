@@ -1,4 +1,5 @@
-﻿using Catan.Shared.Dtos;
+﻿using Catan.Shared.Data;
+using Catan.Shared.Dtos;
 using Catan.Unity.Helpers;
 using Catan.Unity.InternalUIEvents;
 using Catan.Unity.Networking;
@@ -34,12 +35,12 @@ namespace Catan.Unity.Visuals.Controllers
 
         private async Task<PlayerDataDto> LoadPlayerData(int playerId)
         {
-            return await _client.GetPlayerData(_gameId, playerId);
+            return await _client.SendQuery<PlayerDataDto>(_gameId, EnumQueryName.PlayerData);
         }
 
         private async Task<PlayerCardsDto> LoadPlayerCards(int playerId)
         {
-            return await _client.GetPlayerCards(_gameId, playerId);
+            return await _client.SendQuery<PlayerCardsDto>(_gameId, EnumQueryName.PlayerCards);
         }
     }
 }

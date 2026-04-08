@@ -8,10 +8,12 @@ namespace Catan.Unity.Visuals.Controllers
     {
         private VisualsBoard _board;
         private GameObject? _robber;
+        private BoardManager _boardManager;
 
-        public ControllerPlacingRobber(EventBus bus, VisualsBoard board)
+        public ControllerPlacingRobber(EventBus bus, VisualsBoard board, BoardManager boardManager)
         {
             _board = board;
+            _boardManager = boardManager;
 
             bus.Subscribe<RobberMovedUIEvent>(OnRobberPlaced);
         }
@@ -27,7 +29,7 @@ namespace Catan.Unity.Visuals.Controllers
 
             if (_robber == null)
             {
-                _robber = _board.PlaceObject(ManagerGame.Instance.CubeRobberPrefab, pos, null, null, ManagerGame.Instance.Board);
+                _robber = _board.PlaceObject(_boardManager.CubeRobberPrefab, pos, null, null, _boardManager.Board);
             }
 
             else

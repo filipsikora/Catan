@@ -1,7 +1,7 @@
 ﻿using Catan.Unity.Helpers;
-using Catan.Shared.Commands;
 using Catan.Unity.Data;
 using Catan.Unity.Panels;
+using Catan.Shared.Data;
 
 namespace Catan.Unity.Phases.Binders
 {
@@ -13,7 +13,7 @@ namespace Catan.Unity.Phases.Binders
         {
             UI.CardSelectorPanel.Bind(EnumCardSelectorDevelopmentUIButtons.AcceptCards, () =>
             {
-                EventsHandler.Execute(new CardSelectionAcceptedCommand());
+                EventsHandler.Execute(EnumCommandType.CardSelectionAcceptedCommand);
             });
         }
 

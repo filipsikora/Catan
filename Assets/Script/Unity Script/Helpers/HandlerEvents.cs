@@ -27,12 +27,12 @@ namespace Catan.Unity.Helpers
             _gameFlow = gameFlow;
         }
 
-        public async Task Execute(EnumCommandType type, object data)
+        public async Task Execute(EnumCommandType type, object? data = null)
         {
             var dto = new CommandRequestDto
             {
                 Type = type,
-                Data = JObject.FromObject(data)
+                Data = data != null ? JObject.FromObject(data) : new JObject()
             };
 
             CommandResponseDto response;
@@ -55,22 +55,34 @@ namespace Catan.Unity.Helpers
             }
 
             if (response.NextPhase != null)
-                _gameFlow.ChangePhase(response.NextPhase);
+                _gameFlow.ChangePhase(response.NextPhase.Value);
 
             foreach (var message in response.UiMessages)
             {
-                var jToken = message as JToken ?? JToken.FromObject(message);
-                var uiMessage = _translator.TranslateDomainEvent(jToken);
+                var uiMessage = _translator.TranslateUIMessage(message);
 
                 _bus.Publish(uiMessage);
             }
 
             foreach (var message in response.DomainMessages)
             {
-                var jToken = message as JToken ?? JToken.FromObject(message);
-                var domainEvent = _translator.TranslateDomainEvent(jToken);
+                var domainEvent = _translator.TranslateDomainEvent(message);
 
                 _bus.Publish(domainEvent);
+            }
+        }
+
+        public async Task<T> Query<T>(EnumQueryName queryName, object? data = null)
+        {
+            try
+            {
+                return await _client.SendQuery<T>(_gameId, queryName, data);
+            }
+
+            catch (Exception ex)
+            {
+                UnityEngine.Debug.Log($"Query error: {queryName}");
+                return default;
             }
         }
     }

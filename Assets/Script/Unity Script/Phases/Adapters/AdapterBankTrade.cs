@@ -6,6 +6,10 @@ using Catan.Unity.Panels;
 using Catan.Unity.Data;
 using Catan.Shared.Data;
 using Catan.Unity.Helpers;
+using Catan.Unity.Networking;
+using System;
+using System.Threading.Tasks;
+using Catan.Shared.Dtos;
 
 namespace Catan.Unity.Phases.Adapters
 {
@@ -13,7 +17,7 @@ namespace Catan.Unity.Phases.Adapters
     {
         private BinderBankTrade _binder;
 
-        public AdapterBankTrade(ManagerUI ui, EventBus bus, HandlerEvents eventHandler) : base(ui,bus, eventHandler) { }
+        public AdapterBankTrade(ManagerUI ui, EventBus bus, HandlerEvents eventHandler, GameClient client, Guid gameId) : base(ui,bus, eventHandler, client, gameId) { }
 
         public override void OnEnter()
         {
@@ -22,15 +26,12 @@ namespace Catan.Unity.Phases.Adapters
             _binder = new BinderBankTrade(UI, EventBus, EventsHandler);
             _binder.Bind();
 
-            UI.BankTradePanel.gameObject.SetActive(true);
             VisualsUI.SetMainAndPlayerUIVisibility(false, UI.MainUIPanel, UI.PlayerUIPanel);
 
             EventBus.Subscribe<BankTradeRatioChangedUIEvent>(OnRatioChanged);
             EventBus.Subscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
 
-            var resourcesAvailabilitySnapshot = Facade.GetResourcesAvailability();
-
-            UI.BankTradePanel.Show(resourcesAvailabilitySnapshot);
+            _ = LoadData();
         }
 
         private void OnRatioChanged(BankTradeRatioChangedUIEvent signal)
@@ -45,14 +46,21 @@ namespace Catan.Unity.Phases.Adapters
 
             if (signal.Location == EnumResourceCardLocation.OfferedTrade)
             {
-                EventsHandler.Execute(new BankTradeOfferedResourceSelected(signal.Type));
+                EventsHandler.Execute(EnumCommandType.BankTradeOfferedResourceSelectedCommand, signal.Type);
+
                 EventBus.Publish(new ResourceCardVisualStateChangedUIEvent(signal.VisualResourceCardId, signal.Location, EnumResourceCardVisualState.Highlighted));
             }
 
             else
             {
-                EventsHandler.Execute(new BankTradeDesiredResourceSelected(signal.Type));
+                EventsHandler.Execute(EnumCommandType.BankTradeDesiredResourceSelectedCommand, signal.Type);
             }
+        }
+
+        private async Task LoadData()
+        {
+            var snapshot = await EventsHandler.Query<ResourcesAvailabilityDto>(EnumQueryName.ResourcesAvailability);
+            UI.BankTradePanel.Show(snapshot);
         }
 
         public override void OnExit()
