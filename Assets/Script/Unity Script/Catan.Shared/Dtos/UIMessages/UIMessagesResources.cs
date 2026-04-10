@@ -1,13 +1,12 @@
-﻿using Catan.Shared.Data;
-using Catan.Shared.Interfaces;
+﻿using Catan.Shared.Interfaces;
 
 namespace Catan.Shared.Dtos.UiMessages
  {
     public sealed class ResourceSelectedDto : IUiMessageDto
     {
-        public EnumResourceType? Type { get; }
+        public string? Type { get; }
         public bool Selected { get; }
-        public ResourceSelectedDto(bool selected, EnumResourceType? type)
+        public ResourceSelectedDto(bool selected, string? type)
         {
             Type = type;
             Selected = selected;

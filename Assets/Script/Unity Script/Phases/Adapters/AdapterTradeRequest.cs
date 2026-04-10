@@ -1,12 +1,10 @@
 ﻿using Catan.Shared.Data;
 using Catan.Shared.Dtos;
 using Catan.Unity.Helpers;
-using Catan.Unity.Networking;
 using Catan.Unity.Panels;
 using Catan.Unity.Phases.Adapters;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
-using System;
 using System.Threading.Tasks;
 
 namespace Catan.Unity.Phases.Controllers
@@ -15,7 +13,7 @@ namespace Catan.Unity.Phases.Controllers
     {
         private BinderTradeRequest _binder;
 
-        public AdapterTradeRequest(ManagerUI ui, EventBus bus, HandlerEvents eventHandler, GameClient client, Guid gameId) : base(ui, bus, eventHandler, client, gameId) { }
+        public AdapterTradeRequest(ManagerUI ui, EventBus bus, HandlerEvents eventHandler) : base(ui, bus, eventHandler) { }
 
         public override void OnEnter()
         {
@@ -31,10 +29,10 @@ namespace Catan.Unity.Phases.Controllers
 
         private async Task LoadData()
         {
-            var snapshot = await Client.SendQuery<TradeOfferedDto>(GameId, EnumQueryName.TradeOfferData);
+            var snapshot = await EventsHandler.Query<TradeOfferedDto>(EnumQueryName.TradeOfferData);
 
             UI.TradeRequestPanel.AcceptTradeButton.gameObject.SetActive(snapshot.CanTrade);
-            UI.TradeRequestPanel.Show(snapshot.SellerName, snapshot.BuyerName, snapshot.Offered, snapshot.Desired);
+            UI.TradeRequestPanel.Show(snapshot.SellerName, snapshot.BuyerName, Mappers.MapStringResourcesToEnumInDictionary<int>(snapshot.Offered), Mappers.MapStringResourcesToEnumInDictionary<int>(snapshot.Desired));
         }
 
         public override void OnExit()

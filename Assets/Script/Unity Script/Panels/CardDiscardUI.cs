@@ -37,7 +37,7 @@ namespace Catan.Unity.Panels
 
             foreach (var entry in playerResources.PlayerResources)
             {
-                var type = entry.Key;
+                var type = Mappers.MapStringResourcesToEnum(entry.Key);
                 var amount = entry.Value;
 
                 for (int i = 0; i < amount; i++)

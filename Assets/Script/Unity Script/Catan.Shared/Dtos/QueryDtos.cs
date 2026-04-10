@@ -1,5 +1,4 @@
-﻿using Catan.Shared.Data;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Catan.Shared.Dtos
 {
@@ -16,18 +15,18 @@ namespace Catan.Shared.Dtos
 
     public sealed class PlayerCardsDto
     {
-        public Dictionary<EnumResourceType, int> PlayerResources;
+        public Dictionary<string, int> PlayerResources;
     }
 
     public sealed class ResourcesAvailabilityDto
     {
-        public Dictionary<EnumResourceType, bool> ResourcesAvailability;
+        public Dictionary<string, bool> ResourcesAvailability;
     }
 
     public sealed class DevelopmentCardDto
     {
         public int Id { get; set; }
-        public EnumDevelopmentCardTypes Type { get; set; }
+        public string Type { get; set; }
         public bool IsNew { get; set; }
         public bool IsPlayable { get; set; }
     }
@@ -44,8 +43,8 @@ namespace Catan.Shared.Dtos
         public int BuyerId { get; set; }
         public string SellerName { get; set; }
         public string BuyerName { get; set; }
-        public Dictionary<EnumResourceType, int> Offered;
-        public Dictionary<EnumResourceType, int> Desired;
+        public Dictionary<string, int> Offered;
+        public Dictionary<string, int> Desired;
         public bool CanTrade { get; set; }
     }
 }

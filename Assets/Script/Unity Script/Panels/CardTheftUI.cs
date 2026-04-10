@@ -21,7 +21,7 @@ namespace Catan.Unity.Panels
 
             foreach (var entry in resourcesSnapshot.PlayerResources)
             {
-                EnumResourceType type = entry.Key;
+                EnumResourceType type = Mappers.MapStringResourcesToEnum(entry.Key);
                 int count = entry.Value;
 
                 for (int i = 0; i < count; i++)

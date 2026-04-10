@@ -2,9 +2,7 @@
 using Catan.Shared.Dtos;
 using Catan.Unity.Helpers;
 using Catan.Unity.InternalUIEvents;
-using Catan.Unity.Networking;
 using Catan.Unity.Panels;
-using System;
 using System.Threading.Tasks;
 
 namespace Catan.Unity.Visuals.Controllers
@@ -12,15 +10,12 @@ namespace Catan.Unity.Visuals.Controllers
     public sealed class ControllerPlayerUI
     {
         private readonly PlayerUI _playerUI;
-        private readonly GameClient _client;
+        private readonly HandlerEvents _eventsHandler;
 
-        private readonly Guid _gameId;
-
-        public ControllerPlayerUI(GameClient client, PlayerUI playerUI, Guid gameId, EventBus bus)
+        public ControllerPlayerUI(HandlerEvents eventsHandler, PlayerUI playerUI, EventBus bus)
         {
-            _client = client;
+            _eventsHandler = eventsHandler;
             _playerUI = playerUI;
-            _gameId = gameId;
 
             bus.Subscribe<PlayerStateChangedUIEvent>(UpdatePlayerUI);
         }
@@ -35,12 +30,12 @@ namespace Catan.Unity.Visuals.Controllers
 
         private async Task<PlayerDataDto> LoadPlayerData(int playerId)
         {
-            return await _client.SendQuery<PlayerDataDto>(_gameId, EnumQueryName.PlayerData);
+            return await _eventsHandler.Query<PlayerDataDto>(EnumQueryName.PlayerData);
         }
 
         private async Task<PlayerCardsDto> LoadPlayerCards(int playerId)
         {
-            return await _client.SendQuery<PlayerCardsDto>(_gameId, EnumQueryName.PlayerCards);
+            return await _eventsHandler.Query<PlayerCardsDto>(EnumQueryName.PlayerCards);
         }
     }
 }

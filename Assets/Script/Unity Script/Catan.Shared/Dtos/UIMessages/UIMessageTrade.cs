@@ -1,5 +1,4 @@
-﻿using Catan.Shared.Data;
-using Catan.Shared.Interfaces;
+﻿using Catan.Shared.Interfaces;
 
 namespace Catan.Shared.Dtos.UiMessages
 {
@@ -7,9 +6,9 @@ namespace Catan.Shared.Dtos.UiMessages
     {
         public int Ratio { get; }
         public bool PossibleForPlayer { get; }
-        public EnumResourceType? Resource { get; }
+        public string? Resource { get; }
 
-        public BankTradeRatioChangedDto(int ratio, bool possibleForPlayer, EnumResourceType? resource)
+        public BankTradeRatioChangedDto(int ratio, bool possibleForPlayer, string? resource)
         {
             Ratio = ratio;
             PossibleForPlayer = possibleForPlayer;

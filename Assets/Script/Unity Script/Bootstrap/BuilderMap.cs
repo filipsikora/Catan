@@ -8,6 +8,7 @@ using TMPro;
 using Unity.Helpers;
 using UnityEngine;
 using Catan.Shared.Dtos;
+using Catan.Unity.Helpers;
 
 namespace Catan.Unity
 {
@@ -47,7 +48,8 @@ namespace Catan.Unity
         {
             foreach (var hex in board.Hexes)
             {
-                Material mat = FieldMaterialsList.First(f => f.FieldType == hex.FieldType).Material;
+                var fieldType = Mappers.MapStringFieldToEnum(hex.FieldType);
+                Material mat = FieldMaterialsList.First(f => f.FieldType == fieldType).Material;
                 Vector3 pos = HexLayout.AxialToPixel(hex.Q, hex.R, Size);
 
                 GameObject hexObject = GameObject.Instantiate(HexTilePrefab, pos, HexTilePrefab.transform.rotation, Board);
@@ -61,7 +63,7 @@ namespace Catan.Unity
 
                 HexObjects[hex.HexId] = hexObject;
 
-                if (hex.FieldType != EnumFieldTypes.Desert)
+                if (fieldType != EnumFieldTypes.Desert)
                 {
                     Vector3 numberPos = HexLayout.AxialToPixel(hex.Q, hex.R, Size) + Vector3.up * 0.1f;
                     GameObject numberObject = GameObject.Instantiate(HexNumberPrefab, numberPos, HexNumberPrefab.transform.rotation, Board);
@@ -162,7 +164,7 @@ namespace Catan.Unity
 
                 if (port.Type != null)
                 {
-                    materialToUse = FieldMaterialsList.First(f => f.FieldType == (EnumFieldTypes)port.Type).Material;
+                    materialToUse = FieldMaterialsList.First(f => f.FieldType == Mappers.MapStringFieldToEnum(port.Type)).Material;
                 }
 
                 else

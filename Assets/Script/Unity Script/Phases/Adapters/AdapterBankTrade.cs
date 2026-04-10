@@ -6,8 +6,6 @@ using Catan.Unity.Panels;
 using Catan.Unity.Data;
 using Catan.Shared.Data;
 using Catan.Unity.Helpers;
-using Catan.Unity.Networking;
-using System;
 using System.Threading.Tasks;
 using Catan.Shared.Dtos;
 
@@ -17,7 +15,7 @@ namespace Catan.Unity.Phases.Adapters
     {
         private BinderBankTrade _binder;
 
-        public AdapterBankTrade(ManagerUI ui, EventBus bus, HandlerEvents eventHandler, GameClient client, Guid gameId) : base(ui,bus, eventHandler, client, gameId) { }
+        public AdapterBankTrade(ManagerUI ui, EventBus bus, HandlerEvents eventHandler) : base(ui,bus, eventHandler) { }
 
         public override void OnEnter()
         {

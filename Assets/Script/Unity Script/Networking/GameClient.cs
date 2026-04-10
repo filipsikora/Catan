@@ -1,13 +1,13 @@
 ﻿using Catan.Shared.Data;
-using Catan.Shared.Dtos;
+using BGS.Shared.Dtos;
 using Catan.Unity.Helpers;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using BGS.Shared.Data;
 
 namespace Catan.Unity.Networking
 {
@@ -25,7 +25,7 @@ namespace Catan.Unity.Networking
         {
             var dto = new CreateGameRequestDto
             {
-                GameType = EnumGames.Catan
+                GameType = EnumGames.Catan.ToString()
             };
 
             var json = JsonConvert.SerializeObject(dto);
@@ -70,7 +70,7 @@ namespace Catan.Unity.Networking
 
         public async Task<T> SendQuery<T>(Guid gameId, EnumQueryName queryName, object? data = null)
         {
-            var queryString = MapperQueries.MapEnumQueryToString(queryName);
+            var queryString = Mappers.MapEnumQueryToString(queryName);
             var url = $"{_baseUrl}/{gameId}/queries/{queryString}";
 
             if (data != null)

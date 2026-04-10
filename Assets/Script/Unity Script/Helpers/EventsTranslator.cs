@@ -1,7 +1,7 @@
 ﻿using Catan.Unity.InternalUIEvents;
 using Catan.Unity.Interfaces;
 using Newtonsoft.Json.Linq;
-using Catan.Shared.Dtos;
+using BGS.Shared.Dtos;
 using Catan.Shared.Data;
 using System;
 using Catan.Shared.Dtos.UiMessages;
@@ -17,7 +17,10 @@ namespace Catan.Unity.Helpers
         {
             var data = (JObject)message.Data;
 
-            switch (message.Type)
+            if (!Enum.TryParse<EnumUiMessages>(message.Type, out var type))
+                throw new Exception($"Failed to parse UiMessage: {message.Type}");
+
+            switch (type)
             {
                 case EnumUiMessages.VertexHighlightedMessage:
                     {
@@ -40,19 +43,19 @@ namespace Catan.Unity.Helpers
                 case EnumUiMessages.LogMessageMessage:
                     {
                         var dto = data.ToObject<LogMessageDto>();
-                        return new LogMessageUIEvent(dto.Type, dto.Message);
+                        return new LogMessageUIEvent(Mappers.MapStringLogTypeToEnum(dto.Type), dto.Message);
                     }
 
                 case EnumUiMessages.ActionRejectedMessage:
                     {
                         var dto = data.ToObject<ActionRejectedDto>();
-                        return new ActionRejectedUIEvent(dto.PlayerId, dto.Reason);
+                        return new ActionRejectedUIEvent(dto.PlayerId, Mappers.MapStringFailureReasonToEnum(dto.Reason));
                     }
 
                 case EnumUiMessages.ResourceSelectedMessage:
                     {
                         var dto = data.ToObject<ResourceSelectedDto>();
-                        return new ResourceSelectedUIEvent(dto.Selected, dto.Type);
+                        return new ResourceSelectedUIEvent(dto.Selected, Mappers.MapStringResourcesToEnum(dto.Type));
                     }
 
                 case EnumUiMessages.SelectionChangedMessage:
@@ -82,7 +85,8 @@ namespace Catan.Unity.Helpers
                 case EnumUiMessages.BankTradeRatioChangedMessage:
                     {
                         var dto = data.ToObject<BankTradeRatioChangedDto>();
-                        return new BankTradeRatioChangedUIEvent(dto.Ratio, dto.PossibleForPlayer, dto.Resource);
+                        var nullable = true;
+                        return new BankTradeRatioChangedUIEvent(dto.Ratio, dto.PossibleForPlayer, Mappers.MapStringResourcesToEnum(dto.Resource, nullable));
                     }
 
                 case EnumUiMessages.TurnNumberChangedMessage:
@@ -106,7 +110,10 @@ namespace Catan.Unity.Helpers
         {
             var data = (JObject)message.Data;
 
-            switch (message.Type)
+            if (!Enum.TryParse<EnumDomainEvents>(message.Type, out var type))
+                throw new Exception($"Failed to parse DomainEvent: {message.Type}");
+
+            switch (type)
             {
                 case EnumDomainEvents.VillagePlacedEvent:
                     {

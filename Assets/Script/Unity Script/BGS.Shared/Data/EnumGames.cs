@@ -1,8 +1,7 @@
-﻿namespace Catan.Shared.Data
+﻿namespace BGS.Shared.Data
 {
     public enum EnumGames
     {
-        None,
         Catan
     }
 }

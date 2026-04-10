@@ -120,7 +120,7 @@ namespace Catan.Unity.Bootstrap
         {
             var controllerResourceCards = new ControllerResourceCards(_bus);
             new ControllerLogMessagesUI(_bus, _uiManager.LogsPanel);
-            new ControllerPlayerUI(_client, _uiManager.PlayerUIPanel, gameId, _bus);
+            new ControllerPlayerUI(_eventsHandler, _uiManager.PlayerUIPanel, _bus);
             new ControllerPlacingBuildings(_bus, _visualsBoard, _boardManager.Board, _boardManager.CubeVillagePrefab, _boardManager.CubeRoadPrefab, _boardManager.CubeTownPrefab);
             new ControllerPlacingRobber(_bus, _visualsBoard, _boardManager);
             new ControllerBoardVisuals(_bus, _visualsBoard);

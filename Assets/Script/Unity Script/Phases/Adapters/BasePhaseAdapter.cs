@@ -2,8 +2,6 @@
 using Catan.Unity.Phases.Controllers;
 using Catan.Unity.Panels;
 using Catan.Unity.Helpers;
-using Catan.Unity.Networking;
-using System;
 
 namespace Catan.Unity.Phases.Adapters
 {
@@ -12,18 +10,14 @@ namespace Catan.Unity.Phases.Adapters
         protected ManagerUI UI;
         protected EventBus EventBus;
         protected HandlerEvents EventsHandler;
-        protected GameClient Client;
-        protected Guid GameId;
 
         internal AdapterPhaseTransition? Handler;
 
-        public BasePhaseAdapter(ManagerUI ui, EventBus bus, HandlerEvents eventHandler, GameClient client, Guid gameId)
+        public BasePhaseAdapter(ManagerUI ui, EventBus bus, HandlerEvents eventHandler)
         {
             UI = ui;
             EventBus = bus;
             EventsHandler = eventHandler;
-            Client = client;
-            GameId = gameId;
         }
 
         public virtual void OnEnter() { }

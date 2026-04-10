@@ -2,11 +2,9 @@
 using Catan.Unity.Data;
 using Catan.Unity.Helpers;
 using Catan.Unity.InternalUIEvents;
-using Catan.Unity.Networking;
 using Catan.Unity.Panels;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
-using System;
 
 namespace Catan.Unity.Phases.Adapters
 {
@@ -14,7 +12,7 @@ namespace Catan.Unity.Phases.Adapters
     {
         public BinderCardSelection _binder;
 
-        public AdapterMonopolyCard(ManagerUI ui, EventBus bus, HandlerEvents eventHandler, GameClient client, Guid gameId) : base(ui, bus, eventHandler, client, gameId) { }
+        public AdapterMonopolyCard(ManagerUI ui, EventBus bus, HandlerEvents eventHandler) : base(ui, bus, eventHandler) { }
 
         public override void OnEnter()
         {

@@ -1,7 +1,7 @@
 ﻿using Catan.Shared.Data;
 using Newtonsoft.Json.Linq;
 using System.Threading.Tasks;
-using Catan.Shared.Dtos;
+using BGS.Shared.Dtos;
 using Catan.Unity.Networking;
 using System;
 using Catan.Unity.Phases.Controllers;
@@ -31,7 +31,7 @@ namespace Catan.Unity.Helpers
         {
             var dto = new CommandRequestDto
             {
-                Type = type,
+                Type = type.ToString(),
                 Data = data != null ? JObject.FromObject(data) : new JObject()
             };
 
@@ -42,9 +42,15 @@ namespace Catan.Unity.Helpers
                 response = await _client.SendCommand(_gameId, dto);
             }
 
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 UnityEngine.Debug.LogError($"HTTP error: {ex.Message}");
+                return;
+            }
+
+            if (response == null)
+            {
+                UnityEngine.Debug.LogError($"GameResult: {response} is null");
                 return;
             }
 
@@ -55,7 +61,12 @@ namespace Catan.Unity.Helpers
             }
 
             if (response.NextPhase != null)
-                _gameFlow.ChangePhase(response.NextPhase.Value);
+            {
+                if (!Enum.TryParse<EnumGamePhases>(response.NextPhase, out var nextPhase))
+                    throw new Exception($"Failed to parse NextPhase: {response.NextPhase}");
+
+                _gameFlow.ChangePhase(nextPhase);
+            }
 
             foreach (var message in response.UiMessages)
             {

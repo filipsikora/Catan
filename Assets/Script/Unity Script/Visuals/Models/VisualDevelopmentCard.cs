@@ -27,8 +27,9 @@ namespace Catan.Unity.Visuals.Models
         {
             _id = dto.Id;
             _bus = bus;
+            var type = Mappers.MapStringDevCardToEnum(dto.Type);
 
-            SetupVisuals(dto.Type, dto.IsNew, dto.IsPlayable);
+            SetupVisuals(type, dto.IsNew, dto.IsPlayable);
         }
 
         public void OnCardClicked()

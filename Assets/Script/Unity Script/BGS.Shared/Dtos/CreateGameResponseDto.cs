@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Catan.Shared.Dtos
+namespace BGS.Shared.Dtos
 {
     public class CreateGameResponseDto
     {

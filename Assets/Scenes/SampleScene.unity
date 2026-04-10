@@ -455,6 +455,84 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 41520312}
   m_CullTransparentMesh: 1
+--- !u!1 &53458157
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 53458159}
+  - component: {fileID: 53458158}
+  m_Layer: 0
+  m_Name: BoardManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &53458158
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 53458157}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6fdbed066a95c614fb4274cc6ec5d4af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BoardManager
+  Board: {fileID: 843196268}
+  WaterMaterial: {fileID: 2100000, guid: 08761a5bfa2f2e140b5121276ed10bd5, type: 2}
+  IdleGridMaterial: {fileID: 2100000, guid: 71347d129bc54b046887606482ea3f1a, type: 2}
+  HexTilePrefab: {fileID: 6936606820664495432, guid: 53d3199315a885e40a4629a56676dd3b, type: 3}
+  HexNumberPrefab: {fileID: 1649760992147653270, guid: 55a94c72460b06940baa4b17372b7b8d, type: 3}
+  CubeVillagePrefab: {fileID: 3676345247225709590, guid: f1c2a2645b37ec8469f8909f67ff05b1, type: 3}
+  CubeRoadPrefab: {fileID: 211119318293413616, guid: ce45b5907e658274998b0a63ac80bec3, type: 3}
+  CubeTownPrefab: {fileID: 3676345247225709590, guid: f804c675c0951074b80fa48a54c791e7, type: 3}
+  CubeRobberPrefab: {fileID: 3676345247225709590, guid: a4293148edfb7754db6c78cc8232591e, type: 3}
+  CubePortPrefab: {fileID: 4809229941993329006, guid: d315429da507a0b438c18914fc919e52, type: 3}
+  FieldMaterialsList:
+  - FieldType: 0
+    Material: {fileID: 2100000, guid: 8fa60ed9da1e03a4c94935906074a017, type: 2}
+  - FieldType: 1
+    Material: {fileID: 2100000, guid: ee6a5dff7df1af040a92272d21a6fa94, type: 2}
+  - FieldType: 0
+    Material: {fileID: 0}
+  - FieldType: 3
+    Material: {fileID: 2100000, guid: 9bf34b988aadfb94d8421d2c10e9a6de, type: 2}
+  - FieldType: 4
+    Material: {fileID: 2100000, guid: 9393a85c17558c340b62438698fae44d, type: 2}
+  - FieldType: 5
+    Material: {fileID: 2100000, guid: 29fab3019c3a6f94bae6c76619cab751, type: 2}
+  ResourceList:
+  - Type: 0
+    Color: {r: 0.735849, g: 0.72295547, b: 0.5262015, a: 0}
+  - Type: 1
+    Color: {r: 0.5450981, g: 0.2705882, b: 0.07450981, a: 1}
+  - Type: 2
+    Color: {r: 1, g: 0.9803922, b: 0.9803922, a: 1}
+  - Type: 3
+    Color: {r: 0.6, g: 0.6, b: 0.6, a: 0}
+  - Type: 4
+    Color: {r: 1, g: 0.6470588, b: 0, a: 1}
+--- !u!4 &53458159
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 53458157}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &62841019
 GameObject:
   m_ObjectHideFlags: 0
@@ -697,88 +775,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 67575807}
   m_CullTransparentMesh: 1
---- !u!1 &90698428
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 90698430}
-  - component: {fileID: 90698429}
-  m_Layer: 0
-  m_Name: CatanGameManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &90698429
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 90698428}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 64b55bac0e08d4f4497ca7a9a3da3dc2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Catan.CatanGameManager
-  Board: {fileID: 843196268}
-  BoardVisuals: {fileID: 1458050057}
-  UIManager: {fileID: 292578856}
-  ClickHandler: {fileID: 1896637713}
-  Size: 1
-  WaterMaterial: {fileID: 2100000, guid: 08761a5bfa2f2e140b5121276ed10bd5, type: 2}
-  IdleGridMaterial: {fileID: 2100000, guid: 71347d129bc54b046887606482ea3f1a, type: 2}
-  CubeVillagePrefab: {fileID: 3676345247225709590, guid: f1c2a2645b37ec8469f8909f67ff05b1, type: 3}
-  CubeRoadPrefab: {fileID: 211119318293413616, guid: ce45b5907e658274998b0a63ac80bec3, type: 3}
-  CubeTownPrefab: {fileID: 3676345247225709590, guid: f804c675c0951074b80fa48a54c791e7, type: 3}
-  CubeRobberPrefab: {fileID: 3676345247225709590, guid: a4293148edfb7754db6c78cc8232591e, type: 3}
-  HexNumberPrefab: {fileID: 1649760992147653270, guid: 55a94c72460b06940baa4b17372b7b8d, type: 3}
-  HexTilePrefab: {fileID: 6936606820664495432, guid: 53d3199315a885e40a4629a56676dd3b, type: 3}
-  CubePortPrefab: {fileID: 4809229941993329006, guid: d315429da507a0b438c18914fc919e52, type: 3}
-  FieldMaterialsList:
-  - FieldType: 0
-    Material: {fileID: 2100000, guid: 8fa60ed9da1e03a4c94935906074a017, type: 2}
-  - FieldType: 1
-    Material: {fileID: 2100000, guid: ee6a5dff7df1af040a92272d21a6fa94, type: 2}
-  - FieldType: 2
-    Material: {fileID: 2100000, guid: 1cef994f0d491af44b2f7231540b1740, type: 2}
-  - FieldType: 3
-    Material: {fileID: 2100000, guid: 9bf34b988aadfb94d8421d2c10e9a6de, type: 2}
-  - FieldType: 4
-    Material: {fileID: 2100000, guid: 9393a85c17558c340b62438698fae44d, type: 2}
-  - FieldType: 5
-    Material: {fileID: 2100000, guid: 29fab3019c3a6f94bae6c76619cab751, type: 2}
-  ResourceList:
-  - Type: 0
-    Color: {r: 1, g: 0.9333334, b: 0.5490196, a: 1}
-  - Type: 1
-    Color: {r: 0.5450981, g: 0.2705882, b: 0.07450981, a: 1}
-  - Type: 2
-    Color: {r: 0.9, g: 0.9, b: 0.9, a: 1}
-  - Type: 3
-    Color: {r: 0.6627451, g: 0.6627451, b: 0.6627451, a: 1}
-  - Type: 4
-    Color: {r: 1, g: 0.6470588, b: 0, a: 1}
---- !u!4 &90698430
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 90698428}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1279.2948, y: 0, z: 2507.4487}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &95193974
 GameObject:
   m_ObjectHideFlags: 0
@@ -1732,7 +1728,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 292578855}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a71b78e191ecfea478ab4639bf835b83, type: 3}
+  m_Script: {fileID: 11500000, guid: 8963f88f78a516c488aa275b8817be6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Catan.UIManager
   MainUIPanel: {fileID: 1042213132}
@@ -5147,6 +5143,52 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 897370249}
   m_CullTransparentMesh: 1
+--- !u!1 &915192773
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 915192775}
+  - component: {fileID: 915192774}
+  m_Layer: 0
+  m_Name: GameBootstrap
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &915192774
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 915192773}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3fffe3d89ef1574fabfcd9141476414, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Catan.Unity.Bootstrap.GameBootstrap
+  _boardManager: {fileID: 53458158}
+  _uiManager: {fileID: 292578856}
+--- !u!4 &915192775
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 915192773}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &921145721
 GameObject:
   m_ObjectHideFlags: 0
@@ -9996,10 +10038,11 @@ SceneRoots:
   - {fileID: 832575519}
   - {fileID: 141243216}
   - {fileID: 843196268}
-  - {fileID: 90698430}
   - {fileID: 1896637714}
   - {fileID: 713148476}
   - {fileID: 1458050058}
   - {fileID: 2012681194}
   - {fileID: 1398680649}
   - {fileID: 292578857}
+  - {fileID: 53458159}
+  - {fileID: 915192775}

@@ -1,14 +1,13 @@
-﻿using Catan.Shared.Data;
-using Catan.Shared.Interfaces;
+﻿using Catan.Shared.Interfaces;
 
 namespace Catan.Shared.Dtos.UiMessages
 {
     public sealed class LogMessageDto : IUiMessageDto
     {
-        public EnumLogTypes Type { get; }
+        public string Type { get; }
         public string Message { get; }
         public int Time { get; }
-        public LogMessageDto(EnumLogTypes type, string message, int time = 2)
+        public LogMessageDto(string type, string message, int time = 2)
         {
             Type = type;
             Message = message;
@@ -19,8 +18,8 @@ namespace Catan.Shared.Dtos.UiMessages
     public sealed class ActionRejectedDto : IUiMessageDto
     {
         public int PlayerId { get; }
-        public ConditionFailureReason Reason { get; }
-        public ActionRejectedDto(int playerId, ConditionFailureReason reason)
+        public string Reason { get; }
+        public ActionRejectedDto(int playerId, string reason)
         {
             PlayerId = playerId;
             Reason = reason;

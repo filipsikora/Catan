@@ -32,7 +32,9 @@ namespace Catan.Unity.Panels
             VisualsUI.ClearContainer(OfferedCardsContainer);
             VisualsUI.ClearContainer(DesiredCardsContainer);
 
-            foreach (var (key, value) in resourcesAvailabilitySnapshot.ResourcesAvailability)
+            var resourcesAvailability = Mappers.MapStringResourcesToEnumInDictionary<bool>(resourcesAvailabilitySnapshot.ResourcesAvailability);
+
+            foreach (var (key, value) in resourcesAvailability)
             {
                 ResourceCardFactory.DrawResourceCard(key, EnumResourceCardLocation.OfferedTrade, OfferedCardsContainer);
 
