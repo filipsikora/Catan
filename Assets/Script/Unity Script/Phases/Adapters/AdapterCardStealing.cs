@@ -29,7 +29,7 @@ namespace Catan.Unity.Phases.Controllers
             if (!signal.IsLeftClicked)
                 return;
 
-            EventsHandler.Execute(EnumCommandType.StolenCardSelectedCommand, signal.Type);
+            EventsHandler.Execute(EnumCommandType.StolenCardSelectedCommand, new { type = signal.Type });
         }
 
         private async Task LoadData()

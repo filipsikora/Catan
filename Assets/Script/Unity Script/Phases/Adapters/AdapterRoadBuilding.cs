@@ -29,7 +29,7 @@ namespace Catan.Unity.Phases.Adapters
 
         private void OnEdgeClicked(EdgeClickedUIEvent signal)
         {
-            EventsHandler.Execute(EnumCommandType.EdgeClickedCommand, signal.EdgeId);
+            EventsHandler.Execute(EnumCommandType.EdgeClickedCommand, new { edgeId = signal.EdgeId });
         }
 
         private void OnPositionClicked(BuildOptionsSentUIEvent signal)

@@ -20,7 +20,7 @@ namespace Catan.Unity.Visuals.Controllers
             bus.Subscribe<PlayerStateChangedUIEvent>(UpdatePlayerUI);
         }
 
-        public async void UpdatePlayerUI(PlayerStateChangedUIEvent signal)
+        private async void UpdatePlayerUI(PlayerStateChangedUIEvent signal)
         {
             var data = await LoadPlayerData(signal.PlayerId);
             var resources = await LoadPlayerCards(signal.PlayerId);
@@ -30,12 +30,12 @@ namespace Catan.Unity.Visuals.Controllers
 
         private async Task<PlayerDataDto> LoadPlayerData(int playerId)
         {
-            return await _eventsHandler.Query<PlayerDataDto>(EnumQueryName.PlayerData);
+            return await _eventsHandler.Query<PlayerDataDto>(EnumQueryName.PlayerData, new { playerId });
         }
 
         private async Task<PlayerCardsDto> LoadPlayerCards(int playerId)
         {
-            return await _eventsHandler.Query<PlayerCardsDto>(EnumQueryName.PlayerCards);
+            return await _eventsHandler.Query<PlayerCardsDto>(EnumQueryName.PlayerCards, new { playerId });
         }
     }
 }

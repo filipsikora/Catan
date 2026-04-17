@@ -37,12 +37,12 @@ namespace Catan.Unity.Phases.Adapters
 
         private void OnVertexClicked(VertexClickedUIEvent signal)
         {
-            EventsHandler.Execute(EnumCommandType.VertexClickedCommand, signal.VertexId);
+            EventsHandler.Execute(EnumCommandType.VertexClickedCommand, new { vertexId = signal.VertexId });
         }
 
         private void OnEdgeClicked(EdgeClickedUIEvent signal)
         {
-            EventsHandler.Execute(EnumCommandType.EdgeClickedCommand, signal.EdgeId);
+            EventsHandler.Execute(EnumCommandType.EdgeClickedCommand, new{ edgeId = signal.EdgeId });
         }
 
         private void OnTradePossible(SelectionChangedUIEvent signal)
@@ -69,7 +69,7 @@ namespace Catan.Unity.Phases.Adapters
             if (!signal.IsLeftClicked)
                 return;
 
-            EventsHandler.Execute(EnumCommandType.ResourceCardSelectedCommand, new { IsToggled = !signal.IsToggled, signal.Type });
+            EventsHandler.Execute(EnumCommandType.ResourceCardSelectedCommand, new { isToggled = !signal.IsToggled, type = signal.Type });
 
             if (signal.IsToggled)
             {

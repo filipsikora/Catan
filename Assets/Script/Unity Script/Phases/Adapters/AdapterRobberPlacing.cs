@@ -26,7 +26,7 @@ namespace Catan.Unity.Phases.Adapters
 
         private void OnHexClicked(HexClickedUIEvent signal)
         {
-            EventsHandler.Execute(EnumCommandType.HexClickedCommand, signal.HexId);
+            EventsHandler.Execute(EnumCommandType.HexClickedCommand, new { hexId = signal.HexId });
         }
 
         private void OnPotentialVictimsFound(PotentialVictimsFoundUIEvent signal)
@@ -37,7 +37,7 @@ namespace Catan.Unity.Phases.Adapters
 
         private void OnPlayerChosen(PlayerClickedUIEvent signal)
         {
-            EventsHandler.Execute(EnumCommandType.VictimChosenCommand, signal.PlayerId);
+            EventsHandler.Execute(EnumCommandType.VictimChosenCommand, new { playerId = signal.PlayerId });
         }
 
         private async Task LoadData()

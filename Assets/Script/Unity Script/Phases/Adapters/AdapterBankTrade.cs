@@ -44,14 +44,14 @@ namespace Catan.Unity.Phases.Adapters
 
             if (signal.Location == EnumResourceCardLocation.OfferedTrade)
             {
-                EventsHandler.Execute(EnumCommandType.BankTradeOfferedResourceSelectedCommand, signal.Type);
+                EventsHandler.Execute(EnumCommandType.BankTradeOfferedResourceSelectedCommand, new { type = signal.Type });
 
                 EventBus.Publish(new ResourceCardVisualStateChangedUIEvent(signal.VisualResourceCardId, signal.Location, EnumResourceCardVisualState.Highlighted));
             }
 
             else
             {
-                EventsHandler.Execute(EnumCommandType.BankTradeDesiredResourceSelectedCommand, signal.Type);
+                EventsHandler.Execute(EnumCommandType.BankTradeDesiredResourceSelectedCommand, new { type = signal.Type });
             }
         }
 

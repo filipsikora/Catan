@@ -45,7 +45,7 @@ namespace Catan.Unity.Phases.Adapters
             if (!signal.IsLeftClicked)
                 return;
 
-            EventsHandler.Execute(EnumCommandType.StolenCardSelectedCommand, signal.Type);
+            EventsHandler.Execute(EnumCommandType.StolenCardSelectedCommand, new { type = signal.Type });
         }
 
         public override void OnExit()

@@ -4243,6 +4243,7 @@ RectTransform:
   - {fileID: 2088268842}
   - {fileID: 2052258777}
   - {fileID: 687154977}
+  - {fileID: 1458050058}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -5174,8 +5175,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Catan.Unity.Bootstrap.GameBootstrap
   _boardManager: {fileID: 53458158}
   _uiManager: {fileID: 292578856}
-  _visualsBoard: {fileID: 1458050057}
-  _clickHandler: {fileID: 1896637713}
 --- !u!4 &915192775
 Transform:
   m_ObjectHideFlags: 0
@@ -7907,12 +7906,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1458050056}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.51294, y: 1.25258, z: -1.48563}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -400.52347, y: -224.73901, z: -0.3095062}
+  m_LocalScale: {x: 0.2083333, y: 0.2083333, z: 0.2083333}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 713148476}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1509616579
 GameObject:
@@ -10042,7 +10041,6 @@ SceneRoots:
   - {fileID: 843196268}
   - {fileID: 1896637714}
   - {fileID: 713148476}
-  - {fileID: 1458050058}
   - {fileID: 2012681194}
   - {fileID: 1398680649}
   - {fileID: 292578857}

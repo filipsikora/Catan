@@ -4,7 +4,7 @@ namespace Catan.Shared.Dtos.UiMessages
 {
     public sealed class TurnNumberChangedDto : IUiMessageDto
     {
-        public int NewTurnNumber;
+        public int NewTurnNumber { get; set; }
         public TurnNumberChangedDto(int newTurnNumber)
         {
             NewTurnNumber = newTurnNumber;
@@ -13,7 +13,7 @@ namespace Catan.Shared.Dtos.UiMessages
 
     public sealed class DiceRollChangedDto : IUiMessageDto
     {
-        public int RolledNumber;
+        public int RolledNumber { get; set; }
         public DiceRollChangedDto(int rolledNumber)
         {
             RolledNumber = rolledNumber;

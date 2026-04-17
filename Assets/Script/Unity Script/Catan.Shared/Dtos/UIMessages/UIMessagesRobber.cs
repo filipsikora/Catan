@@ -5,7 +5,7 @@ namespace Catan.Shared.Dtos.UiMessages
 {
     public sealed class PlayerSelectedToDiscardDto : IUiMessageDto
     {
-        public int PlayerId;
+        public int PlayerId { get; set; }
         public PlayerSelectedToDiscardDto(int playerId)
         {
             PlayerId = playerId;
@@ -14,7 +14,7 @@ namespace Catan.Shared.Dtos.UiMessages
 
     public sealed class PotentialVictimsFoundDto : IUiMessageDto
     {
-        public List<int> VictimsIds { get; }
+        public List<int> VictimsIds { get; set; }
 
         public PotentialVictimsFoundDto(List<int> victimsIds)
         {

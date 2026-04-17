@@ -79,6 +79,9 @@ namespace Catan.Unity.Networking
                 url += $"?{paramString}";
 
             }
+
+            UnityEngine.Debug.Log(url);
+
             var response = await _http.GetAsync(url);
 
             if (!response.IsSuccessStatusCode)

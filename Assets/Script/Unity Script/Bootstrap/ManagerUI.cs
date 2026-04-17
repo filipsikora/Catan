@@ -21,7 +21,7 @@ namespace Catan.Unity.Panels
 
         public FactoryResourceCards factoryResourceCards;
         public FactoryDevelopmentCards factoryDevCards;
-
+            
         public void Initialize(EventBus bus, ControllerResourceCards controller, BoardManager boardManager)
         {
             factoryResourceCards.Initialize(bus, controller, boardManager);

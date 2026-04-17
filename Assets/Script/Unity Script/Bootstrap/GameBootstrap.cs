@@ -21,13 +21,13 @@ namespace Catan.Unity.Bootstrap
         [SerializeField] private BoardManager _boardManager;
         [SerializeField] private ManagerUI _uiManager;
 
-        private VisualsBoard _visualsBoard;
+        [SerializeField] private VisualsBoard _visualsBoard;
+
+        [SerializeField] private HandlerCameraClicks _clickHandler;
 
         private EventBus _bus;
         private HandlerEvents _eventsHandler;
         private EventsTranslator _eventsTranslator;
-
-        private HandlerCameraClicks _clickHandler;
 
         private GameClient _client;
 
@@ -73,7 +73,7 @@ namespace Catan.Unity.Bootstrap
             }
 
             _phaseTransition = new AdapterPhaseTransition();
-            _gameFlow = new AdapterGameFlow(_uiManager, _bus, _phaseTransition, _client, gameId);
+            _gameFlow = new AdapterGameFlow(_uiManager, _bus, _phaseTransition);
 
             _eventsTranslator = new EventsTranslator();
 
@@ -87,11 +87,9 @@ namespace Catan.Unity.Bootstrap
 
             _bus.Publish(new RobberMovedUIEvent(desertHexId));
 
-            _gameFlow.Initialize(_eventsHandler);
             _clickHandler.Initialize(_bus);
             _uiManager.Initialize(_bus, controllerResourceCards, _boardManager);
-
-            
+            _gameFlow.Initialize(_eventsHandler);
         }
 
         private int InitializeBuilderMap(BoardDto boardDto)

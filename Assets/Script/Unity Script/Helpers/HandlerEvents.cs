@@ -27,8 +27,10 @@ namespace Catan.Unity.Helpers
             _gameFlow = gameFlow;
         }
 
-        public async Task Execute(EnumCommandType type, object? data = null)
+        public async void Execute(EnumCommandType type, object? data = null)    
         {
+            UnityEngine.Debug.Log($"entered handlerevents");
+
             var dto = new CommandRequestDto
             {
                 Type = type.ToString(),
@@ -39,7 +41,9 @@ namespace Catan.Unity.Helpers
 
             try
             {
+                UnityEngine.Debug.Log($"{dto.Type}, {dto.Data}");
                 response = await _client.SendCommand(_gameId, dto);
+                UnityEngine.Debug.Log($"{response.Success} {response.NextPhase} {response.UiMessages} {response.DomainMessages}");
             }
 
             catch (Exception ex)
@@ -70,6 +74,8 @@ namespace Catan.Unity.Helpers
 
             foreach (var message in response.UiMessages)
             {
+                UnityEngine.Debug.Log($"{message.Type}, {message.Data} translating");
+
                 var uiMessage = _translator.TranslateUIMessage(message);
 
                 _bus.Publish(uiMessage);
@@ -82,7 +88,7 @@ namespace Catan.Unity.Helpers
                 _bus.Publish(domainEvent);
             }
         }
-
+        
         public async Task<T> Query<T>(EnumQueryName queryName, object? data = null)
         {
             try
