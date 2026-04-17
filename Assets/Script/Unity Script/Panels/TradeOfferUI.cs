@@ -1,7 +1,5 @@
-using Catan.Core.Snapshots;
-using Catan.Shared.Communication;
-using Catan.Shared.Communication.Commands;
 using Catan.Shared.Data;
+using Catan.Unity.InternalUIEvents;
 using Catan.Unity.Data;
 using Catan.Unity.Helpers;
 using Catan.Unity.Visuals;
@@ -12,6 +10,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Catan.Shared.Dtos;
 
 namespace Catan.Unity.Panels
 {
@@ -26,14 +25,19 @@ namespace Catan.Unity.Panels
         public Button CancelTradeButton;
         public GameObject PlayerButtonPrefab;
 
-        private EventBus Bus => ManagerGame.Instance.EventBus;
+        private EventBus _bus;
 
         public void Awake()
         {
             RegisterButton(EnumTradeOfferUIButtons.CancelTradeOffer, CancelTradeButton);
         }
 
-        public void Show(IReadOnlyList<PlayerNameSnapshot> potentialPartnersData)
+        public void Initialize(EventBus bus)
+        {
+            _bus = bus;
+        }
+
+        public void Show(IReadOnlyList<PlayerNameDto> potentialPartnersData)
         {
             gameObject.SetActive(true);
 
@@ -41,7 +45,7 @@ namespace Catan.Unity.Panels
             VisualsUI.ClearContainer(CardsReviewContainer);
             VisualsUI.ClearContainer(PlayersButtonsContainer);
 
-            foreach (EnumResourceTypes type in Enum.GetValues(typeof(EnumResourceTypes)))
+            foreach (EnumResourceType type in Enum.GetValues(typeof(EnumResourceType)))
             {
                 CardFactory.DrawResourceCard(type, EnumResourceCardLocation.DesiredTrade, CardsChoiceContainer);
             }
@@ -50,16 +54,16 @@ namespace Catan.Unity.Panels
             {
                 var buttonObj = Instantiate(PlayerButtonPrefab, PlayersButtonsContainer);
                 buttonObj.GetComponentInChildren<TextMeshProUGUI>().text = player.Name;
-                buttonObj.GetComponent<Button>().onClick.AddListener(() => Bus.Publish(new TradePartnerChosenCommand(player.Id)));
+                buttonObj.GetComponent<Button>().onClick.AddListener(() => _bus.Publish(new PlayerClickedUIEvent(player.Id)));
             }
         }
 
-        public void DrawVisualResourceCardInReview(EnumResourceTypes type)
+        public void DrawVisualResourceCardInReview(EnumResourceType type)
         {
             CardFactory.DrawResourceCard(type, EnumResourceCardLocation.ReviewTrade, CardsReviewContainer);
         }
 
-        public void DestroyVisualResourceCardInReview(EnumResourceTypes type)
+        public void DestroyVisualResourceCardInReview(EnumResourceType type)
         {
             VisualResourceCard card = CardsReviewContainer.GetComponentsInChildren<VisualResourceCard>().First(c => c.Type == type);
             Destroy(card.gameObject);

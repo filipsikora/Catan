@@ -1,10 +1,10 @@
-﻿using Catan.Core.Snapshots;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Catan.Shared.Data;
 using Catan.Unity.Helpers;
-using Catan.Shared.Communication.Commands;
+using Catan.Unity.InternalUIEvents;
+using Catan.Shared.Dtos;
 
 namespace Catan.Unity.Visuals.Models
 {
@@ -19,21 +19,22 @@ namespace Catan.Unity.Visuals.Models
         public TextMeshProUGUI Name;
         [SerializeField] public TMPro.TextMeshProUGUI Label;
 
-        private HandlerEvents _eventsHandler;
+        private EventBus _bus;
 
         private int _id { get; set; }
 
-        public void Initialize(DevelopmentCardSnapshot snapshot, HandlerEvents eventsHandler)
+        public void Initialize(DevelopmentCardDto dto, EventBus bus)
         {
-            _id = snapshot.Id;
-            _eventsHandler = eventsHandler;
+            _id = dto.Id;
+            _bus = bus;
+            var type = Mappers.MapStringDevCardToEnum(dto.Type);
 
-            SetupVisuals(snapshot.Type, snapshot.IsNew, snapshot.IsPlayable);
+            SetupVisuals(type, dto.IsNew, dto.IsPlayable);
         }
 
         public void OnCardClicked()
         {
-            _eventsHandler.Execute(new DevelopmentCardClickedCommand(_id));
+            _bus.Publish(new DevelopmentCardClickedUIEvent(_id));
         }
 
         public void SetupVisuals(EnumDevelopmentCardTypes type, bool isNew, bool isPlayable)

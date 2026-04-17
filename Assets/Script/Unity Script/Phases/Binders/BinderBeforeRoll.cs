@@ -1,7 +1,7 @@
 ﻿using Catan.Unity.Helpers;
-using Catan.Shared.Communication.Commands;
 using Catan.Unity.Panels;
 using Catan.Unity.Data;
+using Catan.Shared.Data;
 
 namespace Catan.Unity.Phases.Binders
 {
@@ -13,12 +13,12 @@ namespace Catan.Unity.Phases.Binders
         {
             UI.MainUIPanel.Bind(EnumMainUIButtons.RollDice, () =>
             {
-                EventsHandler.Execute(new RollDiceCommand());
+                EventsHandler.Execute(EnumCommandType.RollDiceCommand);
             });
 
             UI.MainUIPanel.Bind(EnumMainUIButtons.DevelopmentCards, () =>
             {
-                EventsHandler.Execute(new ShowDevelopmentCardsCommand());
+                EventsHandler.Execute(EnumCommandType.ShowDevelopmentCardsCommand);
             });
         }
 

@@ -2,8 +2,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using Catan.Shared.Communication.Commands;
-using Catan.Core.Snapshots;
+using Catan.Unity.Helpers;
+using Catan.Unity.InternalUIEvents;
+using Catan.Shared.Dtos;
 
 namespace Catan.Unity.Panels
 {
@@ -13,7 +14,14 @@ namespace Catan.Unity.Panels
         public Transform ButtonsContainer;
         public GameObject ButtonPlayerOptionPrefab;
 
-        public void Show(IReadOnlyList<PlayerNameSnapshot> potentialVictimsData)
+        private EventBus _bus;
+
+        public void Initialize(EventBus bus)
+        {
+            _bus = bus;
+        }
+
+        public void Show(IReadOnlyList<PlayerNameDto> potentialVictimsData)
         {
             gameObject.SetActive(true);
 
@@ -29,7 +37,7 @@ namespace Catan.Unity.Panels
 
                 buttonObj.GetComponent<Button>().onClick.AddListener(() =>
                 {
-                    ManagerGame.Instance.EventBus.Publish(new VictimChosenCommand(victimData.Id));
+                    _bus.Publish(new PlayerClickedUIEvent(victimData.Id));
                     gameObject.SetActive(false);
                 });
             }

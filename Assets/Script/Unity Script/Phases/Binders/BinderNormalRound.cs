@@ -1,7 +1,7 @@
 ﻿using Catan.Unity.Helpers;
-using Catan.Shared.Communication.Commands;
 using Catan.Unity.Data;
 using Catan.Unity.Panels;
+using Catan.Shared.Data;
 
 namespace Catan.Unity.Phases.Binders
 {
@@ -13,42 +13,42 @@ namespace Catan.Unity.Phases.Binders
         {
             UI.MainUIPanel.Bind(EnumMainUIButtons.OfferTrade, () =>
             {
-                EventsHandler.Execute(new OfferTradeCommand());
+                EventsHandler.Execute(EnumCommandType.OfferTradeCommand);
             });
 
             UI.MainUIPanel.Bind(EnumMainUIButtons.BankTrade, () =>
             {
-                EventsHandler.Execute(new BankTradeCommand());
+                EventsHandler.Execute(EnumCommandType.BankTradeCommand);
             });
 
             UI.MainUIPanel.Bind(EnumMainUIButtons.BuildVillage, () =>
             {
-                EventsHandler.Execute(new BuildVillageCommand());
+                EventsHandler.Execute(EnumCommandType.BuildVillageCommand);
             });
 
             UI.MainUIPanel.Bind(EnumMainUIButtons.BuildRoad, () =>
             {
-                EventsHandler.Execute(new BuildRoadCommand());
+                EventsHandler.Execute(EnumCommandType.BuildRoadCommand);
             });
 
             UI.MainUIPanel.Bind(EnumMainUIButtons.UpgradeVillage, () =>
             {
-                EventsHandler.Execute(new UpgradeVillageCommand());
+                EventsHandler.Execute(EnumCommandType.UpgradeVillageCommand);
             });
 
             UI.MainUIPanel.Bind(EnumMainUIButtons.DevelopmentCards, () =>
             {
-                EventsHandler.Execute(new ShowDevelopmentCardsCommand());
+                EventsHandler.Execute(EnumCommandType.ShowDevelopmentCardsCommand);
             });
 
             UI.MainUIPanel.Bind(EnumMainUIButtons.BuyDevelopmentCard, () =>
             {
-                EventsHandler.Execute(new BuyDevelopmentCardCommand());
+                EventsHandler.Execute(EnumCommandType.BuyDevelopmentCardsCommand);
             });
 
             UI.MainUIPanel.Bind(EnumMainUIButtons.NextTurn, () =>
             {
-                EventsHandler.Execute(new EndTurnCommand());
+                EventsHandler.Execute(EnumCommandType.EndTurnCommand);
             });
         }
 

@@ -6,7 +6,7 @@ using Catan.Unity.Helpers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Catan.Core.Snapshots;
+using Catan.Shared.Dtos;
 
 namespace Catan.Unity.Panels
 {
@@ -30,14 +30,14 @@ namespace Catan.Unity.Panels
             gameObject.SetActive(true);
         }
 
-        public void ShowForPlayer(PlayerResourcesSnapshot playerResources)
+        public void ShowForPlayer(PlayerCardsDto playerResources)
         {
             VisualsUI.ClearContainer(CardsContainer);
             ConfirmDiscardButton.gameObject.SetActive(false);
 
             foreach (var entry in playerResources.PlayerResources)
             {
-                var type = entry.Key;
+                var type = Mappers.MapStringResourcesToEnum(entry.Key);
                 var amount = entry.Value;
 
                 for (int i = 0; i < amount; i++)

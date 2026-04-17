@@ -1,58 +1,105 @@
-﻿using Catan.Application;
-using Catan.Application.Interfaces;
-using Catan.Core.Interfaces;
-using Catan.Shared.Interfaces;
+﻿using Catan.Shared.Data;
+using Newtonsoft.Json.Linq;
+using System.Threading.Tasks;
+using BGS.Shared.Dtos;
+using Catan.Unity.Networking;
+using System;
 using Catan.Unity.Phases.Controllers;
-using System.Collections.Generic;
 
 namespace Catan.Unity.Helpers
 {
     public class HandlerEvents
     {
-        private GameApplication _gameApplication;
-        private AdapterGameFlow _gameFlow;
         private EventsTranslator _translator;
         private EventBus _bus;
 
-        public HandlerEvents(GameApplication gameApplication, AdapterGameFlow gameFlow, EventsTranslator translator, EventBus bus)
+        private GameClient _client;
+        private Guid _gameId;
+
+        private AdapterGameFlow _gameFlow;
+
+        public HandlerEvents(EventsTranslator translator, EventBus bus, GameClient client, Guid gameId, AdapterGameFlow gameFlow)
         {
-            _gameApplication = gameApplication;
-            _gameFlow = gameFlow;
             _translator = translator;
             _bus = bus;
+            _client = client;
+            _gameId = gameId;
+            _gameFlow = gameFlow;
         }
 
-        public void Execute(ICommand command)
+        public async void Execute(EnumCommandType type, object? data = null)    
         {
-            var result = _gameApplication.Execute(command);
+            UnityEngine.Debug.Log($"entered handlerevents");
 
-            var uiMessagesList = result.GetUIMessagesList();
-            var domainEventsList = result.GetDomainEventsList();
-
-            if (result.NextPhase != null)
-                _gameFlow.ChangePhase(result.NextPhase.Value);
-
-                PassDomainEvents(domainEventsList);
-                PassUIMessages(uiMessagesList);
-        }
-
-        private void PassUIMessages(IReadOnlyList<IUIMessages> uiMessagesList)
-        {
-            foreach (var uiMessage in uiMessagesList)
+            var dto = new CommandRequestDto
             {
-                var internalUIEvent = _translator.TranslateUIMessage(uiMessage);
+                Type = type.ToString(),
+                Data = data != null ? JObject.FromObject(data) : new JObject()
+            };
 
-                _bus.Publish(internalUIEvent);
+            CommandResponseDto response;
+
+            try
+            {
+                UnityEngine.Debug.Log($"{dto.Type}, {dto.Data}");
+                response = await _client.SendCommand(_gameId, dto);
+                UnityEngine.Debug.Log($"{response.Success} {response.NextPhase} {response.UiMessages} {response.DomainMessages}");
+            }
+
+            catch (Exception ex)
+            {
+                UnityEngine.Debug.LogError($"HTTP error: {ex.Message}");
+                return;
+            }
+
+            if (response == null)
+            {
+                UnityEngine.Debug.LogError($"GameResult: {response} is null");
+                return;
+            }
+
+            if (!response.Success)
+            {
+                UnityEngine.Debug.LogWarning("Command failed");
+                return;
+            }
+
+            if (response.NextPhase != null)
+            {
+                if (!Enum.TryParse<EnumGamePhases>(response.NextPhase, out var nextPhase))
+                    throw new Exception($"Failed to parse NextPhase: {response.NextPhase}");
+
+                _gameFlow.ChangePhase(nextPhase);
+            }
+
+            foreach (var message in response.UiMessages)
+            {
+                UnityEngine.Debug.Log($"{message.Type}, {message.Data} translating");
+
+                var uiMessage = _translator.TranslateUIMessage(message);
+
+                _bus.Publish(uiMessage);
+            }
+
+            foreach (var message in response.DomainMessages)
+            {
+                var domainEvent = _translator.TranslateDomainEvent(message);
+
+                _bus.Publish(domainEvent);
             }
         }
-
-        private void PassDomainEvents(IReadOnlyList<IDomainEvent> domainEventsList)
+        
+        public async Task<T> Query<T>(EnumQueryName queryName, object? data = null)
         {
-            foreach (var domainEvent in domainEventsList)
+            try
             {
-                var internalUIEvent = _translator.TranslateDomainEvent(domainEvent);
+                return await _client.SendQuery<T>(_gameId, queryName, data);
+            }
 
-                _bus.Publish(internalUIEvent);
+            catch (Exception ex)
+            {
+                UnityEngine.Debug.Log($"Query error: {queryName}");
+                return default;
             }
         }
     }

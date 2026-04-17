@@ -1,7 +1,7 @@
 ﻿using Catan.Unity.Helpers;
-using Catan.Shared.Communication.Commands;
 using Catan.Unity.Data;
 using Catan.Unity.Panels;
+using Catan.Shared.Data;
 
 namespace Catan.Unity.Phases.Binders
 {
@@ -13,17 +13,17 @@ namespace Catan.Unity.Phases.Binders
         {
             UI.MainUIPanel.Bind(EnumMainUIButtons.BuildFreeVillage, () =>
             {
-                EventsHandler.Execute(new BuildVillageCommand());
+                EventsHandler.Execute(EnumCommandType.BuildVillageCommand);
             });
 
             UI.MainUIPanel.Bind(EnumMainUIButtons.BuildFreeRoad, () =>
             {
-                EventsHandler.Execute(new BuildRoadCommand());
+                EventsHandler.Execute(EnumCommandType.BuildRoadCommand);
             });
 
             UI.MainUIPanel.Bind(EnumMainUIButtons.NextTurn, () =>
             {
-                EventsHandler.Execute(new EndTurnCommand());
+                EventsHandler.Execute(EnumCommandType.EndTurnCommand);
             });
         }
 

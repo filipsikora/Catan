@@ -1,4 +1,4 @@
-﻿using Catan.Shared.Communication.Commands;
+﻿using Catan.Shared.Data;
 using Catan.Unity.Data;
 using Catan.Unity.Helpers;
 using Catan.Unity.Panels;
@@ -13,7 +13,7 @@ namespace Catan.Unity.Phases.Binders
         {
             UI.TradeOfferPanel.Bind(EnumTradeOfferUIButtons.CancelTradeOffer, () =>
             {
-                EventsHandler.Execute(new TradeOfferCanceledCommand());
+                EventsHandler.Execute(EnumCommandType.TradeOfferCanceledCommand);
             });
         }
 

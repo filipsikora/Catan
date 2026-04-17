@@ -54,6 +54,7 @@ namespace Catan.Unity.Helpers
 
         public void Publish(IInternalUIEvents signal)
         {
+            UnityEngine.Debug.Log($"publihsing {signal.GetType()}");
             var signalType = signal.GetType();
 
             var subscribersSnapshot = _subscribers.ToArray();

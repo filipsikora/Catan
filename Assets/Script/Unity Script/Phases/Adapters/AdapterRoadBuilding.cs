@@ -1,8 +1,7 @@
-﻿using Catan.Application.Controllers;
-using Catan.Core.Snapshots;
-using Catan.Unity.Helpers;
-using Catan.Unity.Communication.InternalUIEvents;
+﻿using Catan.Shared.Data;
 using Catan.Unity.Data;
+using Catan.Unity.Helpers;
+using Catan.Unity.InternalUIEvents;
 using Catan.Unity.Panels;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
@@ -12,24 +11,25 @@ namespace Catan.Unity.Phases.Adapters
     public class AdapterRoadBuilding : BasePhaseAdapter
     {
         private BinderNormalRound _binder;
-        private TurnDataSnapshot _turnDataSnapshot;
 
-        public AdapterRoadBuilding(ManagerUI ui, EventBus bus, Facade facade, HandlerEvents eventsHandler) : base(ui, bus, facade, eventsHandler) { }
+        public AdapterRoadBuilding(ManagerUI ui, EventBus bus, HandlerEvents eventHandler) : base(ui, bus, eventHandler) { }
 
         public override void OnEnter()
         {
             _binder = new BinderNormalRound(UI, EventBus, EventsHandler);
             _binder.Bind();
 
-            _turnDataSnapshot = Facade.GetTurnData();
-
             VisualsUI.SetParentVisibility(UI.PlayerUIPanel, false);
             VisualsUI.MakeAllChildrenVisible(UI.MainUIPanel.ButtonsContainer, false);
 
-
-            EventBus.Subscribe<RoadPlacedUIEvent>(OnRoadPlaced);
+            EventBus.Subscribe<EdgeClickedUIEvent>(OnEdgeClicked);
 
             EventBus.Subscribe<BuildOptionsSentUIEvent>(OnPositionClicked);
+        }
+
+        private void OnEdgeClicked(EdgeClickedUIEvent signal)
+        {
+            EventsHandler.Execute(EnumCommandType.EdgeClickedCommand, new { edgeId = signal.EdgeId });
         }
 
         private void OnPositionClicked(BuildOptionsSentUIEvent signal)
@@ -39,17 +39,11 @@ namespace Catan.Unity.Phases.Adapters
             UI.MainUIPanel.SetButtonVisibility(EnumMainUIButtons.UpgradeVillage, signal.CanUpgradeVillage);
         }
 
-        private void OnRoadPlaced(RoadPlacedUIEvent signal)
-        {
-            EventBus.Publish(new PositionsResetUIEvent());
-            EventBus.Publish(new PlayerStateChangedUIEvent(_turnDataSnapshot.PlayerId));
-        }
-
         public override void OnExit()
         {
             VisualsUI.SetParentVisibility(UI.PlayerUIPanel, true);
 
-            EventBus.Unsubscribe<RoadPlacedUIEvent>(OnRoadPlaced);
+            EventBus.Unsubscribe<EdgeClickedUIEvent>(OnEdgeClicked);
 
             EventBus.Unsubscribe<BuildOptionsSentUIEvent>(OnPositionClicked);
         }

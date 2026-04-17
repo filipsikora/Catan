@@ -1,8 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Catan.Unity.Visuals.Models;
-using Catan.Shared.Communication;
-using Catan.Shared.Communication.Commands;
+using Catan.Unity.InternalUIEvents;
 
 namespace Catan.Unity.Helpers
 {
@@ -35,13 +34,19 @@ namespace Catan.Unity.Helpers
             if (Physics.Raycast(ray, out var hit, 100f, mask))
             {
                 if (hit.collider.TryGetComponent<VisualVertex>(out var v))
-                    _bus.Publish(new VertexClickedCommand(v.VertexId));
+                {
+                    UnityEngine.Debug.Log($"Vertex");
+                    _bus.Publish(new VertexClickedUIEvent(v.VertexId));
+                }
 
                 else if (hit.collider.TryGetComponent<VisualEdge>(out var e))
-                    _bus.Publish(new EdgeClickedCommand(e.EdgeId));
+                    _bus.Publish(new EdgeClickedUIEvent(e.EdgeId));
 
                 else if (hit.collider.TryGetComponent<VisualHex>(out var h))
-                    _bus.Publish(new HexClickedCommand(h.HexId));
+                {
+                    UnityEngine.Debug.Log($"Hex {h.HexId}");
+                    _bus.Publish(new HexClickedUIEvent(h.HexId));
+                }
             }
         }
     }

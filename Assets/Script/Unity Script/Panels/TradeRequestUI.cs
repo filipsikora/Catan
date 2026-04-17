@@ -28,7 +28,7 @@ namespace Catan.Unity.Panels
             RegisterButton(EnumTradeRequestUIButtons.RefuseTradeRequest, RefuseTradeButton);
         }
 
-        public void Show(string sellerName, string buyerName, Dictionary<EnumResourceTypes, int> offered, Dictionary<EnumResourceTypes, int> desired)
+        public void Show(string sellerName, string buyerName, Dictionary<EnumResourceType, int> offered, Dictionary<EnumResourceType, int> desired)
         {
             string text = $"{buyerName}, {sellerName} is offering";
             TradeOfferText.text = text;
@@ -40,7 +40,7 @@ namespace Catan.Unity.Panels
 
             foreach (var entry in offered)
             {
-                EnumResourceTypes type = entry.Key;
+                EnumResourceType type = entry.Key;
                 int count = entry.Value;
 
                 for (int i = 0; i < count; i++)
@@ -51,7 +51,7 @@ namespace Catan.Unity.Panels
 
             foreach (var entry in desired)
             {
-                EnumResourceTypes type = entry.Key;
+                EnumResourceType type = entry.Key;
                 int count = entry.Value;
 
                 for (int i = 0; i < count; i++)

@@ -1,5 +1,5 @@
 ﻿using Catan.Unity.Helpers;
-using Catan.Unity.Communication.InternalUIEvents;
+using Catan.Unity.InternalUIEvents;
 using UnityEngine;
 
 namespace Catan.Unity.Visuals.Controllers
@@ -26,6 +26,7 @@ namespace Catan.Unity.Visuals.Controllers
 
         private void OnVertexHighlighted(VertexHighlightedUIEvent signal)
         {
+            UnityEngine.Debug.Log($"vertex highlighted {signal.VertexId}");
             ResetAllPositions();
 
             var vertexObject = _board.GetVertexObject(signal.VertexId);

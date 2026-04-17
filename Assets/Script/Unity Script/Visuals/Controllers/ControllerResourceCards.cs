@@ -1,8 +1,9 @@
-﻿using Catan.Unity.Helpers;
+﻿#nullable enable
+using Catan.Unity.Helpers;
 using Catan.Unity.Visuals.Models;
 using Catan.Unity.Data;
 using System.Collections.Generic;
-using Catan.Unity.Communication.InternalUIEvents;
+using Catan.Unity.InternalUIEvents;
 
 namespace Catan.Unity.Visuals.Controllers
 {
@@ -25,15 +26,15 @@ namespace Catan.Unity.Visuals.Controllers
             switch (state)
             {
                 case EnumResourceCardVisualState.None:
-                    VisualsUI.ResetResourceCard(card);
+                    card.Reset();
                     break;
 
                 case EnumResourceCardVisualState.Lifted:
-                    VisualsUI.MoveResourceCardUp(card);
+                    card.MoveUp();
                     break;
 
                 case EnumResourceCardVisualState.Highlighted:
-                    VisualsUI.HighlightResourceCard(card);
+                    card.Highlight();
                     break;
             }
         }
@@ -65,7 +66,7 @@ namespace Catan.Unity.Visuals.Controllers
             {
                 if (card.Location == signal.Location)
                 {
-                    VisualsUI.ResetResourceCard(card);
+                    card.Reset();
                 }
             }
         }

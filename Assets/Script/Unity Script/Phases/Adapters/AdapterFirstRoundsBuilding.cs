@@ -1,7 +1,6 @@
-﻿using Catan.Application.Controllers;
-using Catan.Core.Snapshots;
+﻿using Catan.Shared.Data;
 using Catan.Unity.Helpers;
-using Catan.Unity.Communication.InternalUIEvents;
+using Catan.Unity.InternalUIEvents;
 using Catan.Unity.Panels;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
@@ -11,49 +10,58 @@ namespace Catan.Unity.Phases.Adapters
     public class AdapterFirstRoundsBuilding : BasePhaseAdapter
     {
         public BinderFirstRoundBuildings _binder;
-        private TurnDataSnapshot _turnDataSnapshot;
 
-        public AdapterFirstRoundsBuilding(ManagerUI ui, EventBus bus, Facade facade, HandlerEvents eventsHandler) : base(ui, bus, facade, eventsHandler) { }
+        public AdapterFirstRoundsBuilding(ManagerUI ui, EventBus bus, HandlerEvents eventHandler) : base(ui, bus, eventHandler) { }
 
         public override void OnEnter()
         {
+            UnityEngine.Debug.Log("entered phase");
+            UnityEngine.Debug.Log($"MainUI active: {UI.MainUIPanel.gameObject.activeSelf}");
+            UnityEngine.Debug.Log($"PlayerUI active: {UI.PlayerUIPanel.gameObject.activeSelf}");
+
+            
+            EventBus.Publish(new PlayerStateChangedUIEvent(1));
+
+            UnityEngine.Debug.Log("chuj");
+
             _binder = new BinderFirstRoundBuildings(UI, EventBus, EventsHandler);
             _binder.Bind();
 
-            _turnDataSnapshot = Facade.GetTurnData();
+            UI.MainUIPanel.gameObject.SetActive(true);
+            UI.PlayerUIPanel.gameObject.SetActive(true);
 
-            VisualsUI.MakeAllChildrenVisible(UI.MainUIPanel.ButtonsContainer, false);
+            VisualsUI.SetMainAndPlayerUIVisibility(true, UI.MainUIPanel, UI.PlayerUIPanel);
 
-            UI.UpdateTurnCounter(_turnDataSnapshot.TurnNumber);
+            //VisualsUI.MakeAllChildrenVisible(UI.MainUIPanel.ButtonsContainer, false);
 
             EventBus.Subscribe<BuildOptionsSentUIEvent>(OnPositionClicked);
 
-            EventBus.Subscribe<VillagePlacedUIEvent>(OnVillagePlaced);
-            EventBus.Subscribe<RoadPlacedUIEvent>(OnRoadPlaced);
+            EventBus.Subscribe<VertexClickedUIEvent>(OnVertexClicked);
+            EventBus.Subscribe<EdgeClickedUIEvent>(OnEdgeClicked);
 
-            EventBus.Publish(new PlayerStateChangedUIEvent(_turnDataSnapshot.PlayerId));
+            EventBus.Subscribe<RoadPlacedUIEvent>(OnRoadPlaced);
+        }
+
+        private void OnVertexClicked(VertexClickedUIEvent signal)
+        {
+            EventsHandler.Execute(EnumCommandType.VertexClickedCommand, new { vertexId = signal.VertexId });
+        }
+
+        private void OnEdgeClicked(EdgeClickedUIEvent signal)
+        {
+            EventsHandler.Execute(EnumCommandType.EdgeClickedCommand, new { edgeId = signal.EdgeId });
         }
 
         private void OnPositionClicked(BuildOptionsSentUIEvent signal)
         {
+            UnityEngine.Debug.Log($"uievent received, road = {signal.CanBuildRoad}, village = {signal.CanBuildVillage}, town = {signal.CanUpgradeVillage}");
             UI.MainUIPanel.BuildFreeVillageButton.gameObject.SetActive(signal.CanBuildVillage);
             UI.MainUIPanel.BuildFreeRoadButton.gameObject.SetActive(signal.CanBuildRoad);
-        }
-
-        private void OnVillagePlaced(VillagePlacedUIEvent signal)
-        {
-            EventBus.Publish(new PositionsResetUIEvent());
-            EventBus.Publish(new VillagePlacedUIEvent(signal.VertexId, _turnDataSnapshot.PlayerId));
-            EventBus.Publish(new PlayerStateChangedUIEvent(_turnDataSnapshot.PlayerId));
         }
 
         private void OnRoadPlaced(RoadPlacedUIEvent signal)
         {
             UI.MainUIPanel.NextTurnButton.gameObject.SetActive(true);
-
-            EventBus.Publish(new PositionsResetUIEvent());
-            EventBus.Publish(new PlayerStateChangedUIEvent(_turnDataSnapshot.PlayerId));
-            EventBus.Publish(new RoadPlacedUIEvent(signal.EdgeId, _turnDataSnapshot.PlayerId));
         }
 
         public override void OnExit()
@@ -64,7 +72,6 @@ namespace Catan.Unity.Phases.Adapters
 
             EventBus.Unsubscribe<BuildOptionsSentUIEvent>(OnPositionClicked);
 
-            EventBus.Unsubscribe<VillagePlacedUIEvent>(OnVillagePlaced);
             EventBus.Unsubscribe<RoadPlacedUIEvent>(OnRoadPlaced);
         }
     }

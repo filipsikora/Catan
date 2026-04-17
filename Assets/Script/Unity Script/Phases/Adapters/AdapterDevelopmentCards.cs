@@ -1,9 +1,12 @@
-﻿using Catan.Application.Controllers;
+﻿using Catan.Shared.Data;
+using Catan.Shared.Dtos;
 using Catan.Unity.Helpers;
-using Catan.Unity.Communication.InternalUIEvents;
+using Catan.Unity.InternalUIEvents;
 using Catan.Unity.Panels;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Catan.Unity.Phases.Adapters
 {
@@ -11,7 +14,7 @@ namespace Catan.Unity.Phases.Adapters
     {
         private BinderDevelopmentCards _binder;
 
-        public AdapterDevelopmentCards(ManagerUI ui, EventBus bus, Facade facade, HandlerEvents eventsHandler) : base(ui, bus, facade, eventsHandler) { }
+        public AdapterDevelopmentCards(ManagerUI ui, EventBus bus, HandlerEvents eventHandler) : base(ui, bus, eventHandler) { }
 
         public override void OnEnter()
         {
@@ -22,9 +25,20 @@ namespace Catan.Unity.Phases.Adapters
 
             VisualsUI.SetMainAndPlayerUIVisibility(false, UI.MainUIPanel, UI.PlayerUIPanel);
 
-            var currentPlayerDevCardsSnapshots = Facade.GetCurrentPlayerDevCards();
+            EventBus.Subscribe<DevelopmentCardClickedUIEvent>(OnDevCardClicked);
 
-            UI.DevelopmentCardsPanel.Show(currentPlayerDevCardsSnapshots);
+            _ = LoadData();
+        }
+
+        private void OnDevCardClicked(DevelopmentCardClickedUIEvent signal)
+        {
+            EventsHandler.Execute(EnumCommandType.DevelopmentCardClickedPlayedCommand, new { cardId = signal.CardId });
+        }
+
+        private async Task LoadData()
+        {
+            var snapshot = await EventsHandler.Query<List<DevelopmentCardDto>>(EnumQueryName.CurrentPlayerDevCards);
+            UI.DevelopmentCardsPanel.Show(snapshot);
         }
 
         public override void OnExit()
@@ -34,9 +48,7 @@ namespace Catan.Unity.Phases.Adapters
             UI.DevelopmentCardsPanel.gameObject.SetActive(false);
             VisualsUI.SetMainAndPlayerUIVisibility(true, UI.MainUIPanel, UI.PlayerUIPanel);
 
-            var currentPlayerId = Facade.GetCurrentPlayerId();
-
-            EventBus.Publish(new PlayerStateChangedUIEvent(currentPlayerId));
+            EventBus.Unsubscribe<DevelopmentCardClickedUIEvent>(OnDevCardClicked);
         }
     }
 }

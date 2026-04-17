@@ -1,11 +1,11 @@
-﻿using Catan.Application.Controllers;
-using Catan.Core.Snapshots;
-using Catan.Shared.Communication.Commands;
-using Catan.Unity.Communication.InternalUIEvents;
+﻿using Catan.Shared.Data;
+using Catan.Shared.Dtos;
 using Catan.Unity.Helpers;
+using Catan.Unity.InternalUIEvents;
 using Catan.Unity.Panels;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
+using System.Threading.Tasks;
 using EventBus = Catan.Unity.Helpers.EventBus;
 
 namespace Catan.Unity.Phases.Adapters
@@ -13,9 +13,8 @@ namespace Catan.Unity.Phases.Adapters
     public class AdapterCardDiscarding : BasePhaseAdapter
     {
         private BinderCardDiscarding _binder;
-        private TurnDataSnapshot _turnData;
 
-        public AdapterCardDiscarding(ManagerUI ui, EventBus bus, Facade facade, HandlerEvents eventsHandler) : base(ui, bus, facade, eventsHandler) { }
+        public AdapterCardDiscarding(ManagerUI ui, EventBus bus, HandlerEvents eventHandler) : base(ui, bus, eventHandler) { }
 
         public override void OnEnter()
         {
@@ -30,8 +29,6 @@ namespace Catan.Unity.Phases.Adapters
             EventBus.Subscribe<SelectionChangedUIEvent>(OnAcceptedDiscardVisibilityChanged);
             EventBus.Subscribe<PlayerSelectedToDiscardUIEvent>(OnPlayerChosen);
             EventBus.Subscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
-
-            _turnData = Facade.GetTurnData();
         }
 
         private void OnResourceCardClicked(ResourceCardClickedUIEvent signal)
@@ -39,7 +36,7 @@ namespace Catan.Unity.Phases.Adapters
             if (!signal.IsLeftClicked)
                 return;
 
-            EventsHandler.Execute(new ResourceCardSelectedCommand(signal.IsToggled, signal.Type));
+            EventsHandler.Execute(EnumCommandType.ResourceCardSelectedCommand, new { isToggled = signal.IsToggled, type = signal.Type });
 
             if (signal.IsToggled)
             {
@@ -56,20 +53,23 @@ namespace Catan.Unity.Phases.Adapters
 
         private void OnPlayerChosen(PlayerSelectedToDiscardUIEvent signal)
         {
-            var currentPlayerResources = Facade.GetPlayersCards(signal.PlayerId);
-            UI.CardDiscardPanel.ShowForPlayer(currentPlayerResources);
+            _ = LoadData(signal.PlayerId);
         }
 
         private void OnAcceptedDiscardVisibilityChanged(SelectionChangedUIEvent signal)
         {
             UI.CardDiscardPanel.ConfirmDiscardButton.gameObject.SetActive(signal.ActionAvailable);
         }
+       
+        private async Task LoadData(int playerId)
+        {
+            var snapshot = await EventsHandler.Query<PlayerCardsDto>(EnumQueryName.PlayerCards, playerId);
+            UI.CardDiscardPanel.ShowForPlayer(snapshot);
+        }
 
         public override void OnExit()
         {
             _binder.Unbind();
-
-            EventBus.Publish(new PlayerStateChangedUIEvent(_turnData.PlayerId));
 
             EventBus.Unsubscribe<SelectionChangedUIEvent>(OnAcceptedDiscardVisibilityChanged);
             EventBus.Unsubscribe<PlayerSelectedToDiscardUIEvent>(OnPlayerChosen);

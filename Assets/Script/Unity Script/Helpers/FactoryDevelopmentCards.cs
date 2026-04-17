@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using Catan.Unity.Visuals.Models;
-using Catan.Core.Snapshots;
-using Catan.Shared.Communication;
+using Catan.Shared.Dtos;
 
 namespace Catan.Unity.Helpers
 {
@@ -16,12 +15,12 @@ namespace Catan.Unity.Helpers
             _bus = bus;
         }
 
-        public GameObject DrawDevelopmentCard(DevelopmentCardSnapshot snapshot, Transform parent)
+        public GameObject DrawDevelopmentCard(DevelopmentCardDto dto, Transform parent)
         {
             GameObject cardObject = Instantiate(DevelopmentCardPrefab, parent);
 
             var visual = cardObject.GetComponent<VisualDevelopmentCard>();
-            visual.Initialize(snapshot, _bus);
+            visual.Initialize(dto, _bus);
 
             return cardObject;
         }

@@ -1,7 +1,7 @@
 ﻿using Catan.Unity.Helpers;
-using Catan.Shared.Communication.Commands;
 using Catan.Unity.Data;
 using Catan.Unity.Panels;
+using Catan.Shared.Data;
 
 namespace Catan.Unity.Phases.Binders
 {
@@ -13,7 +13,7 @@ namespace Catan.Unity.Phases.Binders
         {
             UI.DevelopmentCardsPanel.Bind(EnumDevelopmentCardsUIButtons.CancelDevelopmentCards, () =>
             {
-                EventsHandler.Execute(new DevelopmentCardsCanceledCommand());
+                EventsHandler.Execute(EnumCommandType.DevelopmentCardsCanceledCommand);
             });
         }
 

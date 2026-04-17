@@ -1,0 +1,36 @@
+﻿namespace Catan.Shared.Data
+{
+    public enum EnumCommandType
+    {
+        BankTradeCanceledCommand,
+        BankTradeOfferedResourceSelectedCommand,
+        BankTradeDesiredResourceSelectedCommand,
+        BankTradeCommand,
+        VertexClickedCommand,
+        EdgeClickedCommand,
+        HexClickedCommand,
+        BuildVillageCommand,
+        BuildRoadCommand,
+        UpgradeVillageCommand,
+        ShowDevelopmentCardsCommand,
+        BuyDevelopmentCardsCommand,
+        DevelopmentCardsCanceledCommand,
+        CardSelectionAcceptedCommand,
+        DevelopmentCardClickedPlayedCommand,
+        StartGameCommand,
+        ResourceCardSelectedCommand,
+        VictimChosenCommand,
+        DiscardingAcceptedCommand,
+        StolenCardSelectedCommand,
+        TryGetDiscardingVictimCommand,
+        RollDiceCommand,
+        EndTurnCommand,
+        OfferTradeCommand,
+        TradeOfferCanceledCommand,
+        TradePartnerChosenCommand,
+        TradeRequestAcceptedCommand,
+        RefuseTradeRequestCommand,
+        RequestTradeDataCommand,
+        AcceptTradeRequestCommand
+    }
+}

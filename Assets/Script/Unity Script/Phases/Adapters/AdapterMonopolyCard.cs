@@ -1,12 +1,10 @@
-﻿using Catan.Shared.Communication.Commands;
+﻿using Catan.Shared.Data;
+using Catan.Unity.Data;
 using Catan.Unity.Helpers;
-using Catan.Shared.Data;
-using Catan.Unity.Communication.InternalUIEvents;
+using Catan.Unity.InternalUIEvents;
+using Catan.Unity.Panels;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
-using Catan.Unity.Data;
-using Catan.Unity.Panels;
-using Catan.Application.Controllers;
 
 namespace Catan.Unity.Phases.Adapters
 {
@@ -14,7 +12,7 @@ namespace Catan.Unity.Phases.Adapters
     {
         public BinderCardSelection _binder;
 
-        public AdapterMonopolyCard(ManagerUI ui, EventBus bus, Facade facade, HandlerEvents eventsHandler) : base(ui, bus, facade, eventsHandler) { }
+        public AdapterMonopolyCard(ManagerUI ui, EventBus bus, HandlerEvents eventHandler) : base(ui, bus, eventHandler) { }
 
         public override void OnEnter()
         {
@@ -47,7 +45,7 @@ namespace Catan.Unity.Phases.Adapters
             if (!signal.IsLeftClicked)
                 return;
 
-            EventsHandler.Execute(new StolenCardSelectedCommand(signal.Type));
+            EventsHandler.Execute(EnumCommandType.StolenCardSelectedCommand, new { type = signal.Type });
         }
 
         public override void OnExit()

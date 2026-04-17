@@ -1,4 +1,3 @@
-using Catan.Core.Snapshots;
 using Catan.Unity.Helpers;
 using Catan.Unity.Data;
 using Catan.Unity.Visuals;
@@ -6,6 +5,7 @@ using Catan.Unity.Visuals.Models;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using Catan.Shared.Dtos;
 
 namespace Catan.Unity.Panels
 {
@@ -20,7 +20,7 @@ namespace Catan.Unity.Panels
             RegisterButton(EnumDevelopmentCardsUIButtons.CancelDevelopmentCards, CancelDevelopmentCardsButton);
         }
 
-        public void Show(IReadOnlyList<DevelopmentCardSnapshot> cards)
+        public void Show(IReadOnlyList<DevelopmentCardDto> cards)
         {
             CancelDevelopmentCardsButton.gameObject.SetActive(true);
             gameObject.SetActive(true);

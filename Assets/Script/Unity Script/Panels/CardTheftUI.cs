@@ -3,7 +3,7 @@ using Catan.Unity.Visuals;
 using Catan.Shared.Data;
 using TMPro;
 using UnityEngine;
-using Catan.Core.Snapshots;
+using Catan.Shared.Dtos;
 
 namespace Catan.Unity.Panels
 {
@@ -13,7 +13,7 @@ namespace Catan.Unity.Panels
         public FactoryResourceCards CardFactory;
         public TextMeshProUGUI TitleText;
 
-        public void Show(PlayerResourcesSnapshot resourcesSnapshot)
+        public void Show(PlayerCardsDto resourcesSnapshot)
         {
             gameObject.SetActive(true);
 
@@ -21,7 +21,7 @@ namespace Catan.Unity.Panels
 
             foreach (var entry in resourcesSnapshot.PlayerResources)
             {
-                EnumResourceTypes type = entry.Key;
+                EnumResourceType type = Mappers.MapStringResourcesToEnum(entry.Key);
                 int count = entry.Value;
 
                 for (int i = 0; i < count; i++)

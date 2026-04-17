@@ -30,7 +30,7 @@ namespace Catan.Unity.Panels
 
             VisualsUI.ClearContainer(DesiredCardsContainer);
 
-            foreach (EnumResourceTypes type in Enum.GetValues(typeof(EnumResourceTypes)))
+            foreach (EnumResourceType type in Enum.GetValues(typeof(EnumResourceType)))
             {
                 CardFactory.DrawResourceCard(type, EnumResourceCardLocation.DesiredTrade, DesiredCardsContainer);
             }

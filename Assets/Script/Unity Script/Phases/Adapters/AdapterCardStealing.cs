@@ -1,34 +1,27 @@
-﻿using Catan.Shared.Communication.Commands;
-using Catan.Unity.Communication.InternalUIEvents;
-using Catan.Unity.Phases.Adapters;
-using Catan.Core.Snapshots;
-using Catan.Unity.Panels;
+﻿using Catan.Shared.Data;
+using Catan.Shared.Dtos;
 using Catan.Unity.Helpers;
-using Catan.Application.Controllers;
+using Catan.Unity.InternalUIEvents;
+using Catan.Unity.Panels;
+using Catan.Unity.Phases.Adapters;
+using System.Threading.Tasks;
 
 namespace Catan.Unity.Phases.Controllers
 {
     public class AdapterCardStealing : BasePhaseAdapter
     {
-        private PlayerNameSnapshot _victimName;
-        private PlayerResourcesSnapshot _victimResources;
-        private int _thiefData;
-
-        public AdapterCardStealing(ManagerUI ui, EventBus bus, Facade facade, HandlerEvents eventsHandler) : base(ui, bus, facade, eventsHandler) { }
+        public AdapterCardStealing(ManagerUI ui, EventBus bus, HandlerEvents eventHandler) : base(ui, bus, eventHandler) { }
 
         public override void OnEnter()
         {
             EventBus.Subscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
 
-            _victimName = Facade.GetVictimsName();
-            ShowVictimsCards(_victimName.Id);
+            ShowVictimsCards();
         }
 
-        public void ShowVictimsCards(int victimId)
+        public void ShowVictimsCards()
         {
-            _thiefData = Facade.GetCurrentPlayerId();
-            _victimResources = Facade.GetPlayersCards(victimId);
-            UI.CardTheftPanel.Show(_victimResources);
+            _ = LoadData();
         }
 
         private void OnResourceCardClicked(ResourceCardClickedUIEvent signal)
@@ -36,13 +29,17 @@ namespace Catan.Unity.Phases.Controllers
             if (!signal.IsLeftClicked)
                 return;
 
-            EventsHandler.Execute(new StolenCardSelectedCommand(signal.Type));
+            EventsHandler.Execute(EnumCommandType.StolenCardSelectedCommand, new { type = signal.Type });
+        }
+
+        private async Task LoadData()
+        {
+            var snapshot = await EventsHandler.Query<PlayerCardsDto>(EnumQueryName.VictimCards);
+            UI.CardTheftPanel.Show(snapshot);
         }
 
         public override void OnExit()
         {
-            EventBus.Publish(new PlayerStateChangedUIEvent(_thiefData));
-
             EventBus.Unsubscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
 
             UI.CardTheftPanel.gameObject.SetActive(false);

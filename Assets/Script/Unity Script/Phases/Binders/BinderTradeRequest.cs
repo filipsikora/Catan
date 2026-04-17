@@ -1,7 +1,7 @@
 ﻿using Catan.Unity.Helpers;
-using Catan.Shared.Communication.Commands;
 using Catan.Unity.Data;
 using Catan.Unity.Panels;
+using Catan.Shared.Data;
 
 namespace Catan.Unity.Phases.Binders
 {
@@ -13,12 +13,12 @@ namespace Catan.Unity.Phases.Binders
         {
             UI.TradeRequestPanel.Bind(EnumTradeRequestUIButtons.AcceptTradeRequest, () =>
             {
-                EventsHandler.Execute(new AcceptTradeRequestCommand());
+                EventsHandler.Execute(EnumCommandType.AcceptTradeRequestCommand);
             });
 
             UI.TradeRequestPanel.Bind(EnumTradeRequestUIButtons.RefuseTradeRequest, () =>
             {
-                EventsHandler.Execute(new RefuseTradeRequestCommand());
+                EventsHandler.Execute(EnumCommandType.RefuseTradeRequestCommand);
             });
         }
 
