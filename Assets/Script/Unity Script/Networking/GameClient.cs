@@ -21,7 +21,7 @@ namespace Catan.Unity.Networking
             _http = new HttpClient();
         }
 
-        public async Task<Guid> CreateGame()
+        public async Task<CreateGameResponseDto> CreateGame()
         {
             var dto = new CreateGameRequestDto
             {
@@ -44,7 +44,7 @@ namespace Catan.Unity.Networking
 
             var result = JsonConvert.DeserializeObject<CreateGameResponseDto>(responseJson) ?? throw new Exception("Failed to deserialize CreateGameResponseDto");
 
-            return result.GameId;
+            return result;
         }
 
         public async Task<CommandResponseDto> SendCommand(Guid gameId, CommandRequestDto dto)

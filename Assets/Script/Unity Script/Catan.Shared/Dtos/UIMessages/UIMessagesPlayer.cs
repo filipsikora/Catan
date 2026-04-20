@@ -1,8 +1,8 @@
 ﻿using Catan.Shared.Interfaces;
 
-namespace Catan.Shared.Dtos.DomainEvents
+namespace Catan.Shared.Dtos.UIMessages
 {
-    public sealed class PlayerStateChangedDto : IDomainEventDto
+    public sealed class PlayerStateChangedDto : IUiMessageDto
     {
         public int PlayerId;
         public PlayerStateChangedDto(int playerId)

@@ -58,7 +58,7 @@ namespace Catan.Unity.Visuals.Controllers
             var vertexObject = _boardVisuals.GetVertexObject(signal.VertexId);
             var pos = vertexObject.transform.position;
             var playerColor = RegistryPlayerColor.GetColor(signal.OwnerId);
-
+            
             _boardVisuals.PlaceObject(_townPrefab, pos, null, playerColor, _board);
 
             _bus.Publish(new PositionsResetUIEvent());

@@ -15,4 +15,37 @@ namespace Catan.Shared.Dtos.UiMessages
             CanUpgradeVillage = canTown;
         }
     }
+
+    public sealed class VillagePlacedDto : IUiMessageDto
+    {
+        public int VertexId { get; set; }
+        public int OwnerId { get; set; }
+        public VillagePlacedDto(int vertexId, int ownerId)
+        {
+            VertexId = vertexId;
+            OwnerId = ownerId;
+        }
+    }
+
+    public sealed class RoadPlacedDto : IUiMessageDto
+    {
+        public int EdgeId { get; set; }
+        public int OwnerId { get; set; }
+        public RoadPlacedDto(int edgeId, int ownerId)
+        {
+            EdgeId = edgeId;
+            OwnerId = ownerId;
+        }
+    }
+
+    public sealed class TownPlacedDto : IUiMessageDto
+    {
+        public int VertexId { get; set; }
+        public int OwnerId { get; set; }
+        public TownPlacedDto(int vertexId, int ownerId)
+        {
+            VertexId = vertexId;
+            OwnerId = ownerId;
+        }
+    }
 }

@@ -58,10 +58,13 @@ namespace Catan.Unity.Bootstrap
             _client = new GameClient();
 
             Guid gameId;
+            int firstPlayerId;
 
             try
             {
-                gameId = await _client.CreateGame();
+                var createGameResponse = await _client.CreateGame();
+                gameId = createGameResponse.GameId;
+                firstPlayerId = createGameResponse.FirstPlayerId;
 
                 Debug.Log($"Game created: {gameId}");
             }
@@ -79,13 +82,14 @@ namespace Catan.Unity.Bootstrap
 
             _eventsHandler = new HandlerEvents(_eventsTranslator, _bus, _client, gameId, _gameFlow);
 
-
             var board = await _eventsHandler.Query<BoardDto>(EnumQueryName.Board);
 
             var desertHexId = InitializeBuilderMap(board);
             var controllerResourceCards = InitializeVisualControllers(gameId);
 
             _bus.Publish(new RobberMovedUIEvent(desertHexId));
+            _bus.Publish(new TurnNumberChangedUIEvent(1));
+            _bus.Publish(new PlayerStateChangedUIEvent(firstPlayerId + 1));
 
             _clickHandler.Initialize(_bus);
             _uiManager.Initialize(_bus, controllerResourceCards, _boardManager);

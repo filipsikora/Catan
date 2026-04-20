@@ -4,8 +4,8 @@ namespace Catan.Shared.Dtos.UiMessages
  {
     public sealed class ResourceSelectedDto : IUiMessageDto
     {
-        public string? Type { get; set; }
-        public bool Selected { get; set; }
+        public string? Type { get; }
+        public bool Selected { get; }
         public ResourceSelectedDto(bool selected, string? type)
         {
             Type = type;
@@ -15,7 +15,7 @@ namespace Catan.Shared.Dtos.UiMessages
 
     public sealed class SelectionChangedDto : IUiMessageDto
     {
-        public bool ActionAvailable { get; set; }
+        public bool ActionAvailable;
         public SelectionChangedDto(bool actionAvailable)
         {
             ActionAvailable = actionAvailable;
@@ -24,7 +24,7 @@ namespace Catan.Shared.Dtos.UiMessages
 
     public sealed class DesiredCardsChangedDto : IUiMessageDto
     {
-        public bool HasDesired { get; set; }
+        public bool HasDesired { get; }
         public DesiredCardsChangedDto(bool hasDesired)
         {
             HasDesired = hasDesired;

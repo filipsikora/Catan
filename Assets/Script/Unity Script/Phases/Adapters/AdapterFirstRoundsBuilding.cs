@@ -15,13 +15,6 @@ namespace Catan.Unity.Phases.Adapters
 
         public override void OnEnter()
         {
-            UnityEngine.Debug.Log("entered phase");
-            UnityEngine.Debug.Log($"MainUI active: {UI.MainUIPanel.gameObject.activeSelf}");
-            UnityEngine.Debug.Log($"PlayerUI active: {UI.PlayerUIPanel.gameObject.activeSelf}");
-
-            
-            EventBus.Publish(new PlayerStateChangedUIEvent(1));
-
             UnityEngine.Debug.Log("chuj");
 
             _binder = new BinderFirstRoundBuildings(UI, EventBus, EventsHandler);
@@ -32,7 +25,7 @@ namespace Catan.Unity.Phases.Adapters
 
             VisualsUI.SetMainAndPlayerUIVisibility(true, UI.MainUIPanel, UI.PlayerUIPanel);
 
-            //VisualsUI.MakeAllChildrenVisible(UI.MainUIPanel.ButtonsContainer, false);
+            VisualsUI.MakeAllChildrenVisible(UI.MainUIPanel.ButtonsContainer, false);
 
             EventBus.Subscribe<BuildOptionsSentUIEvent>(OnPositionClicked);
 

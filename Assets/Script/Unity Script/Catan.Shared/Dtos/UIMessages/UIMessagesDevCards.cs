@@ -1,8 +1,8 @@
 ﻿using Catan.Shared.Interfaces;
 
-namespace Catan.Shared.Dtos.DomainEvents
+namespace Catan.Shared.Dtos.UIMessages
 {
-    public sealed class DevelopmentCardBoughtDto : IDomainEventDto
+    public sealed class DevelopmentCardBoughtDto : IUiMessageDto
     {
         public int CardId;
         public DevelopmentCardBoughtDto(int cardId)

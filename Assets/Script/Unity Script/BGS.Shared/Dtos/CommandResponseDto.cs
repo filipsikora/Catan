@@ -10,6 +10,5 @@ namespace BGS.Shared.Dtos
         public bool Success { get; set; }
         public String? NextPhase { get; set; }
         public List<UiMessageDto> UiMessages { get; set; } = new();
-        public List<DomainEventDto> DomainMessages { get; set; } = new();
     }
 }

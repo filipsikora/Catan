@@ -43,7 +43,7 @@ namespace Catan.Unity.Helpers
             {
                 UnityEngine.Debug.Log($"{dto.Type}, {dto.Data}");
                 response = await _client.SendCommand(_gameId, dto);
-                UnityEngine.Debug.Log($"{response.Success} {response.NextPhase} {response.UiMessages} {response.DomainMessages}");
+                UnityEngine.Debug.Log($"{response.Success} {response.NextPhase} {response.UiMessages}");
             }
 
             catch (Exception ex)
@@ -79,13 +79,6 @@ namespace Catan.Unity.Helpers
                 var uiMessage = _translator.TranslateUIMessage(message);
 
                 _bus.Publish(uiMessage);
-            }
-
-            foreach (var message in response.DomainMessages)
-            {
-                var domainEvent = _translator.TranslateDomainEvent(message);
-
-                _bus.Publish(domainEvent);
             }
         }
         

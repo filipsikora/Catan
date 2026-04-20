@@ -4,9 +4,9 @@ namespace Catan.Shared.Dtos.UiMessages
 {
     public sealed class LogMessageDto : IUiMessageDto
     {
-        public string Type { get; set; }
-        public string Message { get; set; }
-        public int Time { get; set; }
+        public string Type { get; }
+        public string Message { get; }
+        public int Time { get; }
         public LogMessageDto(string type, string message, int time = 2)
         {
             Type = type;
@@ -17,8 +17,8 @@ namespace Catan.Shared.Dtos.UiMessages
 
     public sealed class ActionRejectedDto : IUiMessageDto
     {
-        public int PlayerId { get; set; }
-        public string Reason { get; set; }
+        public int PlayerId { get; }
+        public string Reason { get; }
         public ActionRejectedDto(int playerId, string reason)
         {
             PlayerId = playerId;

@@ -1,11 +1,11 @@
-﻿using Catan.Unity.InternalUIEvents;
-using Catan.Unity.Interfaces;
-using Newtonsoft.Json.Linq;
-using BGS.Shared.Dtos;
+﻿using BGS.Shared.Dtos;
 using Catan.Shared.Data;
-using System;
 using Catan.Shared.Dtos.UiMessages;
-using Catan.Shared.Dtos.DomainEvents;
+using Catan.Shared.Dtos.UIMessages;
+using Catan.Unity.Interfaces;
+using Catan.Unity.InternalUIEvents;
+using Newtonsoft.Json.Linq;
+using System;
 
 namespace Catan.Unity.Helpers
 {
@@ -101,58 +101,44 @@ namespace Catan.Unity.Helpers
                         return new DiceRollChangedUIEvent(dto.RolledNumber);
                     }
 
-                default:
-                    throw new Exception($"Unknown UI message: {message.Type}");
-            }
-        }
-
-        public IInternalUIEvents TranslateDomainEvent(DomainEventDto message)
-        {
-            var data = (JObject)message.Data;
-
-            if (!Enum.TryParse<EnumDomainEvents>(message.Type, out var type))
-                throw new Exception($"Failed to parse DomainEvent: {message.Type}");
-
-            switch (type)
-            {
-                case EnumDomainEvents.VillagePlacedEvent:
-                    {
+                case EnumUiMessages.VillagePlacedMessage:
+                {
                         var dto = data.ToObject<VillagePlacedDto>();
                         return new VillagePlacedUIEvent(dto.VertexId, dto.OwnerId);
                     }
 
-                case EnumDomainEvents.RoadPlacedEvent:
+                case EnumUiMessages.RoadPlacedMessage:
                     {
                         var dto = data.ToObject<RoadPlacedDto>();
                         return new RoadPlacedUIEvent(dto.EdgeId, dto.OwnerId);
                     }
 
-                case EnumDomainEvents.TownPlacedEvent:
+                case EnumUiMessages.TownPlacedMessage:
                     {
                         var dto = data.ToObject<TownPlacedDto>();
                         return new TownPlacedUIEvent(dto.VertexId, dto.OwnerId);
                     }
 
-                case EnumDomainEvents.DevelopmentCardBoughtEvent:
+                case EnumUiMessages.DevelopmentCardBoughtMessage:
                     {
                         var dto = data.ToObject<DevelopmentCardBoughtDto>();
                         return new DevelopmentCardBoughtUIEvent(dto.CardId);
                     }
 
-                case EnumDomainEvents.RobberPlacedEvent:
+                case EnumUiMessages.RobberPlacedMessage:
                     {
                         var dto = data.ToObject<RobberPlacedDto>();
                         return new RobberMovedUIEvent(dto.HexId);
                     }
 
-                case EnumDomainEvents.PlayerStateChangedEvent:
+                case EnumUiMessages.PlayerStateChangedMessage:
                     {
                         var dto = data.ToObject<PlayerStateChangedDto>();
                         return new PlayerStateChangedUIEvent(dto.PlayerId);
                     }
 
                 default:
-                    throw new Exception($"Unknown domain event: {message.Type}");
+                    throw new Exception($"Unknown UI message: {message.Type}");
             }
         }
     }

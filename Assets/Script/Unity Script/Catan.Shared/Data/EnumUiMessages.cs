@@ -15,6 +15,12 @@
         PotentialVictimsFoundMessage,
         BankTradeRatioChangedMessage,
         TurnNumberChangedMessage,
-        DiceRollChangedMessage
+        DiceRollChangedMessage,
+        VillagePlacedMessage,
+        RoadPlacedMessage,
+        TownPlacedMessage,
+        DevelopmentCardBoughtMessage,
+        RobberPlacedMessage,
+        PlayerStateChangedMessage
     }
 }
