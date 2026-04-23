@@ -25,8 +25,6 @@ namespace Catan.Unity.Helpers
             if (!Mouse.current.leftButton.wasPressedThisFrame)
                 return;
 
-            Debug.Log("Click detected");
-
             Vector2 mousePos = Mouse.current.position.ReadValue();
             Ray ray = _cam.ScreenPointToRay(mousePos);
             int mask = LayerMask.GetMask("VertexLayer", "EdgeLayer", "HexLayer");

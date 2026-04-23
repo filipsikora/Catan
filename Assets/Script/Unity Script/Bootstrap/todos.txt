@@ -1,0 +1,13 @@
+﻿1.
+ISSUE: sometimes i get stuff coming over from old plays? like it says i am trying to use mainui panel but it has been destroyed.
+
+SOLUTION: will need to get into that
+
+STATE: to do once game is running, low priority
+
+2.
+ISSUE: sometimes i get visualresorucecards error on exiting, not sure what is it about. also need to check if i do clean up well, if not will need to fix memory issues
+
+SOLUTION: will need to check it out
+
+STATE: low priority

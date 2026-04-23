@@ -509,13 +509,13 @@ MonoBehaviour:
     Material: {fileID: 2100000, guid: 29fab3019c3a6f94bae6c76619cab751, type: 2}
   ResourceList:
   - Type: 0
-    Color: {r: 0.735849, g: 0.72295547, b: 0.5262015, a: 1}
+    Color: {r: 0.735849, g: 0.72295547, b: 0.5262015, a: 0}
   - Type: 1
     Color: {r: 0.5450981, g: 0.2705882, b: 0.07450981, a: 1}
   - Type: 2
     Color: {r: 1, g: 0.9803922, b: 0.9803922, a: 1}
   - Type: 3
-    Color: {r: 0.6, g: 0.6, b: 0.6, a: 1}
+    Color: {r: 0.6, g: 0.6, b: 0.6, a: 0}
   - Type: 4
     Color: {r: 1, g: 0.6470588, b: 0, a: 1}
 --- !u!4 &53458159

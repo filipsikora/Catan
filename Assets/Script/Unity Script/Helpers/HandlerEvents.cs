@@ -58,12 +58,6 @@ namespace Catan.Unity.Helpers
                 return;
             }
 
-            if (!response.Success)
-            {
-                UnityEngine.Debug.LogWarning("Command failed");
-                return;
-            }
-
             if (response.NextPhase != null)
             {
                 if (!Enum.TryParse<EnumGamePhases>(response.NextPhase, out var nextPhase))

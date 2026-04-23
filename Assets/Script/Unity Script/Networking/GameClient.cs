@@ -14,7 +14,7 @@ namespace Catan.Unity.Networking
     public class GameClient
     {
         private readonly HttpClient _http;
-        private readonly string _baseUrl = "http://localhost:5235/games";
+        private readonly string _baseUrl = "http://localhost:5000/games";
 
         public GameClient()
         {
