@@ -100,7 +100,7 @@ namespace Catan.Unity.Visuals.Controllers
             if (card == null)
                 return;
 
-            card.IsToggled = !card.IsToggled;
+            card.IsSelected = !card.IsSelected;
         }
 
         public void Dispose()

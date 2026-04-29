@@ -31,18 +31,17 @@ namespace Catan.Unity.Phases.Adapters
 
         private void OnPotentialVictimsFound(PotentialVictimsFoundUIEvent signal)
         {
-            _ = LoadData();
-
+            _ = LoadData(signal.VictimsIds);
         }
 
         private void OnPlayerChosen(PlayerClickedUIEvent signal)
         {
-            EventsHandler.Execute(EnumCommandType.VictimChosenCommand, new { playerId = signal.PlayerId });
+            EventsHandler.Execute(EnumCommandType.VictimChosenCommand, new { victimId = signal.PlayerId });
         }
 
-        private async Task LoadData()
+        private async Task LoadData(List<int> victimsIds)
         {
-            var snapshot = await EventsHandler.Query<List<PlayerNameDto>>(EnumQueryName.SomePlayersNames);
+            var snapshot = await EventsHandler.Query<List<PlayerNameDto>>(EnumQueryName.SomePlayersNames, new { playerIds = victimsIds });
             UI.VictimSelectorPanel.Show(snapshot);
 
         }

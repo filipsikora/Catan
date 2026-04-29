@@ -11,3 +11,17 @@ ISSUE: sometimes i get visualresorucecards error on exiting, not sure what is it
 SOLUTION: will need to check it out
 
 STATE: low priority
+
+3.
+ISSUE: controllers are not what they are supposed to be because i fell in love with the concept before understanding it and in hotseat
+
+SOLUTION:  i will need to change boardvisuals to player-specific controller and have it sub for for examplebuildings placed so that it can check playerid and maybe run resetselection
+
+STATE: once simultanous or during client transition
+
+4.
+ISSUE: first turn starts without information, because it only comes in a uimessage from enter from app phase, and there is no transition for the first phase
+
+SOLUTION: i guess the best would be to add a setupphase that would take care of first board initialization or something and then move to the new, first real phase, and trigger onenter
+
+STATE: i dont think i want to bother with that now, i will remember about it for later

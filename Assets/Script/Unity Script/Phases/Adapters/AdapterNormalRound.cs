@@ -28,6 +28,8 @@ namespace Catan.Unity.Phases.Adapters
 
             EventBus.Subscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
 
+            EventBus.Subscribe<PositionsResetUIEvent>(OnAllPositionsReset);
+
             UI.HideTradeOfferButton();
 
             VisualsUI.ResetResourceCardsInParent(UI.PlayerUIPanel.ResourceCardsPanel);
@@ -37,11 +39,17 @@ namespace Catan.Unity.Phases.Adapters
 
         private void OnVertexClicked(VertexClickedUIEvent signal)
         {
+            EventsHandler.ResetSelectedPositions();
+            EventsHandler.SetSelectedVertexId(signal.VertexId);
+
             EventsHandler.Execute(EnumCommandType.VertexClickedCommand, new { vertexId = signal.VertexId });
         }
 
         private void OnEdgeClicked(EdgeClickedUIEvent signal)
         {
+            EventsHandler.ResetSelectedPositions();
+            EventsHandler.SetSelectedEdgeId(signal.EdgeId);
+
             EventsHandler.Execute(EnumCommandType.EdgeClickedCommand, new{ edgeId = signal.EdgeId });
         }
 
@@ -57,6 +65,13 @@ namespace Catan.Unity.Phases.Adapters
             }
         }
 
+        private void OnAllPositionsReset(PositionsResetUIEvent signal)
+        {
+            UI.MainUIPanel.BuildVillageButton.gameObject.SetActive(false);
+            UI.MainUIPanel.BuildRoadButton.gameObject.SetActive(false);
+            UI.MainUIPanel.UpgradeVillageButton.gameObject.SetActive(false);
+        }
+
         private void OnPositionClicked(BuildOptionsSentUIEvent signal)
         {
             UI.MainUIPanel.SetButtonVisibility(EnumMainUIButtons.BuildVillage, signal.CanBuildVillage);
@@ -69,9 +84,9 @@ namespace Catan.Unity.Phases.Adapters
             if (!signal.IsLeftClicked)
                 return;
 
-            EventsHandler.Execute(EnumCommandType.ResourceCardSelectedCommand, new { isToggled = !signal.IsToggled, type = signal.Type });
+            EventsHandler.Execute(EnumCommandType.ResourceCardSelectedCommand, new { isSelected = !signal.IsSelected, type = signal.Type });
 
-            if (signal.IsToggled)
+            if (signal.IsSelected)
             {
                 EventBus.Publish(new ResourceCardVisualStateChangedUIEvent(signal.VisualResourceCardId, signal.Location, Data.EnumResourceCardVisualState.None));
             }
@@ -100,6 +115,9 @@ namespace Catan.Unity.Phases.Adapters
             EventBus.Unsubscribe<BuildOptionsSentUIEvent>(OnPositionClicked);
 
             EventBus.Unsubscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
+
+            EventBus.Unsubscribe<PositionsResetUIEvent>(OnAllPositionsReset);
+
         }
     }
 }

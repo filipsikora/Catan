@@ -1,7 +1,8 @@
-﻿using Catan.Unity.Helpers;
+﻿using Catan.Shared.Data;
 using Catan.Unity.Data;
+using Catan.Unity.Helpers;
+using Catan.Unity.InternalUIEvents;
 using Catan.Unity.Panels;
-using Catan.Shared.Data;
 
 namespace Catan.Unity.Phases.Binders
 {
@@ -23,17 +24,50 @@ namespace Catan.Unity.Phases.Binders
 
             UI.MainUIPanel.Bind(EnumMainUIButtons.BuildVillage, () =>
             {
-                EventsHandler.Execute(EnumCommandType.BuildVillageCommand);
+                Bus.Publish(new PositionsResetUIEvent());
+
+                if (EventsHandler.SelectedVertexId == null)
+                {
+                    Bus.Publish(new LogMessageUIEvent(EnumLogTypes.Info, "First select a vertex"));
+
+                    return;
+                }
+
+                EventsHandler.Execute(EnumCommandType.BuildVillageCommand, new { vertexId = EventsHandler.SelectedVertexId });
+
+                EventsHandler.ResetSelectedPositions();
             });
 
             UI.MainUIPanel.Bind(EnumMainUIButtons.BuildRoad, () =>
             {
-                EventsHandler.Execute(EnumCommandType.BuildRoadCommand);
+                Bus.Publish(new PositionsResetUIEvent());
+
+                if (EventsHandler.SelectedEdgeId == null)
+                {
+                    Bus.Publish(new LogMessageUIEvent(EnumLogTypes.Info, "First select a road"));
+
+                    return;
+                }
+
+                EventsHandler.Execute(EnumCommandType.BuildRoadCommand, new {edgeId = EventsHandler.SelectedEdgeId });
+
+                EventsHandler.ResetSelectedPositions();
             });
 
             UI.MainUIPanel.Bind(EnumMainUIButtons.UpgradeVillage, () =>
             {
-                EventsHandler.Execute(EnumCommandType.UpgradeVillageCommand);
+                Bus.Publish(new PositionsResetUIEvent());
+
+                if (EventsHandler.SelectedVertexId == null)
+                {
+                    Bus.Publish(new LogMessageUIEvent(EnumLogTypes.Info, "First select a vertex"));
+
+                    return;
+                }
+
+                EventsHandler.Execute(EnumCommandType.UpgradeVillageCommand, new { vertexId = EventsHandler.SelectedVertexId });
+
+                EventsHandler.ResetSelectedPositions();
             });
 
             UI.MainUIPanel.Bind(EnumMainUIButtons.DevelopmentCards, () =>

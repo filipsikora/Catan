@@ -32,7 +32,7 @@ namespace Catan.Unity.Phases.Adapters
 
         private void OnDevCardClicked(DevelopmentCardClickedUIEvent signal)
         {
-            EventsHandler.Execute(EnumCommandType.DevelopmentCardClickedPlayedCommand, new { cardId = signal.CardId });
+            EventsHandler.Execute(EnumCommandType.DevelopmentCardClickedPlayedCommand, new { developmentCardId = signal.CardId });
         }
 
         private async Task LoadData()

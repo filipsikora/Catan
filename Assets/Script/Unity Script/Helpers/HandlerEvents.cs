@@ -18,6 +18,11 @@ namespace Catan.Unity.Helpers
 
         private AdapterGameFlow _gameFlow;
 
+        // temporary 
+
+        public int? SelectedVertexId;
+        public int? SelectedEdgeId;
+
         public HandlerEvents(EventsTranslator translator, EventBus bus, GameClient client, Guid gameId, AdapterGameFlow gameFlow)
         {
             _translator = translator;
@@ -85,9 +90,27 @@ namespace Catan.Unity.Helpers
 
             catch (Exception ex)
             {
-                UnityEngine.Debug.Log($"Query error: {queryName}");
+                UnityEngine.Debug.Log($"Query error: {queryName}, {ex.Message}");
                 return default;
             }
+        }
+
+        // temporary
+
+        public void SetSelectedVertexId(int vertexId)
+        {
+            SelectedVertexId = vertexId;
+        }
+
+        public void SetSelectedEdgeId(int edgeId)
+        {
+            SelectedEdgeId = edgeId;
+        }
+
+        public void ResetSelectedPositions()
+        {
+            SelectedEdgeId = null;
+            SelectedVertexId = null;
         }
     }
 }

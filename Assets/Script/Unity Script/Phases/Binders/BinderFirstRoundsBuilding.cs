@@ -2,6 +2,7 @@
 using Catan.Unity.Data;
 using Catan.Unity.Panels;
 using Catan.Shared.Data;
+using Catan.Unity.InternalUIEvents;
 
 namespace Catan.Unity.Phases.Binders
 {
@@ -13,12 +14,34 @@ namespace Catan.Unity.Phases.Binders
         {
             UI.MainUIPanel.Bind(EnumMainUIButtons.BuildFreeVillage, () =>
             {
-                EventsHandler.Execute(EnumCommandType.BuildVillageCommand);
+                Bus.Publish(new PositionsResetUIEvent());
+
+                if (EventsHandler.SelectedVertexId == null)
+                {
+                    Bus.Publish(new LogMessageUIEvent(EnumLogTypes.Info, "First select a vertex"));
+
+                    return;
+                }
+
+                EventsHandler.Execute(EnumCommandType.BuildVillageCommand, new { vertexId = EventsHandler.SelectedVertexId });
+
+                EventsHandler.ResetSelectedPositions();
             });
 
             UI.MainUIPanel.Bind(EnumMainUIButtons.BuildFreeRoad, () =>
             {
-                EventsHandler.Execute(EnumCommandType.BuildRoadCommand);
+                Bus.Publish(new PositionsResetUIEvent());
+
+                if (EventsHandler.SelectedEdgeId == null)
+                {
+                    Bus.Publish(new LogMessageUIEvent(EnumLogTypes.Info, "First select a road"));
+
+                    return;
+                }
+
+                EventsHandler.Execute(EnumCommandType.BuildRoadCommand, new { edgeId = EventsHandler.SelectedEdgeId });
+
+                EventsHandler.ResetSelectedPositions();
             });
 
             UI.MainUIPanel.Bind(EnumMainUIButtons.NextTurn, () =>
