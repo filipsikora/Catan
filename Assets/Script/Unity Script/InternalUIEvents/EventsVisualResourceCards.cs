@@ -10,7 +10,7 @@ namespace Catan.Unity.InternalUIEvents
         public EnumResourceType Type { get; }
         public EnumResourceCardLocation Location { get; }
         public bool IsLeftClicked { get; }
-        public bool IsToggled { get; }
+        public bool IsSelected { get; }
 
         public ResourceCardClickedUIEvent(int visualResourceCardId, EnumResourceType type, EnumResourceCardLocation location, bool isLeftClicked, bool isToggled)
         {
@@ -18,7 +18,7 @@ namespace Catan.Unity.InternalUIEvents
             Type = type;
             Location = location;
             IsLeftClicked = isLeftClicked;
-            IsToggled = isToggled;
+            IsSelected = isToggled;
         }
     }
 

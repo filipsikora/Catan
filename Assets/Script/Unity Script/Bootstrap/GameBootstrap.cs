@@ -87,13 +87,18 @@ namespace Catan.Unity.Bootstrap
             var desertHexId = InitializeBuilderMap(board);
             var controllerResourceCards = InitializeVisualControllers(gameId);
 
-            _bus.Publish(new RobberMovedUIEvent(desertHexId));
-            _bus.Publish(new TurnNumberChangedUIEvent(1));
-            _bus.Publish(new PlayerStateChangedUIEvent(firstPlayerId + 1));
+            ApplyInitialState(desertHexId, firstPlayerId);
 
             _clickHandler.Initialize(_bus);
             _uiManager.Initialize(_bus, controllerResourceCards, _boardManager);
             _gameFlow.Initialize(_eventsHandler);
+        }
+
+        private void ApplyInitialState(int desertHexId, int firstPlayerId) // this will need to be fixed later on with the controllers fix
+        {
+            _bus.Publish(new RobberMovedUIEvent(desertHexId));
+            _bus.Publish(new TurnNumberChangedUIEvent(1));
+            _bus.Publish(new PlayerStateChangedUIEvent(firstPlayerId));
         }
 
         private int InitializeBuilderMap(BoardDto boardDto)

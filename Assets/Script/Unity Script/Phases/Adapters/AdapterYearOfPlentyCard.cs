@@ -36,12 +36,12 @@ namespace Catan.Unity.Phases.Adapters
         {
             if (signal.IsLeftClicked)
             {
-                EventsHandler.Execute(EnumCommandType.ResourceCardSelectedCommand, new { isToggled = true, type = signal.Type });
+                EventsHandler.Execute(EnumCommandType.ResourceCardSelectedCommand, new { isSelected = true, type = signal.Type });
             }
 
             else
             {
-                EventsHandler.Execute(EnumCommandType.ResourceCardSelectedCommand, new { isToggled = false, type = signal.Type });
+                EventsHandler.Execute(EnumCommandType.ResourceCardSelectedCommand, new { isSelected = false, type = signal.Type });
             }
         }
 

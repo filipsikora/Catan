@@ -36,9 +36,9 @@ namespace Catan.Unity.Phases.Adapters
             if (!signal.IsLeftClicked)
                 return;
 
-            EventsHandler.Execute(EnumCommandType.ResourceCardSelectedCommand, new { isToggled = signal.IsToggled, type = signal.Type });
+            EventsHandler.Execute(EnumCommandType.ResourceCardSelectedCommand, new { isSelected = signal.IsSelected, type = signal.Type });
 
-            if (signal.IsToggled)
+            if (signal.IsSelected)
             {
                 EventBus.Publish(new ResourceCardVisualStateChangedUIEvent(signal.VisualResourceCardId, signal.Location, Data.EnumResourceCardVisualState.None));
             }
@@ -63,7 +63,7 @@ namespace Catan.Unity.Phases.Adapters
        
         private async Task LoadData(int playerId)
         {
-            var snapshot = await EventsHandler.Query<PlayerCardsDto>(EnumQueryName.PlayerCards, playerId);
+            var snapshot = await EventsHandler.Query<PlayerCardsDto>(EnumQueryName.PlayerCards, new { playerId });
             UI.CardDiscardPanel.ShowForPlayer(snapshot);
         }
 

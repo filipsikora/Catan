@@ -15,8 +15,6 @@ namespace Catan.Unity.Phases.Adapters
 
         public override void OnEnter()
         {
-            UnityEngine.Debug.Log("chuj");
-
             _binder = new BinderFirstRoundBuildings(UI, EventBus, EventsHandler);
             _binder.Bind();
 
@@ -33,23 +31,36 @@ namespace Catan.Unity.Phases.Adapters
             EventBus.Subscribe<EdgeClickedUIEvent>(OnEdgeClicked);
 
             EventBus.Subscribe<RoadPlacedUIEvent>(OnRoadPlaced);
+
+            EventBus.Subscribe<PositionsResetUIEvent>(OnAllPositionsReset);
         }
 
         private void OnVertexClicked(VertexClickedUIEvent signal)
         {
+            EventsHandler.ResetSelectedPositions();
+            EventsHandler.SetSelectedVertexId(signal.VertexId);
+
             EventsHandler.Execute(EnumCommandType.VertexClickedCommand, new { vertexId = signal.VertexId });
         }
 
         private void OnEdgeClicked(EdgeClickedUIEvent signal)
         {
+            EventsHandler.ResetSelectedPositions();
+            EventsHandler.SetSelectedEdgeId(signal.EdgeId);
+
             EventsHandler.Execute(EnumCommandType.EdgeClickedCommand, new { edgeId = signal.EdgeId });
         }
 
         private void OnPositionClicked(BuildOptionsSentUIEvent signal)
         {
-            UnityEngine.Debug.Log($"uievent received, road = {signal.CanBuildRoad}, village = {signal.CanBuildVillage}, town = {signal.CanUpgradeVillage}");
             UI.MainUIPanel.BuildFreeVillageButton.gameObject.SetActive(signal.CanBuildVillage);
             UI.MainUIPanel.BuildFreeRoadButton.gameObject.SetActive(signal.CanBuildRoad);
+        }
+
+        private void OnAllPositionsReset(PositionsResetUIEvent signal)
+        {
+            UI.MainUIPanel.BuildFreeRoadButton.gameObject.SetActive(false);
+            UI.MainUIPanel.BuildFreeVillageButton.gameObject.SetActive(false);
         }
 
         private void OnRoadPlaced(RoadPlacedUIEvent signal)
@@ -66,6 +77,12 @@ namespace Catan.Unity.Phases.Adapters
             EventBus.Unsubscribe<BuildOptionsSentUIEvent>(OnPositionClicked);
 
             EventBus.Unsubscribe<RoadPlacedUIEvent>(OnRoadPlaced);
+
+            EventBus.Unsubscribe<VertexClickedUIEvent>(OnVertexClicked);
+            EventBus.Unsubscribe<EdgeClickedUIEvent>(OnEdgeClicked);
+
+            EventBus.Unsubscribe<PositionsResetUIEvent>(OnAllPositionsReset);
+
         }
     }
 }

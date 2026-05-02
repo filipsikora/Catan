@@ -19,6 +19,7 @@ namespace Catan.Unity.Helpers
                 EnumQueryName.ResourcesAvailability => "resources-availability",
                 EnumQueryName.TradeOfferData => "trade-offer-data",
                 EnumQueryName.VictimCards => "victim-cards",
+                EnumQueryName.SomePlayersNames => "some-players-names",
                 _ => throw new Exception($"Unknown query: {queryName}")
             };
         }

@@ -14,7 +14,7 @@ namespace Catan.Unity.Visuals.Models
         public int VisualResourceCardId;
         public EnumResourceType Type;
         public EnumResourceCardVisualState State = EnumResourceCardVisualState.None;
-        public bool IsToggled = false;
+        public bool IsSelected = false;
 
         private EventBus _bus;
         private ControllerResourceCards _controller;
@@ -33,7 +33,7 @@ namespace Catan.Unity.Visuals.Models
         {
             bool isLeftClicked = eventData.button == PointerEventData.InputButton.Left;
 
-            _bus.Publish(new ResourceCardClickedUIEvent(VisualResourceCardId, Type, Location, isLeftClicked, IsToggled));
+            _bus.Publish(new ResourceCardClickedUIEvent(VisualResourceCardId, Type, Location, isLeftClicked, IsSelected));
         }
 
         public void MoveUp()

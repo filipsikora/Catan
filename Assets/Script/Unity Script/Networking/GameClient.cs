@@ -44,6 +44,8 @@ namespace Catan.Unity.Networking
 
             var result = JsonConvert.DeserializeObject<CreateGameResponseDto>(responseJson) ?? throw new Exception("Failed to deserialize CreateGameResponseDto");
 
+            UnityEngine.Debug.Log($"{result.FirstPlayerId}");
+
             return result;
         }
 

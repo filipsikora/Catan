@@ -48,14 +48,14 @@ namespace Catan.Unity.Phases.Adapters
 
             if (signal.Location == EnumResourceCardLocation.DesiredTrade)
             {
-                EventsHandler.Execute(EnumCommandType.ResourceCardSelectedCommand, new { isToggled = true, type = signal.Type });
+                EventsHandler.Execute(EnumCommandType.ResourceCardSelectedCommand, new { isSelected = true, type = signal.Type });
 
                 UI.TradeOfferPanel.DrawVisualResourceCardInReview(signal.Type);
             }
 
             else
             {
-                EventsHandler.Execute(EnumCommandType.ResourceCardSelectedCommand, new { isToggled = false , type = signal.Type });
+                EventsHandler.Execute(EnumCommandType.ResourceCardSelectedCommand, new { isSelected = false , type = signal.Type });
 
                 UI.TradeOfferPanel.DestroyVisualResourceCardInReview(signal.Type);
             }
@@ -63,7 +63,7 @@ namespace Catan.Unity.Phases.Adapters
 
         private void OnPlayerChosen(PlayerClickedUIEvent signal)
         {
-            EventsHandler.Execute(EnumCommandType.TradeOfferCanceledCommand, signal.PlayerId);
+            EventsHandler.Execute(EnumCommandType.TradePartnerChosenCommand, new { playerId = signal.PlayerId });
         }
         private async Task LoadData()
         {
