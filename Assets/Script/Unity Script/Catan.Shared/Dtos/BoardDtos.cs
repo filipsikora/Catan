@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Catan.Shared.Data;
+using System.Collections.Generic;
 
 namespace Catan.Shared.Dtos
 {
@@ -26,7 +27,7 @@ namespace Catan.Shared.Dtos
     {
         public int HexId { get; set; }
         public int? HexNumber { get; set; }
-        public string? FieldType { get; set; }
+        public EnumFieldTypes? FieldType { get; set; }
         public int Q { get; set; }
         public int R { get; set; }
     }
@@ -34,7 +35,7 @@ namespace Catan.Shared.Dtos
     public class PortDto
     {
         public int EdgeId { get; set; }
-        public string? Type { get; set; }
+        public EnumResourceType? Type { get; set; }
     }
 
     public class BoardDto
@@ -43,6 +44,31 @@ namespace Catan.Shared.Dtos
         public List<EdgeDto> Edges { get; set; }
         public List<HexDto> Hexes { get; set; }
         public List<PortDto> Ports { get; set; }
-        public int BlockedHexId { get; set; }
+        public int? BlockedHexId { get; set; }
+    }
+
+    public class FullVertexDto
+    {
+        public int VertexId { get; set; }
+        public List<CornerDto> Corners { get; set; }
+        public int? OwnerId { get; set; }
+        public EnumBuildings Building { get; set; }
+    }
+
+    public class FullEdgeDto
+    {
+        public int EdgeId { get; set; }
+        public int VertexAId { get; set; }
+        public int VertexBId { get; set; }
+        public int? OwnerId { get; set; }
+    }
+
+    public class FullBoardDto
+    {
+        public List<FullVertexDto> Vertices { get; set; }
+        public List<FullEdgeDto> Edges { get; set; }
+        public List<HexDto> Hexes { get; set; }
+        public List<PortDto> Ports { get; set; }
+        public int? BlockedHexId { get; set; }
     }
 }

@@ -16,22 +16,28 @@ namespace Catan.Unity.Networking
         private readonly HttpClient _http;
         private readonly string _baseUrl = "http://localhost:5000/games";
 
+        // for testing
+        public Guid GameId { get; set; }
+        public Guid? PlayerToken { get; set; }
+
         public GameClient()
         {
             _http = new HttpClient();
         }
 
-        public async Task<CreateGameResponseDto> CreateGame()
+        public async Task<JoinGameResponseDto> JoinGame()
         {
-            var dto = new CreateGameRequestDto
+            var dto = new JoinGameRequestDto
             {
-                GameType = EnumGames.Catan.ToString()
+                GameId = GameId,
+                PlayerToken = PlayerToken,
+                PlayerName = "ClientOne"
             };
 
             var json = JsonConvert.SerializeObject(dto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await _http.PostAsync($"{_baseUrl}/create", content);
+            var response = await _http.PostAsync($"{_baseUrl}/join", content);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -42,9 +48,7 @@ namespace Catan.Unity.Networking
 
             var responseJson = await response.Content.ReadAsStringAsync();
 
-            var result = JsonConvert.DeserializeObject<CreateGameResponseDto>(responseJson) ?? throw new Exception("Failed to deserialize CreateGameResponseDto");
-
-            UnityEngine.Debug.Log($"{result.FirstPlayerId}");
+            var result = JsonConvert.DeserializeObject<JoinGameResponseDto>(responseJson) ?? throw new Exception("Failed to deserialize JoinGameResponseDto");
 
             return result;
         }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Catan.Shared.Data;
 
 namespace Catan.Shared.Dtos
 {
@@ -13,6 +14,7 @@ namespace Catan.Shared.Dtos
         public int ExtraPoints { get; set; }
     }
 
+
     public sealed class PlayerCardsDto
     {
         public Dictionary<string, int> PlayerResources;
@@ -26,7 +28,7 @@ namespace Catan.Shared.Dtos
     public sealed class DevelopmentCardDto
     {
         public int Id { get; set; }
-        public string Type { get; set; }
+        public EnumDevelopmentCardTypes Type { get; set; }
         public bool IsNew { get; set; }
         public bool IsPlayable { get; set; }
     }

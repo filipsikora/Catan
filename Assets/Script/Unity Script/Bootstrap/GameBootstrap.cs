@@ -1,7 +1,10 @@
-﻿using Catan.Shared.Data;
+﻿using BGS.Shared.Dtos;
+using Catan.Shared.Data;
 using Catan.Shared.Dtos;
+using Catan.Unity.Caches;
 using Catan.Unity.Helpers;
 using Catan.Unity.InternalUIEvents;
+using Catan.Unity.Mappers;
 using Catan.Unity.Networking;
 using Catan.Unity.Panels;
 using Catan.Unity.Phases.Controllers;
@@ -35,6 +38,9 @@ namespace Catan.Unity.Bootstrap
         private AdapterPhaseTransition _phaseTransition;
         public Dictionary<EnumResourceType, Color> PortColorLookup { get; private set; }
 
+        public GameCache GameCache;
+        public ConnectionCache ConnectionCache;
+
 
         private async void Awake()
         {
@@ -52,21 +58,15 @@ namespace Catan.Unity.Bootstrap
 
         async void Start()
         {
-            Debug.Log("Creating game");
-
             _bus = new EventBus();
             _client = new GameClient();
 
             Guid gameId;
-            int firstPlayerId;
+            JoinGameResponseDto joinGameResponse;
 
             try
             {
-                var createGameResponse = await _client.CreateGame();
-                gameId = createGameResponse.GameId;
-                firstPlayerId = createGameResponse.FirstPlayerId;
-
-                Debug.Log($"Game created: {gameId}");
+                joinGameResponse = await _client.JoinGame();
             }
 
             catch (Exception ex)
@@ -80,9 +80,11 @@ namespace Catan.Unity.Bootstrap
 
             _eventsTranslator = new EventsTranslator();
 
-            _eventsHandler = new HandlerEvents(_eventsTranslator, _bus, _client, gameId, _gameFlow);
+            _eventsHandler = new HandlerEvents(_eventsTranslator, _bus, _client, joinGameResponse.GameId, _gameFlow);
 
-            var board = await _eventsHandler.Query<BoardDto>(EnumQueryName.Board);
+            var joinPayload = joinGameResponse.Payload.ToObject<GameStatePerPlayerDto>();
+
+            CreateCaches(joinPayload);
 
             var desertHexId = InitializeBuilderMap(board);
             var controllerResourceCards = InitializeVisualControllers(gameId);
@@ -134,6 +136,14 @@ namespace Catan.Unity.Bootstrap
             new ControllerTurnVisuals(_bus, _uiManager.MainUIPanel);
 
             return controllerResourceCards;
+        }
+
+        private void CreateCaches(GameStatePerPlayerDto joinState)
+        {
+            var gameFlow = joinState.GameFlow;
+            ConnectionCache = new ConnectionCache(joinState.PlayerToken, joinState.GameId);
+            GameCache = new GameCache(BoardMappers.MapBoardStateToModel(joinState), PlayerMappers.MapPlayerDtoToModel(joinState), PlayerMappers.MapOtherPlayersDtoToModel(joinState.OtherPlayers), 
+                gameFlow.TurnNumber, gameFlow.RolledNumber, gameFlow.CurrentPlayerId, gameFlow.KnightChampionId, gameFlow.RoadChampionId, gameFlow.CurrentPhase);
         }
     }
 }

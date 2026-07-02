@@ -4,9 +4,9 @@ namespace Catan.Shared.Dtos.UiMessages
 {
     public sealed class BuildOptionsSentDto : IUiMessageDto
     {
-        public bool CanBuildVillage { get; set; }
-        public bool CanBuildRoad { get; set; }
-        public bool CanUpgradeVillage { get; set; }
+        public bool CanBuildVillage { get; }
+        public bool CanBuildRoad { get; }
+        public bool CanUpgradeVillage { get; }
 
         public BuildOptionsSentDto(bool canVillage, bool canRoad, bool canTown)
         {
@@ -18,8 +18,8 @@ namespace Catan.Shared.Dtos.UiMessages
 
     public sealed class VillagePlacedDto : IUiMessageDto
     {
-        public int VertexId { get; set; }
-        public int OwnerId { get; set; }
+        public int VertexId;
+        public int OwnerId;
         public VillagePlacedDto(int vertexId, int ownerId)
         {
             VertexId = vertexId;
@@ -29,8 +29,8 @@ namespace Catan.Shared.Dtos.UiMessages
 
     public sealed class RoadPlacedDto : IUiMessageDto
     {
-        public int EdgeId { get; set; }
-        public int OwnerId { get; set; }
+        public int EdgeId;
+        public int OwnerId;
         public RoadPlacedDto(int edgeId, int ownerId)
         {
             EdgeId = edgeId;
@@ -40,8 +40,8 @@ namespace Catan.Shared.Dtos.UiMessages
 
     public sealed class TownPlacedDto : IUiMessageDto
     {
-        public int VertexId { get; set; }
-        public int OwnerId { get; set; }
+        public int VertexId;
+        public int OwnerId;
         public TownPlacedDto(int vertexId, int ownerId)
         {
             VertexId = vertexId;

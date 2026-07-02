@@ -28,6 +28,10 @@
         DiscardContextInvalid,
         NotRoadsLeft,
         NotEnoughResourcesInBank,
-        NotEnoughResources
+        NotEnoughResources,
+        InitialVillageBuilt,
+        InitialRoadBuilt,
+        InitialRoundNotFinished,
+        NotCorrectPhase
     }
 }

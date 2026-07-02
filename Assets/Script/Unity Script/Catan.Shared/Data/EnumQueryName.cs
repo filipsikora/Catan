@@ -10,6 +10,7 @@
         CurrentPlayerDevCards,
         NotCurrentPlayerNames,
         TradeOfferData,
-        SomePlayersNames
+        SomePlayersNames,
+        FullPlayer
     }
 }

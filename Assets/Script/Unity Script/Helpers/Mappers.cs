@@ -1,7 +1,10 @@
 ﻿using Catan.Shared.Data;
+using Catan.Shared.Dtos;
+using Catan.Unity.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Catan.Models;
 
 namespace Catan.Unity.Helpers
 {
@@ -85,5 +88,6 @@ namespace Catan.Unity.Helpers
 
             return logType;
         }
+
     }
 }
