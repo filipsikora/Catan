@@ -1,7 +1,6 @@
 ﻿using BGS.Shared.Dtos;
 using Catan.Shared.Data;
 using Catan.Shared.Dtos.UiMessages;
-using Catan.Shared.Dtos.UIMessages;
 using Catan.Unity.Interfaces;
 using Catan.Unity.InternalUIEvents;
 using Newtonsoft.Json.Linq;

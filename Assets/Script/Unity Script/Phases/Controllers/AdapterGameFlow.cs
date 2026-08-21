@@ -2,6 +2,7 @@
 using Catan.Shared.Data;
 using Catan.Unity.Panels;
 using Catan.Unity.Phases.Adapters;
+using Catan.Unity.Caches;
 
 namespace Catan.Unity.Phases.Controllers
 {
@@ -11,12 +12,14 @@ namespace Catan.Unity.Phases.Controllers
         private readonly ManagerUI _ui;
         private readonly EventBus _bus;
         private HandlerEvents _eventsHandler;
+        private GameCache _gameCache;
 
-        public AdapterGameFlow(ManagerUI ui, EventBus bus, AdapterPhaseTransition phases)
+        public AdapterGameFlow(ManagerUI ui, EventBus bus, AdapterPhaseTransition phases, GameCache gameCache)
         {
             _ui = ui;
             _bus = bus;
             _phases = phases;
+            _gameCache = gameCache;
         }
 
         public void Initialize(HandlerEvents eventsHandler)
@@ -31,7 +34,7 @@ namespace Catan.Unity.Phases.Controllers
             switch (nextPhase)
             {
                 case EnumGamePhases.BankTrade:
-                    _phases.TransitionTo(new AdapterBankTrade(_ui, _bus, _eventsHandler));
+                    _phases.TransitionTo(new AdapterBankTrade(_ui, _bus, _eventsHandler, _gameCache.GameFlow.Bank));
                     break;
 
                 case EnumGamePhases.NormalRound:
@@ -55,7 +58,7 @@ namespace Catan.Unity.Phases.Controllers
                     break;
 
                 case EnumGamePhases.CardDiscarding:
-                    _phases.TransitionTo(new AdapterCardDiscarding(_ui, _bus, _eventsHandler));
+                    _phases.TransitionTo(new AdapterCardDiscarding(_ui, _bus, _eventsHandler, _gameCache.MyPlayer.Resources));
                     break;
 
                 case EnumGamePhases.CardStealing:

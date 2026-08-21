@@ -4,8 +4,8 @@ namespace Catan.Unity.Caches
 {
     public class ConnectionCache
     {
-        Guid? PlayerToken { get; set; }
-        Guid? GameId { get; set; }
+        public Guid? PlayerToken { get; set; }
+        public Guid? GameId { get; set; }
 
         public ConnectionCache(Guid? playerToken, Guid? gameId)
         {

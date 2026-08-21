@@ -1,13 +1,11 @@
 ﻿using Catan.Shared.Data;
 using BGS.Shared.Dtos;
-using Catan.Unity.Helpers;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using BGS.Shared.Data;
 
 namespace Catan.Unity.Networking
 {

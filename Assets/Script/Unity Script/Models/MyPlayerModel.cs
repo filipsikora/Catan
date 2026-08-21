@@ -1,5 +1,6 @@
 ﻿using Catan.Shared.Data;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Catan.Unity.Models
 {
@@ -15,8 +16,9 @@ namespace Catan.Unity.Models
         public int VictoryPoints { get; set; }
         public int ExtraPoints { get; set; }
 
-        public IReadOnlyList<DevCardModel> DevCards { get; set; }
+        public List<DevCardModel> DevCards { get; set; }
         public Dictionary<EnumResourceType, int> Resources { get; set; }
+        public int DevCardNumber { get; set; }
 
         public MyPlayerModel(int playerId, string name, Dictionary<string, int> buildingsLeft, int points, int knights, int victoryPoints, int extraPoints, IReadOnlyList<DevCardModel> devCards, Dictionary<EnumResourceType, int> resources)
         {
@@ -27,8 +29,9 @@ namespace Catan.Unity.Models
             Knights = knights;
             VictoryPoints = victoryPoints;
             ExtraPoints = extraPoints;
-            DevCards = devCards;
+            DevCards = devCards.ToList();
             Resources = resources;
+            DevCardNumber = 0;
         }
     }
 }

@@ -33,6 +33,8 @@ namespace Catan.Shared.Dtos
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        public int Points { get; set; }
+        public int ExtraPoints { get; set; }
 
         public int ResourceCardsNumber { get; set; }
         public int DevCardsNumber { get; set; }

@@ -1,32 +1,12 @@
 ﻿using Catan.Shared.Data;
-using Catan.Shared.Dtos;
-using Catan.Unity.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.Catan.Models;
 
 namespace Catan.Unity.Helpers
 {
     public static class Mappers
     {
-        public static string MapEnumQueryToString(EnumQueryName queryName)
-        {
-            return queryName switch
-            {
-                EnumQueryName.Board => "board",
-                EnumQueryName.CurrentPlayerDevCards => "current-player-dev-cards",
-                EnumQueryName.NotCurrentPlayerNames => "not-current-player-names",
-                EnumQueryName.PlayerCards => "player-cards",
-                EnumQueryName.PlayerData => "player-data",
-                EnumQueryName.ResourcesAvailability => "resources-availability",
-                EnumQueryName.TradeOfferData => "trade-offer-data",
-                EnumQueryName.VictimCards => "victim-cards",
-                EnumQueryName.SomePlayersNames => "some-players-names",
-                _ => throw new Exception($"Unknown query: {queryName}")
-            };
-        }
-
         public static Dictionary<EnumResourceType, T> MapStringResourcesToEnumInDictionary<T>(Dictionary<string, T> resourcesString)
         {
             return resourcesString.ToDictionary(
@@ -56,16 +36,7 @@ namespace Catan.Unity.Helpers
             return field;
         }
 
-        public static EnumDevelopmentCardTypes MapStringDevCardToEnum(string? devCardString)
-        {
-            if (devCardString == null)
-                throw new Exception($"DevCard: {devCardString} is empty");
 
-            if (!Enum.TryParse<EnumDevelopmentCardTypes>(devCardString, out var devCard))
-                throw new Exception($"Failed to parse field: {devCardString}");
-
-            return devCard;
-        }
 
         public static ConditionFailureReason MapStringFailureReasonToEnum(string? failureReasonString)
         {

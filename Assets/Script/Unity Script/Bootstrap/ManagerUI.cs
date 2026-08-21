@@ -24,11 +24,13 @@ namespace Catan.Unity.Panels
             
         public void Initialize(EventBus bus, ControllerResourceCards controller, BoardManager boardManager)
         {
-            factoryResourceCards.Initialize(bus, controller, boardManager);
+            factoryResourceCards.Initialize(bus, boardManager);
             factoryDevCards.Initialize(bus);
+
+            BankTradePanel.Initialize(controller);
+
             VictimSelectorPanel.Initialize(bus);
             TradeOfferPanel.Initialize(bus);
-
         }
 
         public void UpdateTurnCounter(int turn) => MainUIPanel.UpdateTurnCounter(turn);

@@ -23,8 +23,8 @@ namespace Catan.Unity.Mappers
 
         public static List<OtherPlayerModel> MapOtherPlayersDtoToModel(OtherPlayersDto otherPlayersList)
         {
-            return otherPlayersList.OtherPlayers.Select(otherPlayer => new OtherPlayerModel(otherPlayer.Id, otherPlayer.Name, otherPlayer.ResourceCardsNumber, otherPlayer.ResourceCardsNumber, 
-                otherPlayer.VictoryCardsPlayed, otherPlayer.KnightCardsPlayed)).ToList();
+            return otherPlayersList.OtherPlayers.Select(otherPlayer => new OtherPlayerModel(otherPlayer.Id, otherPlayer.Name, otherPlayer.Points, otherPlayer.ExtraPoints, otherPlayer.ResourceCardsNumber, 
+                otherPlayer.ResourceCardsNumber, otherPlayer.VictoryCardsPlayed, otherPlayer.KnightCardsPlayed)).ToList();
         }
     }
 }

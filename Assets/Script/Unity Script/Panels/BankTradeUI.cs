@@ -7,6 +7,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Catan.Shared.Dtos;
+using Catan.Unity.Visuals.Controllers;
+using System.Collections.Generic;
 
 namespace Catan.Unity.Panels
 {
@@ -18,29 +20,32 @@ namespace Catan.Unity.Panels
         public TextMeshProUGUI TextRatio;
 
         public FactoryResourceCards ResourceCardFactory;
+        private ControllerResourceCards _resourceCardsController;
 
         public Button CancelTradeButton;
-
 
         public void Awake()
         {
             RegisterButton(EnumBankTradeUIButtons.CancelBankTrade, CancelTradeButton);
         }
 
-        public void Show(ResourcesAvailabilityDto resourcesAvailabilitySnapshot)
+        public void Initialize(ControllerResourceCards resourceCardsController)
         {
-            VisualsUI.ClearContainer(OfferedCardsContainer);
-            VisualsUI.ClearContainer(DesiredCardsContainer);
+            _resourceCardsController = resourceCardsController;
+        }
 
-            var resourcesAvailability = Mappers.MapStringResourcesToEnumInDictionary<bool>(resourcesAvailabilitySnapshot.ResourcesAvailability);
+        public void Show(Dictionary<EnumResourceType, int> resources)
+        {
+            VisualsUI.ClearContainer(OfferedCardsContainer, _resourceCardsController);
+            VisualsUI.ClearContainer(DesiredCardsContainer, _resourceCardsController);
 
-            foreach (var (key, value) in resourcesAvailability)
+            foreach (var (key, value) in resources)
             {
-                ResourceCardFactory.DrawResourceCard(key, EnumResourceCardLocation.OfferedTrade, OfferedCardsContainer);
+                ResourceCardFactory.Create(key, EnumResourceCardLocation.OfferedTrade, OfferedCardsContainer, _resourceCardsController);
 
-                if (value == true)
+                if (value != 0)
                 {
-                    ResourceCardFactory.DrawResourceCard(key, EnumResourceCardLocation.DesiredTrade, DesiredCardsContainer);
+                    ResourceCardFactory.Create(key, EnumResourceCardLocation.DesiredTrade, DesiredCardsContainer, _resourceCardsController);
                 }
             }
         }

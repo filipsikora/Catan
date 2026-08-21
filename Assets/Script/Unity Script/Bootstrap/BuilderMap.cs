@@ -7,8 +7,9 @@ using System.Linq;
 using TMPro;
 using Unity.Helpers;
 using UnityEngine;
-using Catan.Shared.Dtos;
-using Catan.Unity.Helpers;
+using Catan.Unity.Models;
+using Unity.Catan.Models;
+using Catan.Unity.Mappers;
 
 namespace Catan.Unity
 {
@@ -30,26 +31,24 @@ namespace Catan.Unity
         public Dictionary<int, GameObject> EdgeObjects = new();
         public Dictionary<int, GameObject> HexObjects = new();
 
-        public Dictionary<int, VertexDto> vertexLookup = new();
-        public Dictionary<int, EdgeDto> edgeLookup = new();
+        private BoardModel _board;
 
-        public void BuildMap(BoardDto board)
+        public void BuildMap(BoardModel boardModel)
         {
-            vertexLookup = board.Vertices.ToDictionary(v => v.VertexId);
-            edgeLookup = board.Edges.ToDictionary(e => e.EdgeId);
+            _board = boardModel;
 
-            DrawEdges(board);
-            DrawVertices(board);
-            DrawHexes(board);
-            DrawPorts(board);
+            DrawEdges();
+            DrawVertices();
+            DrawHexes();
+            DrawPorts();
         }
 
-        public void DrawHexes(BoardDto board)
+        public void DrawHexes()
         {
-            foreach (var hex in board.Hexes)
+            foreach (var entry in _board.Hexes)
             {
-                var fieldType = Mappers.MapStringFieldToEnum(hex.FieldType);
-                Material mat = FieldMaterialsList.First(f => f.FieldType == fieldType).Material;
+                var hex = entry.Value;
+                Material mat = FieldMaterialsList.First(f => f.FieldType == hex.FieldType).Material;
                 Vector3 pos = HexLayout.AxialToPixel(hex.Q, hex.R, Size);
 
                 GameObject hexObject = GameObject.Instantiate(HexTilePrefab, pos, HexTilePrefab.transform.rotation, Board);
@@ -63,7 +62,7 @@ namespace Catan.Unity
 
                 HexObjects[hex.HexId] = hexObject;
 
-                if (fieldType != EnumFieldTypes.Desert)
+                if (hex.FieldType != EnumFieldTypes.Desert)
                 {
                     Vector3 numberPos = HexLayout.AxialToPixel(hex.Q, hex.R, Size) + Vector3.up * 0.1f;
                     GameObject numberObject = GameObject.Instantiate(HexNumberPrefab, numberPos, HexNumberPrefab.transform.rotation, Board);
@@ -74,10 +73,11 @@ namespace Catan.Unity
             }
         }
 
-        public void DrawEdges(BoardDto board)
+        public void DrawEdges()
         {
-            foreach (var edge in board.Edges)
+            foreach (var entry in _board.Edges)
             {
+                var edge = entry.Value;
                 var (a, b, mid, dir, rotation) = GetEdgeVisualData(edge.EdgeId);
 
                 GameObject edgeObject = new GameObject($"Edge_{edge.EdgeId}");
@@ -117,12 +117,13 @@ namespace Catan.Unity
             }
         }
 
-        public void DrawVertices(BoardDto board)
+        public void DrawVertices()
         {
             float vertexHeight = 0.15f;
 
-            foreach (var vertex in board.Vertices)
+            foreach (var entry in _board.Vertices)
             {
+                var vertex = entry.Value;
                 Vector3 pos = ResolveVertexPosition(vertex);
 
                 var vertexObject = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
@@ -148,10 +149,11 @@ namespace Catan.Unity
             }
         }
 
-        public void DrawPorts(BoardDto board)
+        public void DrawPorts()
         {
-            foreach (var port in board.Ports)
+            foreach (var entry in _board.Ports)
             {
+                var port = entry.Value;
                 var (_, _, mid, dir, rotation) = GetEdgeVisualData(port.EdgeId);
 
                 var perpendicular = Vector3.Cross(Vector3.down, dir).normalized;
@@ -164,7 +166,7 @@ namespace Catan.Unity
 
                 if (port.Type != null)
                 {
-                    materialToUse = FieldMaterialsList.First(f => f.FieldType == Mappers.MapStringFieldToEnum(port.Type)).Material;
+                    materialToUse = FieldMaterialsList.First(f => f.FieldType == EnumMappers.MapResourceToField(port.Type.Value)).Material;
                 }
 
                 else
@@ -173,6 +175,7 @@ namespace Catan.Unity
                 }
 
                 var renderer = portObject.GetComponent<Renderer>();
+
                 if (renderer != null)
                 {
                     renderer.material = materialToUse;
@@ -180,7 +183,7 @@ namespace Catan.Unity
             }
         }
 
-        private Vector3 ResolveVertexPosition(VertexDto v)
+        private Vector3 ResolveVertexPosition(VertexModel v)
         {
             var points = v.Corners.Select(c =>
                 HexLayout.GetCorner(c.HexQ, c.HexR, c.CornerIndex, Size)
@@ -192,10 +195,10 @@ namespace Catan.Unity
 
         public (Vector3 start, Vector3 end, Vector3 mid, Vector3 dir, Quaternion rotation) GetEdgeVisualData(int edgeId)
         {
-            var edgeObject = edgeLookup[edgeId];
+            var edgeObject = _board.Edges[edgeId];
 
-            var start = ResolveVertexPosition(vertexLookup[edgeObject.VertexAId]);
-            var end = ResolveVertexPosition(vertexLookup[edgeObject.VertexBId]);
+            var start = ResolveVertexPosition(_board.Vertices[edgeObject.VertexAId]);
+            var end = ResolveVertexPosition(_board.Vertices[edgeObject.VertexBId]);
 
             var mid = (start + end) / 2f;
             var dir = (end - start).normalized;

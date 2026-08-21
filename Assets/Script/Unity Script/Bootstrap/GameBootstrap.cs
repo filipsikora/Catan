@@ -1,18 +1,19 @@
-﻿using BGS.Shared.Dtos;
-using Catan.Shared.Data;
+﻿using Catan.Shared.Data;
 using Catan.Shared.Dtos;
 using Catan.Unity.Caches;
 using Catan.Unity.Helpers;
 using Catan.Unity.InternalUIEvents;
 using Catan.Unity.Mappers;
+using Catan.Unity.Models;
 using Catan.Unity.Networking;
 using Catan.Unity.Panels;
 using Catan.Unity.Phases.Controllers;
 using Catan.Unity.Visuals;
 using Catan.Unity.Visuals.Controllers;
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Unity.Helpers;
 using UnityEngine;
 
 namespace Catan.Unity.Bootstrap
@@ -31,6 +32,7 @@ namespace Catan.Unity.Bootstrap
         private EventBus _bus;
         private HandlerEvents _eventsHandler;
         private EventsTranslator _eventsTranslator;
+        private DomainEventDispatcher _dispatcher;
 
         private GameClient _client;
 
@@ -40,6 +42,8 @@ namespace Catan.Unity.Bootstrap
 
         public GameCache GameCache;
         public ConnectionCache ConnectionCache;
+
+        private GameSocket _socket;
 
 
         private async void Awake()
@@ -58,52 +62,60 @@ namespace Catan.Unity.Bootstrap
 
         async void Start()
         {
-            _bus = new EventBus();
-            _client = new GameClient();
+            CreateInfrastructure();
 
-            Guid gameId;
-            JoinGameResponseDto joinGameResponse;
+            var initialState = await JoinGame();
 
-            try
-            {
-                joinGameResponse = await _client.JoinGame();
-            }
+            InitializeCache(initialState);
 
-            catch (Exception ex)
-            {
-                Debug.Log($"Error: {ex.Message}");
-                return;
-            }
+            _gameFlow = new AdapterGameFlow(_uiManager, _bus, _phaseTransition, GameCache);
+            _dispatcher = new DomainEventDispatcher(GameCache);
+            _eventsHandler = new HandlerEvents(_eventsTranslator, _bus, _client, ConnectionCache.GameId.Value, _gameFlow); // gameid will be removed and this will be moved to create infrastructure
+            _socket = new GameSocket();
 
-            _phaseTransition = new AdapterPhaseTransition();
-            _gameFlow = new AdapterGameFlow(_uiManager, _bus, _phaseTransition);
+            await _socket.Connect(ConnectionCache.GameId.Value, ConnectionCache.PlayerToken.Value, _dispatcher);
 
-            _eventsTranslator = new EventsTranslator();
+            var controllerResourceCards = InitializeRendering(initialState);
 
-            _eventsHandler = new HandlerEvents(_eventsTranslator, _bus, _client, joinGameResponse.GameId, _gameFlow);
+            InitializeInfrastructure(controllerResourceCards);
 
-            var joinPayload = joinGameResponse.Payload.ToObject<GameStatePerPlayerDto>();
+            ApplyInitialState();
+        }
 
-            CreateCaches(joinPayload);
+        private async Task<GameStatePerPlayerDto> JoinGame()
+        {
+            var joinGameResponse = await _client.JoinGame();
 
-            var desertHexId = InitializeBuilderMap(board);
-            var controllerResourceCards = InitializeVisualControllers(gameId);
+            ConnectionCache = new ConnectionCache(joinGameResponse.PlayerToken, joinGameResponse.GameId);
 
-            ApplyInitialState(desertHexId, firstPlayerId);
+            return joinGameResponse.Payload.ToObject<GameStatePerPlayerDto>();
+        }
 
+        private void ApplyInitialState()
+        {
+            _bus.Publish(new RobberMovedUIEvent(GameCache.Board.BlockedHexId));
+            _bus.Publish(new GameFlowReceivedUIEvent(GameCache.GameFlow));
+            _bus.Publish(new PlayerStateReceivedUIEvent(GameCache.MyPlayer));
+            _bus.Publish(new OtherPlayersReceivedUIEvent(GameCache.OtherPlayers)); // those events need to be made while reworking domainevents
+        }
+
+        private ControllerResourceCards InitializeRendering(GameStatePerPlayerDto initialState)
+        {
+            InitializeBuilderMap(GameCache.Board);
+
+            var controllerResourceCards = InitializeVisualControllers();
+
+            return controllerResourceCards;
+        }
+
+        private void InitializeInfrastructure(ControllerResourceCards controllerResourceCards)
+        {
             _clickHandler.Initialize(_bus);
             _uiManager.Initialize(_bus, controllerResourceCards, _boardManager);
             _gameFlow.Initialize(_eventsHandler);
         }
 
-        private void ApplyInitialState(int desertHexId, int firstPlayerId) // this will need to be fixed later on with the controllers fix
-        {
-            _bus.Publish(new RobberMovedUIEvent(desertHexId));
-            _bus.Publish(new TurnNumberChangedUIEvent(1));
-            _bus.Publish(new PlayerStateChangedUIEvent(firstPlayerId));
-        }
-
-        private int InitializeBuilderMap(BoardDto boardDto)
+        private void InitializeBuilderMap(BoardModel boardModel)
         {
             var builderMap = new BuilderMap
             {
@@ -118,14 +130,20 @@ namespace Catan.Unity.Bootstrap
                 Size = 1f
             };
 
-            builderMap.BuildMap(boardDto);
+            builderMap.BuildMap(boardModel);
             _visualsBoard.Initialize(builderMap, _boardManager.IdleGridMaterial);
-
-
-            return boardDto.BlockedHexId;
         }
 
-        private ControllerResourceCards InitializeVisualControllers(Guid gameId)
+        private void CreateInfrastructure()
+        {
+            _bus = new EventBus();
+            _client = new GameClient();
+            _phaseTransition = new AdapterPhaseTransition();
+            _gameFlow = new AdapterGameFlow(_uiManager, _bus, _phaseTransition, GameCache);
+            _eventsTranslator = new EventsTranslator();
+        }
+
+        private ControllerResourceCards InitializeVisualControllers()
         {
             var controllerResourceCards = new ControllerResourceCards(_bus);
             new ControllerLogMessagesUI(_bus, _uiManager.LogsPanel);
@@ -138,12 +156,12 @@ namespace Catan.Unity.Bootstrap
             return controllerResourceCards;
         }
 
-        private void CreateCaches(GameStatePerPlayerDto joinState)
+        private void InitializeCache(GameStatePerPlayerDto joinState)
         {
             var gameFlow = joinState.GameFlow;
-            ConnectionCache = new ConnectionCache(joinState.PlayerToken, joinState.GameId);
-            GameCache = new GameCache(BoardMappers.MapBoardStateToModel(joinState), PlayerMappers.MapPlayerDtoToModel(joinState), PlayerMappers.MapOtherPlayersDtoToModel(joinState.OtherPlayers), 
-                gameFlow.TurnNumber, gameFlow.RolledNumber, gameFlow.CurrentPlayerId, gameFlow.KnightChampionId, gameFlow.RoadChampionId, gameFlow.CurrentPhase);
+            GameCache = new GameCache(BoardMappers.MapBoardStateToModel(joinState), PlayerMappers.MapPlayerDtoToModel(joinState), PlayerMappers.MapOtherPlayersDtoToModel(joinState.OtherPlayers),
+                new GameFlowModel(gameFlow.TurnNumber, gameFlow.RolledNumber, gameFlow.CurrentPlayerId, gameFlow.KnightChampionId, gameFlow.RoadChampionId, gameFlow.CurrentPhase, gameFlow.Bank, 
+                gameFlow.PlayersToMove));
         }
     }
 }

@@ -3,15 +3,21 @@ using UnityEngine;
 using Catan.Unity.Visuals.Models;
 using Catan.Unity.Data;
 using Catan.Unity.Panels;
+using Catan.Unity.Visuals.Controllers;
 
 namespace Catan.Unity.Visuals
 {
     public static class VisualsUI
     {
-        public static void ClearContainer(Transform panel)
+        public static void ClearContainer(Transform panel, ControllerResourceCards controller)
         {
             foreach (Transform child in panel)
             {
+                var card = child.GetComponent<VisualResourceCard>();
+
+                if (card != null)
+                    controller.Unregister(card);
+
                 Object.Destroy(child.gameObject);
             }
         }

@@ -1,21 +1,25 @@
-using Catan.Unity.Data;
-using Catan.Unity.Visuals;
-using Catan.Unity.Visuals.Models;
 using Catan.Shared.Data;
+using Catan.Shared.Dtos;
+using Catan.Unity.Data;
 using Catan.Unity.Helpers;
+using Catan.Unity.Visuals;
+using Catan.Unity.Visuals.Controllers;
+using Catan.Unity.Visuals.Models;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Catan.Shared.Dtos;
 
 namespace Catan.Unity.Panels
 {
     public class CardDiscardUI : VisualButton<EnumCardSelectorDiscardUIButtons>
     {
         public Transform CardsContainer;
-        public FactoryResourceCards CardFactory;
         public TextMeshProUGUI TitleText;
         public Button ConfirmDiscardButton;
+
+        public FactoryResourceCards CardFactory;
+        private ControllerResourceCards _resourceCardsController;
 
 
         public void Awake()
@@ -23,27 +27,17 @@ namespace Catan.Unity.Panels
             RegisterButton(EnumCardSelectorDiscardUIButtons.ConfirmDiscard, ConfirmDiscardButton);
         }
 
-        public void Show()
+        public void Show(Dictionary<EnumResourceType, int> resources)
         {
-            VisualsUI.ClearContainer(CardsContainer);
+            VisualsUI.ClearContainer(CardsContainer, _resourceCardsController);
 
             gameObject.SetActive(true);
-        }
-
-        public void ShowForPlayer(PlayerCardsDto playerResources)
-        {
-            VisualsUI.ClearContainer(CardsContainer);
             ConfirmDiscardButton.gameObject.SetActive(false);
 
-            foreach (var entry in playerResources.PlayerResources)
+            foreach (var entry in resources)
             {
-                var type = Mappers.MapStringResourcesToEnum(entry.Key);
-                var amount = entry.Value;
-
-                for (int i = 0; i < amount; i++)
-                {
-                    CardFactory.DrawResourceCard(type, EnumResourceCardLocation.VictimHand, CardsContainer);
-                }
+                for (int i = 0; i < entry.Value; i++)
+                    CardFactory.Create(entry.Key, EnumResourceCardLocation.VictimHand, CardsContainer, _resourceCardsController);
             }
         }
     }

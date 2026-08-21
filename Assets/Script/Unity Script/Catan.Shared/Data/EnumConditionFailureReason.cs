@@ -31,7 +31,11 @@
         NotEnoughResources,
         InitialVillageBuilt,
         InitialRoadBuilt,
+        InitialRoadNotBuilt,
         InitialRoundNotFinished,
-        NotCorrectPhase
+        InitialVillageNotBuilt,
+        NotCorrectPhase,
+        NotCurrentPlayer,
+        FreeBuildingDone
     }
 }

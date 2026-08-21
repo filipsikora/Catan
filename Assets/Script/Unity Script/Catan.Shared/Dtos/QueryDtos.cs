@@ -22,7 +22,7 @@ namespace Catan.Shared.Dtos
 
     public sealed class ResourcesAvailabilityDto
     {
-        public Dictionary<string, bool> ResourcesAvailability;
+        public Dictionary<EnumResourceType, bool> ResourcesAvailability;
     }
 
     public sealed class DevelopmentCardDto

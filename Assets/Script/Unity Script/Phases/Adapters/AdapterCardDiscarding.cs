@@ -5,6 +5,7 @@ using Catan.Unity.InternalUIEvents;
 using Catan.Unity.Panels;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using EventBus = Catan.Unity.Helpers.EventBus;
 
@@ -13,8 +14,12 @@ namespace Catan.Unity.Phases.Adapters
     public class AdapterCardDiscarding : BasePhaseAdapter
     {
         private BinderCardDiscarding _binder;
+        private Dictionary<EnumResourceType, int> _resources;
 
-        public AdapterCardDiscarding(ManagerUI ui, EventBus bus, HandlerEvents eventHandler) : base(ui, bus, eventHandler) { }
+        public AdapterCardDiscarding(ManagerUI ui, EventBus bus, HandlerEvents eventHandler, Dictionary<EnumResourceType, int> resources) : base(ui, bus, eventHandler)
+        {
+            _resources = resources;
+        }
 
         public override void OnEnter()
         {
@@ -24,11 +29,12 @@ namespace Catan.Unity.Phases.Adapters
             _binder.Bind();
 
             VisualsUI.SetMainAndPlayerUIVisibility(false, UI.MainUIPanel, UI.PlayerUIPanel);
-            UI.CardDiscardPanel.Show();
 
             EventBus.Subscribe<SelectionChangedUIEvent>(OnAcceptedDiscardVisibilityChanged);
             EventBus.Subscribe<PlayerSelectedToDiscardUIEvent>(OnPlayerChosen);
             EventBus.Subscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
+
+            UI.CardDiscardPanel.Show(_resources);
         }
 
         private void OnResourceCardClicked(ResourceCardClickedUIEvent signal)
@@ -59,12 +65,6 @@ namespace Catan.Unity.Phases.Adapters
         private void OnAcceptedDiscardVisibilityChanged(SelectionChangedUIEvent signal)
         {
             UI.CardDiscardPanel.ConfirmDiscardButton.gameObject.SetActive(signal.ActionAvailable);
-        }
-       
-        private async Task LoadData(int playerId)
-        {
-            var snapshot = await EventsHandler.Query<PlayerCardsDto>(EnumQueryName.PlayerCards, new { playerId });
-            UI.CardDiscardPanel.ShowForPlayer(snapshot);
         }
 
         public override void OnExit()

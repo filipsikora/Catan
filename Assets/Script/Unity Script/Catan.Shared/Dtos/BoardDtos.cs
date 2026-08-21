@@ -69,6 +69,6 @@ namespace Catan.Shared.Dtos
         public List<FullEdgeDto> Edges { get; set; }
         public List<HexDto> Hexes { get; set; }
         public List<PortDto> Ports { get; set; }
-        public int? BlockedHexId { get; set; }
+        public int BlockedHexId { get; set; }
     }
 }

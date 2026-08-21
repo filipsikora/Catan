@@ -54,4 +54,3 @@ namespace Catan.Unity.Mappers
         }
     }
 }
-}

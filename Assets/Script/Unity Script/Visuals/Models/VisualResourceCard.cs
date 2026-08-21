@@ -4,7 +4,6 @@ using UnityEngine.EventSystems;
 using Catan.Unity.Data;
 using Catan.Unity.InternalUIEvents;
 using Catan.Unity.Helpers;
-using Catan.Unity.Visuals.Controllers;
 
 namespace Catan.Unity.Visuals.Models
 {
@@ -17,16 +16,13 @@ namespace Catan.Unity.Visuals.Models
         public bool IsSelected = false;
 
         private EventBus _bus;
-        private ControllerResourceCards _controller;
 
-        public void Initialize(EnumResourceCardLocation location, int visualResourceCardId, EnumResourceType type, EventBus bus, ControllerResourceCards controller)
+        public void Initialize(EnumResourceCardLocation location, int visualResourceCardId, EnumResourceType type, EventBus bus)
         {
             Location = location;
             VisualResourceCardId = visualResourceCardId;
             Type = type;
             _bus = bus;
-            _controller = controller;
-            _controller.Register(this);
         }
 
         public void OnPointerClick(PointerEventData eventData)
@@ -49,11 +45,6 @@ namespace Catan.Unity.Visuals.Models
         public void Reset()
         {
             Debug.Log($"{this} reset");
-        }
-
-        private void OnDestroy()
-        {
-            _controller.Unregister(this);
         }
 
         public override string ToString()

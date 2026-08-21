@@ -6,16 +6,19 @@ using Catan.Unity.Panels;
 using Catan.Unity.Data;
 using Catan.Shared.Data;
 using Catan.Unity.Helpers;
-using System.Threading.Tasks;
-using Catan.Shared.Dtos;
+using System.Collections.Generic;
 
 namespace Catan.Unity.Phases.Adapters
 {
     public class AdapterBankTrade : BasePhaseAdapter
     {
         private BinderBankTrade _binder;
+        private Dictionary<EnumResourceType, int> _resources;
 
-        public AdapterBankTrade(ManagerUI ui, EventBus bus, HandlerEvents eventHandler) : base(ui,bus, eventHandler) { }
+        public AdapterBankTrade(ManagerUI ui, EventBus bus, HandlerEvents eventHandler, Dictionary<EnumResourceType, int> resources) : base(ui,bus, eventHandler)
+        {
+            _resources = resources;
+        }
 
         public override void OnEnter()
         {
@@ -29,7 +32,7 @@ namespace Catan.Unity.Phases.Adapters
             EventBus.Subscribe<BankTradeRatioChangedUIEvent>(OnRatioChanged);
             EventBus.Subscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
 
-            _ = LoadData();
+            UI.BankTradePanel.Show(_resources);
         }
 
         private void OnRatioChanged(BankTradeRatioChangedUIEvent signal)
@@ -53,12 +56,6 @@ namespace Catan.Unity.Phases.Adapters
             {
                 EventsHandler.Execute(EnumCommandType.BankTradeDesiredResourceSelectedCommand, new { type = signal.Type });
             }
-        }
-
-        private async Task LoadData()
-        {
-            var snapshot = await EventsHandler.Query<ResourcesAvailabilityDto>(EnumQueryName.ResourcesAvailability);
-            UI.BankTradePanel.Show(snapshot);
         }
 
         public override void OnExit()

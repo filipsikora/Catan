@@ -2,7 +2,7 @@
 {
     public enum EnumGameInstanceState
     {
-        Lobby,
+        PlayersJoining,
         Created,
         Playing,
         Finished,
