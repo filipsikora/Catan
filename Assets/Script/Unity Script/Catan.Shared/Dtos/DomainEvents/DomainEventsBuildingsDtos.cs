@@ -9,24 +9,27 @@ namespace Catan.Shared.Dtos.DomainEvents
         public int VertexId;
         public int OwnerId;
         public int Points;
-        public int VillagesLeft;
         public Dictionary<EnumResourceType, int> Resources;
+        public int ResourcesCount;
         public Dictionary<EnumResourceType, int> Bank;
+        public Dictionary<string, int> BuildingsLeft;
 
         public VillagePlacedEventPrivateDto(
             int vertexId,
             int ownerId,
             int points,
-            int villagesLeft,
             Dictionary<EnumResourceType, int> resources,
-            Dictionary<EnumResourceType, int> bank)
+            Dictionary<EnumResourceType, int> bank,
+            int resourcesCount,
+            Dictionary<string, int> buildingsLeft)
         {
             VertexId = vertexId;
             OwnerId = ownerId;
             Points = points;
-            VillagesLeft = villagesLeft;
             Resources = resources;
+            ResourcesCount = resourcesCount;
             Bank = bank;
+            BuildingsLeft = buildingsLeft;
         }
     }
 
@@ -35,24 +38,24 @@ namespace Catan.Shared.Dtos.DomainEvents
         public int VertexId;
         public int OwnerId;
         public int Points;
-        public int VillagesLeft;
         public int ResourcesCount;
         public Dictionary<EnumResourceType, int> Bank;
+        public Dictionary<string, int> BuildingsLeft;
 
         public VillagePlacedEventPublicDto(
             int vertexId,
             int ownerId,
             int points,
-            int villagesLeft,
             int resourcesCount,
-            Dictionary<EnumResourceType, int> bank)
+            Dictionary<EnumResourceType, int> bank,
+            Dictionary<string, int> buildingsLeft)
         {
             VertexId = vertexId;
             OwnerId = ownerId;
             Points = points;
-            VillagesLeft = villagesLeft;
             ResourcesCount = resourcesCount;
             Bank = bank;
+            BuildingsLeft = buildingsLeft;
         }
     }
 
@@ -60,22 +63,25 @@ namespace Catan.Shared.Dtos.DomainEvents
     {
         public int EdgeId;
         public int OwnerId;
-        public int RoadsLeft;
         public Dictionary<EnumResourceType, int> Resources;
+        public int ResourcesCount;
         public Dictionary<EnumResourceType, int> Bank;
+        public Dictionary<string, int> BuildingsLeft;
 
         public RoadPlacedEventPrivateDto(
             int edgeId,
             int ownerId,
-            int roadsLeft,
             Dictionary<EnumResourceType, int> resources,
-            Dictionary<EnumResourceType, int> bank)
+            Dictionary<EnumResourceType, int> bank,
+            int resourcesCount,
+            Dictionary<string, int> buildingsLeft)
         {
             EdgeId = edgeId;
             OwnerId = ownerId;
-            RoadsLeft = roadsLeft;
             Resources = resources;
+            ResourcesCount = resourcesCount;
             Bank = bank;
+            BuildingsLeft = buildingsLeft; 
         }
     }
 
@@ -83,22 +89,22 @@ namespace Catan.Shared.Dtos.DomainEvents
     {
         public int EdgeId;
         public int OwnerId;
-        public int RoadsLeft;
         public int ResourcesCount;
         public Dictionary<EnumResourceType, int> Bank;
+        public Dictionary<string, int> BuildingsLeft;
 
         public RoadPlacedEventPublicDto(
             int edgeId,
             int ownerId,
-            int roadsLeft,
             int resourcesCount,
-            Dictionary<EnumResourceType, int> bank)
+            Dictionary<EnumResourceType, int> bank,
+            Dictionary<string, int> buildingsLeft)
         {
             EdgeId = edgeId;
             OwnerId = ownerId;
-            RoadsLeft = roadsLeft;
             ResourcesCount = resourcesCount;
             Bank = bank;
+            BuildingsLeft = buildingsLeft;
         }
     }
 
@@ -107,27 +113,27 @@ namespace Catan.Shared.Dtos.DomainEvents
         public int VertexId;
         public int OwnerId;
         public int Points;
-        public int TownsLeft;
-        public int VillagesLeft;
         public Dictionary<EnumResourceType, int> Resources;
+        public int ResourcesCount;
         public Dictionary<EnumResourceType, int> Bank;
+        public Dictionary<string, int> BuildingsLeft;
 
         public TownPlacedEventPrivateDto(
             int vertexId,
             int ownerId,
             int points,
-            int townsLeft,
-            int villagesLeft,
             Dictionary<EnumResourceType, int> resources,
-            Dictionary<EnumResourceType, int> bank)
+            Dictionary<EnumResourceType, int> bank,
+            int resourcesCount,
+            Dictionary<string, int> buildingsLeft)
         {
             VertexId = vertexId;
             OwnerId = ownerId;
             Points = points;
-            TownsLeft = townsLeft;
-            VillagesLeft = villagesLeft;
             Resources = resources;
+            ResourcesCount = resourcesCount;
             Bank = bank;
+            BuildingsLeft = buildingsLeft;
         }
     }
 
@@ -136,27 +142,24 @@ namespace Catan.Shared.Dtos.DomainEvents
         public int VertexId;
         public int OwnerId;
         public int Points;
-        public int TownsLeft;
-        public int VillagesLeft;
         public int ResourcesCount;
         public Dictionary<EnumResourceType, int> Bank;
+        public Dictionary<string, int> BuildingsLeft;
 
         public TownPlacedEventPublicDto(
             int vertexId,
             int ownerId,
             int points,
-            int townsLeft,
-            int villagesLeft,
             int resourcesCount,
-            Dictionary<EnumResourceType, int> bank)
+            Dictionary<EnumResourceType, int> bank,
+            Dictionary<string, int> buildingsLeft)
         {
             VertexId = vertexId;
             OwnerId = ownerId;
             Points = points;
-            TownsLeft = townsLeft;
-            VillagesLeft = villagesLeft;
             ResourcesCount = resourcesCount;
             Bank = bank;
+            BuildingsLeft = buildingsLeft;
         }
     }
 }

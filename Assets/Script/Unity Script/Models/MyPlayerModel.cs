@@ -19,8 +19,12 @@ namespace Catan.Unity.Models
         public List<DevCardModel> DevCards { get; set; }
         public Dictionary<EnumResourceType, int> Resources { get; set; }
         public int DevCardNumber { get; set; }
+        public int ResourceCardsNumber { get; set; }
+        public int VictoryCardsPlayed { get; set; }
+        public int KnightCardsPlayed { get; set; }
 
-        public MyPlayerModel(int playerId, string name, Dictionary<string, int> buildingsLeft, int points, int knights, int victoryPoints, int extraPoints, IReadOnlyList<DevCardModel> devCards, Dictionary<EnumResourceType, int> resources)
+        public MyPlayerModel(int playerId, string name, Dictionary<string, int> buildingsLeft, int points, int knights, int victoryPoints, int extraPoints, IReadOnlyList<DevCardModel> devCards, 
+            Dictionary<EnumResourceType, int> resources, int devCardsNumber, int victoryCardsPlayed, int knightCardsPlayed, int resourceCardsNumber)
         {
             PlayerId = playerId;
             Name = name;
@@ -31,7 +35,10 @@ namespace Catan.Unity.Models
             ExtraPoints = extraPoints;
             DevCards = devCards.ToList();
             Resources = resources;
-            DevCardNumber = 0;
+            DevCardNumber = devCardsNumber;
+            VictoryCardsPlayed = victoryCardsPlayed;
+            KnightCardsPlayed = knightCardsPlayed;
+            ResourceCardsNumber = resourceCardsNumber;
         }
     }
 }

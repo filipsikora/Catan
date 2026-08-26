@@ -150,9 +150,9 @@ namespace Unity.Helpers
             _gameCache.GameFlow.Bank = dto.Bank;
 
             _gameCache.MyPlayer.Points = dto.Points;
-            _gameCache.MyPlayer.BuildingsLeft["Village"] = dto.VillagesLeft;
             _gameCache.MyPlayer.Resources = dto.Resources;
-
+            _gameCache.MyPlayer.ResourceCardsNumber = dto.ResourcesCount;
+            _gameCache.MyPlayer.BuildingsLeft = dto.BuildingsLeft;
             return dto;
         }
 
@@ -171,6 +171,7 @@ namespace Unity.Helpers
             {
                 player.Points = dto.Points;
                 player.ResourceCardsNumber = dto.ResourcesCount;
+                player.BuildingsLeft = dto.BuildingsLeft;
             }
 
             return dto;
@@ -184,8 +185,9 @@ namespace Unity.Helpers
 
             _gameCache.GameFlow.Bank = dto.Bank;
 
-            _gameCache.MyPlayer.BuildingsLeft["Road"] = dto.RoadsLeft;
             _gameCache.MyPlayer.Resources = dto.Resources;
+            _gameCache.MyPlayer.ResourceCardsNumber = dto.ResourcesCount;
+            _gameCache.MyPlayer.BuildingsLeft = dto.BuildingsLeft;
 
             return dto;
         }
@@ -198,7 +200,13 @@ namespace Unity.Helpers
 
             _gameCache.GameFlow.Bank = dto.Bank;
 
-            UpdateOtherPlayerResourceCount(dto.OwnerId, dto.ResourcesCount);
+            OtherPlayerModel? player = FindOtherPlayer(dto.OwnerId);
+
+            if (player != null)
+            {
+                player.ResourceCardsNumber = dto.ResourcesCount;
+                player.BuildingsLeft = dto.BuildingsLeft;
+            }
 
             return dto;
         }
@@ -213,9 +221,9 @@ namespace Unity.Helpers
             _gameCache.GameFlow.Bank = dto.Bank;
 
             _gameCache.MyPlayer.Points = dto.Points;
-            _gameCache.MyPlayer.BuildingsLeft["Town"] = dto.TownsLeft;
-            _gameCache.MyPlayer.BuildingsLeft["Village"] = dto.VillagesLeft;
             _gameCache.MyPlayer.Resources = dto.Resources;
+            _gameCache.MyPlayer.ResourceCardsNumber = dto.ResourcesCount;
+            _gameCache.MyPlayer.BuildingsLeft = dto.BuildingsLeft;
 
             return dto;
         }
@@ -235,6 +243,7 @@ namespace Unity.Helpers
             {
                 player.Points = dto.Points;
                 player.ResourceCardsNumber = dto.ResourcesCount;
+                player.BuildingsLeft = dto.BuildingsLeft;
             }
 
             return dto;

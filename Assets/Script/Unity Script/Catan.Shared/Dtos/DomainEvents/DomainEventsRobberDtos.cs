@@ -10,17 +10,20 @@ namespace Catan.Shared.Dtos.DomainEvents
         public Dictionary<EnumResourceType, int> Resources;
         public Dictionary<EnumResourceType, int> PlayerResources;
         public Dictionary<EnumResourceType, int> Bank;
+        public int PlayerResourcesCount;
 
         public CardsDiscardedEventPrivateDto(
             int playerId,
             Dictionary<EnumResourceType, int> resources,
             Dictionary<EnumResourceType, int> playerResources,
-            Dictionary<EnumResourceType, int> bank)
+            Dictionary<EnumResourceType, int> bank,
+            int playerResourcesCount)
         {
             PlayerId = playerId;
             Resources = resources;
             PlayerResources = playerResources;
             Bank = bank;
+            PlayerResourcesCount = playerResourcesCount;
         }
     }
 
@@ -118,7 +121,9 @@ namespace Catan.Shared.Dtos.DomainEvents
         public int HexId;
         public bool CanSteal;
 
-        public RobberPlacedEventDto(int hexId, bool canSteal)
+        public RobberPlacedEventDto(
+            int hexId,
+            bool canSteal)
         {
             HexId = hexId;
             CanSteal = canSteal;

@@ -1,16 +1,25 @@
 ﻿using BGS.Shared.Dtos;
 using Catan.Shared.Data;
+using Catan.Shared.Dtos.DomainEvents;
 using Catan.Shared.Dtos.UiMessages;
+using Catan.Shared.Interfaces;
+using Catan.Unity.Caches;
 using Catan.Unity.Interfaces;
 using Catan.Unity.InternalUIEvents;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 
 namespace Catan.Unity.Helpers
 {
     public class EventsTranslator
     {
-        public EventsTranslator() { }
+        private GameCache _gameCache;
+
+        public EventsTranslator(GameCache gameCache)
+        {
+            _gameCache = gameCache;
+        }
 
         public IInternalUIEvents TranslateUIMessage(UiMessageDto message)
         {
@@ -39,40 +48,10 @@ namespace Catan.Unity.Helpers
                         return new BuildOptionsSentUIEvent(dto.CanBuildVillage, dto.CanBuildRoad, dto.CanUpgradeVillage);
                     }
 
-                case EnumUiMessages.LogMessageMessage:
-                    {
-                        var dto = data.ToObject<LogMessageDto>();
-                        return new LogMessageUIEvent(Mappers.MapStringLogTypeToEnum(dto.Type), dto.Message);
-                    }
-
                 case EnumUiMessages.ActionRejectedMessage:
                     {
                         var dto = data.ToObject<ActionRejectedDto>();
                         return new ActionRejectedUIEvent(dto.PlayerId, Mappers.MapStringFailureReasonToEnum(dto.Reason));
-                    }
-
-                case EnumUiMessages.ResourceSelectedMessage:
-                    {
-                        var dto = data.ToObject<ResourceSelectedDto>();
-                        return new ResourceSelectedUIEvent(dto.Selected, Mappers.MapStringResourcesToEnum(dto.Type));
-                    }
-
-                case EnumUiMessages.SelectionChangedMessage:
-                    {
-                        var dto = data.ToObject<SelectionChangedDto>();
-                        return new SelectionChangedUIEvent(dto.ActionAvailable);
-                    }
-
-                case EnumUiMessages.DesiredCardsChangedMessage:
-                    {
-                        var dto = data.ToObject<DesiredCardsChangedDto>();
-                        return new DesiredCardsChangedUIEvent(dto.HasDesired);
-                    }
-
-                case EnumUiMessages.PlayerSelectedToDiscardMessage:
-                    {
-                        var dto = data.ToObject<PlayerSelectedToDiscardDto>();
-                        return new PlayerSelectedToDiscardUIEvent(dto.PlayerId);
                     }
 
                 case EnumUiMessages.PotentialVictimsFoundMessage:
@@ -100,44 +79,79 @@ namespace Catan.Unity.Helpers
                         return new DiceRollChangedUIEvent(dto.RolledNumber);
                     }
 
-                case EnumUiMessages.VillagePlacedMessage:
-                {
-                        var dto = data.ToObject<VillagePlacedDto>();
-                        return new VillagePlacedUIEvent(dto.VertexId, dto.OwnerId);
+                default:
+                    throw new Exception($"Unknown UI message: {message.Type}");
+            }
+        }
+
+        public List<IInternalUIEvents> TranslateDomainEvent(IDomainEventDto domainEvent)
+        {
+            var uiEvents = new List<IInternalUIEvents>();
+
+            switch (domainEvent)
+            {
+                case VillagePlacedEventPrivateDto dto:
+                    {
+                        uiEvents.Add(new VillagePlacedUIEvent(dto.VertexId, dto.OwnerId));
+                        uiEvents.Add(new MyResourcesChangedUIEvent(_gameCache.MyPlayer.Resources));
+                        uiEvents.Add(new AllPlayersResourcesChangedUIEvent(_gameCache.GetOtherPlayersResourceCounts()));
+                        uiEvents.Add(new PlayersPointsChangedUIEvent())
+                        return uiEvents;
                     }
 
-                case EnumUiMessages.RoadPlacedMessage:
+                case VillagePlacedEventPublicDto dto:
                     {
-                        var dto = data.ToObject<RoadPlacedDto>();
-                        return new RoadPlacedUIEvent(dto.EdgeId, dto.OwnerId);
+                        uiEvents.Add(new VillagePlacedUIEvent(dto.VertexId, dto.OwnerId));
+                        uiEvents.Add(new AllPlayersResourcesChangedUIEvent(_gameCache.GetOtherPlayersResourceCounts()));
+                        return uiEvents;
                     }
 
-                case EnumUiMessages.TownPlacedMessage:
-                    {
-                        var dto = data.ToObject<TownPlacedDto>();
-                        return new TownPlacedUIEvent(dto.VertexId, dto.OwnerId);
+                case RoadPlacedEventPrivateDto dto:
+                                        {
+                        uiEvents.Add(new RoadPlacedUIEvent(dto.EdgeId, dto.OwnerId));
+                        uiEvents.Add(new MyResourcesChangedUIEvent(_gameCache.MyPlayer.Resources));
+                        uiEvents.Add(new AllPlayersResourcesChangedUIEvent(_gameCache.GetOtherPlayersResourceCounts()));
+                        return uiEvents;
                     }
 
-                case EnumUiMessages.DevelopmentCardBoughtMessage:
+                case RoadPlacedEventPublicDto dto:
                     {
-                        var dto = data.ToObject<DevelopmentCardBoughtDto>();
-                        return new DevelopmentCardBoughtUIEvent(dto.CardId);
+                        uiEvents.Add(new RoadPlacedUIEvent(dto.EdgeId, dto.OwnerId));
+                        uiEvents.Add(new AllPlayersResourcesChangedUIEvent(_gameCache.GetOtherPlayersResourceCounts()));
+                        return uiEvents;
                     }
 
-                case EnumUiMessages.RobberPlacedMessage:
+                case TownPlacedEventPrivateDto dto:
                     {
-                        var dto = data.ToObject<RobberPlacedDto>();
-                        return new RobberMovedUIEvent(dto.HexId);
+                        uiEvents.Add(new TownPlacedUIEvent(dto.VertexId, dto.OwnerId));
+                        uiEvents.Add(new MyResourcesChangedUIEvent(_gameCache.MyPlayer.Resources));
+                        uiEvents.Add(new AllPlayersResourcesChangedUIEvent(_gameCache.GetOtherPlayersResourceCounts()));
+                        return uiEvents;
                     }
 
-                case EnumUiMessages.PlayerStateChangedMessage:
+                case TownPlacedEventPublicDto dto:
                     {
-                        var dto = data.ToObject<PlayerStateChangedDto>();
-                        return new PlayerStateChangedUIEvent(dto.PlayerId);
+                        uiEvents.Add(new TownPlacedUIEvent(dto.VertexId, dto.OwnerId));
+                        uiEvents.Add(new AllPlayersResourcesChangedUIEvent(_gameCache.GetOtherPlayersResourceCounts()));
+                        return uiEvents;
+                    }
+
+                case BankTradeDoneEventPrivateDto:
+                    {
+                        uiEvents.Add(new BankInformationChangedUIEvent(_gameCache.GameFlow.Bank));
+                        uiEvents.Add(new MyResourcesChangedUIEvent(_gameCache.MyPlayer.Resources));
+                        return uiEvents;
+                    }
+
+                case BankTradeDoneEventPublicDto:
+                    {
+                        uiEvents.Add(new BankInformationChangedUIEvent(_gameCache.GameFlow.Bank));
+                        uiEvents.Add(new AllPlayersResourcesChangedUIEvent(_gameCache.GetOtherPlayersResourceCounts()));
+                        return uiEvents;    
                     }
 
                 default:
-                    throw new Exception($"Unknown UI message: {message.Type}");
+                    throw new Exception($"Unknown Domain event: {domainEvent}");
             }
         }
     }
