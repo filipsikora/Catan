@@ -13,18 +13,18 @@ namespace Catan.Unity.Mappers
             var resources = gameState.Player.Resources;
 
             return new MyPlayerModel(player.PlayerId, player.Name, player.BuildingsLeft, player.Points, player.Knights, player.VictoryPoints, player.ExtraPoints, 
-                MapDevCardDtoToModel(player.DevCards), resources.PlayerResources);
+                MapDevCardDtoToModel(player.DevCards), resources.PlayerResources, player.DevCardsNumber, player.VictoryCardsPlayed, player.KnightCardsPlayed, player.ResourceCardsNumber);
         }
 
         public static List<DevCardModel> MapDevCardDtoToModel(List<DevelopmentCardDto> devCardsList)
         {
-            return devCardsList.Select(devCard => new DevCardModel(devCard.Id, devCard.Type, devCard.IsNew, devCard.IsPlayable)).ToList();
+            return devCardsList.Select(devCard => new DevCardModel(devCard.Id, devCard.Type,  devCard.IsPlayable)).ToList();
         }
 
         public static List<OtherPlayerModel> MapOtherPlayersDtoToModel(OtherPlayersDto otherPlayersList)
         {
             return otherPlayersList.OtherPlayers.Select(otherPlayer => new OtherPlayerModel(otherPlayer.Id, otherPlayer.Name, otherPlayer.Points, otherPlayer.ExtraPoints, otherPlayer.ResourceCardsNumber, 
-                otherPlayer.ResourceCardsNumber, otherPlayer.VictoryCardsPlayed, otherPlayer.KnightCardsPlayed)).ToList();
+                otherPlayer.ResourceCardsNumber, otherPlayer.VictoryCardsPlayed, otherPlayer.KnightCardsPlayed, otherPlayer.BuildingsLeft)).ToList();
         }
     }
 }

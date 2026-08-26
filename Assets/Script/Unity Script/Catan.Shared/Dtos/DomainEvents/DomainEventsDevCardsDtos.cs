@@ -10,17 +10,20 @@ namespace Catan.Shared.Dtos.DomainEvents
         public int CardId;
         public EnumDevelopmentCardTypes CardType;
         public int DevCardNumber;
+        public List<DevelopmentCardDto> DevCards;
 
         public DevCardUsedEventPrivateDto(
             int playerId,
             int cardId,
             EnumDevelopmentCardTypes cardType,
-            int devCardNumber)
+            int devCardNumber,
+            List<DevelopmentCardDto> devCards)
         {
             PlayerId = playerId;
             CardId = cardId;
             CardType = cardType;
             DevCardNumber = devCardNumber;
+            DevCards = devCards;
         }
     }
 
@@ -46,6 +49,7 @@ namespace Catan.Shared.Dtos.DomainEvents
         public int VictimId;
         public Dictionary<EnumResourceType, int> ThiefResources;
         public int VictimResourcesCount;
+        public int ThiefResourcesCount;
 
         public CardsStolenEventThiefDto(
             EnumResourceType resource,
@@ -53,7 +57,8 @@ namespace Catan.Shared.Dtos.DomainEvents
             int thiefId,
             int victimId,
             Dictionary<EnumResourceType, int> thiefResources,
-            int victimResourcesCount)
+            int victimResourcesCount,
+            int thiefResourcesCount)
         {
             Resource = resource;
             Quantity = quantity;
@@ -61,6 +66,7 @@ namespace Catan.Shared.Dtos.DomainEvents
             VictimId = victimId;
             ThiefResources = thiefResources;
             VictimResourcesCount = victimResourcesCount;
+            ThiefResourcesCount = thiefResourcesCount;
         }
     }
 
@@ -72,6 +78,7 @@ namespace Catan.Shared.Dtos.DomainEvents
         public int VictimId;
         public int ThiefResourcesCount;
         public Dictionary<EnumResourceType, int> VictimResources;
+        public int VictimResourcesCount;
 
         public CardsStolenEventVictimDto(
             EnumResourceType resource,
@@ -79,7 +86,8 @@ namespace Catan.Shared.Dtos.DomainEvents
             int thiefId,
             int victimId,
             int thiefResourcesCount,
-            Dictionary<EnumResourceType, int> victimResources)
+            Dictionary<EnumResourceType, int> victimResources,
+            int victimResourcesCount)
         {
             Resource = resource;
             Quantity = quantity;
@@ -87,6 +95,7 @@ namespace Catan.Shared.Dtos.DomainEvents
             VictimId = victimId;
             ThiefResourcesCount = thiefResourcesCount;
             VictimResources = victimResources;
+            VictimResourcesCount = victimResourcesCount;
         }
     }
 
@@ -124,6 +133,7 @@ namespace Catan.Shared.Dtos.DomainEvents
         public int DevCardNumber;
         public Dictionary<EnumResourceType, int> Resources;
         public bool IsPlayable;
+        public int ResourceCardsCount;
 
         public DevCardBoughtEventPrivateDto(
             int playerId,
@@ -131,7 +141,8 @@ namespace Catan.Shared.Dtos.DomainEvents
             EnumDevelopmentCardTypes devCardType,
             int devCardNumber,
             Dictionary<EnumResourceType, int> resources,
-            bool isPlayable)
+            bool isPlayable,
+            int resourceCardsCount)
         {
             PlayerId = playerId;
             CardId = cardId;
@@ -139,6 +150,7 @@ namespace Catan.Shared.Dtos.DomainEvents
             DevCardNumber = devCardNumber;
             Resources = resources;
             IsPlayable = isPlayable;
+            ResourceCardsCount = resourceCardsCount;
         }
     }
 
@@ -194,11 +206,17 @@ namespace Catan.Shared.Dtos.DomainEvents
     {
         public IEnumerable<int> DevCardsPlayable;
 
-        public DevCardPlayabilityChangedEventPrivateDto(IEnumerable<int> devCardsPlayable)
+        public DevCardPlayabilityChangedEventPrivateDto(
+            IEnumerable<int> devCardsPlayable)
         {
             DevCardsPlayable = devCardsPlayable;
         }
     }
 
-    public sealed class DevCardPlayabilityChangedEventPublicDto : IDomainEventDto { }
+    public sealed class DevCardPlayabilityChangedEventPublicDto : IDomainEventDto
+    {
+        public DevCardPlayabilityChangedEventPublicDto()
+        {
+        }
+    }
 }

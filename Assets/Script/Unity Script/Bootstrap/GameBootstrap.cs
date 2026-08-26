@@ -62,11 +62,11 @@ namespace Catan.Unity.Bootstrap
 
         async void Start()
         {
-            CreateInfrastructure();
-
             var initialState = await JoinGame();
 
             InitializeCache(initialState);
+
+            CreateInfrastructure();
 
             _gameFlow = new AdapterGameFlow(_uiManager, _bus, _phaseTransition, GameCache);
             _dispatcher = new DomainEventDispatcher(GameCache);
@@ -75,7 +75,7 @@ namespace Catan.Unity.Bootstrap
 
             await _socket.Connect(ConnectionCache.GameId.Value, ConnectionCache.PlayerToken.Value, _dispatcher);
 
-            var controllerResourceCards = InitializeRendering(initialState);
+            var controllerResourceCards = InitializeRendering();
 
             InitializeInfrastructure(controllerResourceCards);
 
@@ -99,7 +99,7 @@ namespace Catan.Unity.Bootstrap
             _bus.Publish(new OtherPlayersReceivedUIEvent(GameCache.OtherPlayers)); // those events need to be made while reworking domainevents
         }
 
-        private ControllerResourceCards InitializeRendering(GameStatePerPlayerDto initialState)
+        private ControllerResourceCards InitializeRendering()
         {
             InitializeBuilderMap(GameCache.Board);
 
@@ -139,8 +139,7 @@ namespace Catan.Unity.Bootstrap
             _bus = new EventBus();
             _client = new GameClient();
             _phaseTransition = new AdapterPhaseTransition();
-            _gameFlow = new AdapterGameFlow(_uiManager, _bus, _phaseTransition, GameCache);
-            _eventsTranslator = new EventsTranslator();
+            _eventsTranslator = new EventsTranslator(GameCache);
         }
 
         private ControllerResourceCards InitializeVisualControllers()

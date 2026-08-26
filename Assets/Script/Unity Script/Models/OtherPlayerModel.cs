@@ -1,4 +1,6 @@
-﻿namespace Catan.Unity.Models
+﻿using System.Collections.Generic;
+
+namespace Catan.Unity.Models
 {
     public class OtherPlayerModel
     {
@@ -11,7 +13,10 @@
         public int VictoryCardsPlayed { get; set; }
         public int KnightCardsPlayed { get; set; }
 
-        public OtherPlayerModel(int id, string name, int points, int extraPoints, int resourceCardsNumber, int devCardsNumber, int victoryCardsPlayed, int knightCardsPlayed)
+        public Dictionary<string, int> BuildingsLeft { get; set; }
+
+
+        public OtherPlayerModel(int id, string name, int points, int extraPoints, int resourceCardsNumber, int devCardsNumber, int victoryCardsPlayed, int knightCardsPlayed, Dictionary<string, int> buildingsLeft)
         {
             Id = id;
             Name = name;
@@ -21,6 +26,7 @@
             DevCardsNumber = devCardsNumber;
             VictoryCardsPlayed = victoryCardsPlayed;
             KnightCardsPlayed = knightCardsPlayed;
+            BuildingsLeft = buildingsLeft;
         }
     }
 }

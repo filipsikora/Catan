@@ -12,6 +12,7 @@ namespace Catan.Shared.Dtos.DomainEvents
         public int Ratio;
         public Dictionary<EnumResourceType, int> Bank;
         public Dictionary<EnumResourceType, int> PlayerResources;
+        public int PlayerResourcesCount;
 
         public BankTradeDoneEventPrivateDto(
             int playerId,
@@ -19,7 +20,8 @@ namespace Catan.Shared.Dtos.DomainEvents
             EnumResourceType desired,
             int ratio,
             Dictionary<EnumResourceType, int> bank,
-            Dictionary<EnumResourceType, int> playerResources)
+            Dictionary<EnumResourceType, int> playerResources,
+            int playerResourcesCount)
         {
             PlayerId = playerId;
             Offered = offered;
@@ -27,6 +29,7 @@ namespace Catan.Shared.Dtos.DomainEvents
             Ratio = ratio;
             Bank = bank;
             PlayerResources = playerResources;
+            PlayerResourcesCount = playerResourcesCount;
         }
     }
 
@@ -56,38 +59,13 @@ namespace Catan.Shared.Dtos.DomainEvents
         }
     }
 
-    public sealed class BankTradeDoneEventDto : IDomainEventDto
-    {
-        public int PlayerId;
-        public EnumResourceType Offered;
-        public EnumResourceType Desired;
-        public int Ratio;
-        public Dictionary<EnumResourceType, int> Bank;
-        public Dictionary<EnumResourceType, int> PlayerResources;
-
-        public BankTradeDoneEventDto(
-            int playerId,
-            EnumResourceType offered,
-            EnumResourceType desired,
-            int ratio,
-            Dictionary<EnumResourceType, int> bank,
-            Dictionary<EnumResourceType, int> playerResources)
-        {
-            PlayerId = playerId;
-            Offered = offered;
-            Desired = desired;
-            Ratio = ratio;
-            Bank = bank;
-            PlayerResources = playerResources;
-        }
-    }
-
     public sealed class TradeDoneEventSellerDto : IDomainEventDto
     {
         public int SellerId;
         public int BuyerId;
         public Dictionary<EnumResourceType, int> SellerResources;
         public int BuyerResourcesCount;
+        public int SellerResourcesCount;
         public Dictionary<EnumResourceType, int> Offered;
         public Dictionary<EnumResourceType, int> Desired;
 
@@ -97,12 +75,14 @@ namespace Catan.Shared.Dtos.DomainEvents
             Dictionary<EnumResourceType, int> sellerResources,
             int buyerResourcesCount,
             Dictionary<EnumResourceType, int> offered,
-            Dictionary<EnumResourceType, int> desired)
+            Dictionary<EnumResourceType, int> desired,
+            int sellerResourcesCount)
         {
             SellerId = sellerId;
             BuyerId = buyerId;
             SellerResources = sellerResources;
             BuyerResourcesCount = buyerResourcesCount;
+            SellerResourcesCount = sellerResourcesCount;
             Offered = offered;
             Desired = desired;
         }
@@ -114,6 +94,7 @@ namespace Catan.Shared.Dtos.DomainEvents
         public int BuyerId;
         public int SellerResourcesCount;
         public Dictionary<EnumResourceType, int> BuyerResources;
+        public int BuyerResourcesCount;
         public Dictionary<EnumResourceType, int> Offered;
         public Dictionary<EnumResourceType, int> Desired;
 
@@ -123,12 +104,14 @@ namespace Catan.Shared.Dtos.DomainEvents
             int sellerResourcesCount,
             Dictionary<EnumResourceType, int> buyerResources,
             Dictionary<EnumResourceType, int> offered,
-            Dictionary<EnumResourceType, int> desired)
+            Dictionary<EnumResourceType, int> desired,
+            int buyerResourcesCount)
         {
             SellerId = sellerId;
             BuyerId = buyerId;
             SellerResourcesCount = sellerResourcesCount;
             BuyerResources = buyerResources;
+            BuyerResourcesCount = buyerResourcesCount;
             Offered = offered;
             Desired = desired;
         }
