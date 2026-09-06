@@ -32,7 +32,7 @@ namespace Catan.Unity.Bootstrap
         private EventBus _bus;
         private HandlerEvents _eventsHandler;
         private EventsTranslator _eventsTranslator;
-        private DomainEventDispatcher _dispatcher;
+        private CacheUpdater _dispatcher;
 
         private GameClient _client;
 
@@ -69,7 +69,7 @@ namespace Catan.Unity.Bootstrap
             CreateInfrastructure();
 
             _gameFlow = new AdapterGameFlow(_uiManager, _bus, _phaseTransition, GameCache);
-            _dispatcher = new DomainEventDispatcher(GameCache);
+            _dispatcher = new CacheUpdater(GameCache);
             _eventsHandler = new HandlerEvents(_eventsTranslator, _bus, _client, ConnectionCache.GameId.Value, _gameFlow); // gameid will be removed and this will be moved to create infrastructure
             _socket = new GameSocket();
 

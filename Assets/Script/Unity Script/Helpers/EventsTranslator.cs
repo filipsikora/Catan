@@ -95,7 +95,7 @@ namespace Catan.Unity.Helpers
                         uiEvents.Add(new VillagePlacedUIEvent(dto.VertexId, dto.OwnerId));
                         uiEvents.Add(new MyResourcesChangedUIEvent(_gameCache.MyPlayer.Resources));
                         uiEvents.Add(new AllPlayersResourcesChangedUIEvent(_gameCache.GetOtherPlayersResourceCounts()));
-                        uiEvents.Add(new PlayersPointsChangedUIEvent())
+                        uiEvents.Add(new PlayersPointsChangedUIEvent(dto.OwnerId, _gameCache.MyPlayer.Points));
                         return uiEvents;
                     }
 

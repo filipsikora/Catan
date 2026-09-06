@@ -54,19 +54,22 @@ namespace Catan.Shared.Dtos.DomainEvents
         public int VictimId;
         public Dictionary<EnumResourceType, int> ThiefResources;
         public int VictimResourcesCount;
+        public int ThiefResourcesCount;
 
         public CardStolenEventThiefDto(
             EnumResourceType resource,
             int thiefId,
             int victimId,
             Dictionary<EnumResourceType, int> thiefResources,
-            int victimResourcesCount)
+            int victimResourcesCount,
+            int thiefResourcesCount)
         {
             Resource = resource;
             ThiefId = thiefId;
             VictimId = victimId;
             ThiefResources = thiefResources;
             VictimResourcesCount = victimResourcesCount;
+            ThiefResourcesCount = thiefResourcesCount;
         }
     }
 
@@ -77,19 +80,22 @@ namespace Catan.Shared.Dtos.DomainEvents
         public int VictimId;
         public int ThiefResourcesCount;
         public Dictionary<EnumResourceType, int> VictimResources;
+        public int VictimResourcesCount;
 
         public CardStolenEventVictimDto(
             EnumResourceType resource,
             int thiefId,
             int victimId,
             int thiefResourcesCount,
-            Dictionary<EnumResourceType, int> victimResources)
+            Dictionary<EnumResourceType, int> victimResources,
+            int victimResourceCount)
         {
             Resource = resource;
             ThiefId = thiefId;
             VictimId = victimId;
             ThiefResourcesCount = thiefResourcesCount;
             VictimResources = victimResources;
+            VictimResourcesCount = victimResourceCount;
         }
     }
 

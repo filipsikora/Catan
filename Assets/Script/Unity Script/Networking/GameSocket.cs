@@ -12,12 +12,12 @@ namespace Catan.Unity.Networking
     public sealed class GameSocket
     {
         private ClientWebSocket _socket;
-        private DomainEventDispatcher _dispatcher;
+        private CacheUpdater _updater;
 
-        public async Task Connect(Guid gameId, Guid playerToken, DomainEventDispatcher dispatcher)
+        public async Task Connect(Guid gameId, Guid playerToken, CacheUpdater dispatcher)
         {
             _socket = new ClientWebSocket();
-            _dispatcher = dispatcher;
+            _updater = dispatcher;
 
             var uri = new Uri($"ws://localhost:5000/games/{gameId}/{playerToken}/socket");
 
@@ -48,9 +48,12 @@ namespace Catan.Unity.Networking
         private void HandleMessage(string json)
         {
             var update = JsonConvert.DeserializeObject<GameUpdateDto>(json);
-            var domainEventDto = _dispatcher.Handle(update);
+            var domainEventDto = DomainEventDeserializer.Deserialize(update);
+            _updater.UpdateCache(domainEventDto);
             // get uievents list + log
             // publish it
         }
+
+
     }
 }
