@@ -25,3 +25,10 @@ ISSUE: first turn starts without information, because it only comes in a uimessa
 SOLUTION: i guess the best would be to add a setupphase that would take care of first board initialization or something and then move to the new, first real phase, and trigger onenter
 
 STATE: i dont think i want to bother with that now, i will remember about it for later
+
+5. 
+ISSUE: more than one playerInformationChanged domainEvent can be issued for example when giving resources
+
+SOLUTION: introduce domaineventdone in server and batch changes until it's done
+
+STATE: considering it, want to implement architecture first

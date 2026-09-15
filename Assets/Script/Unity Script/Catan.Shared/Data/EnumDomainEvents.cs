@@ -21,6 +21,8 @@
         VictoryCardUsedEvent,
         KnightCardUsedEvent,
         TradeDoneEvent,
-        RobberPlacedEvent
+        RobberPlacedEvent,
+        ResourcesDistributionDoneEvent,
+        TurnNumberChangedEvent
     }
 }

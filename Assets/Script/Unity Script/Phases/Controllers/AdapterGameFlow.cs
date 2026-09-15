@@ -26,7 +26,7 @@ namespace Catan.Unity.Phases.Controllers
         {
             _eventsHandler = eventsHandler;
 
-            ChangePhase(EnumGamePhases.FirstRoundsBuilding);
+            ChangePhase(_gameCache.GameFlow.CurrentPhase);
         }
 
         public void ChangePhase(EnumGamePhases nextPhase)

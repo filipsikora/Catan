@@ -31,97 +31,42 @@ namespace Catan.Shared.Dtos.DomainEvents
     {
         public int PlayerId;
         public int DevCardNumber;
+        public EnumDevelopmentCardTypes CardType;
 
         public DevCardUsedEventPublicDto(
             int playerId,
-            int devCardNumber)
+            int devCardNumber,
+            EnumDevelopmentCardTypes cardType)
         {
             PlayerId = playerId;
             DevCardNumber = devCardNumber;
+            CardType = cardType;
         }
     }
 
-    public sealed class CardsStolenEventThiefDto : IDomainEventDto
+    public sealed class CardsStolenEventDto : IDomainEventDto
     {
-        public EnumResourceType Resource;
-        public int Quantity;
-        public int ThiefId;
-        public int VictimId;
-        public Dictionary<EnumResourceType, int> ThiefResources;
-        public int VictimResourcesCount;
-        public int ThiefResourcesCount;
+        public EnumResourceType Resource { get; }
+        public int ThiefId { get; }
+        public Dictionary<int, int> VictimIdsToAmounts { get; }
+        public Dictionary<EnumResourceType, int> MyResources { get; }
+        public int MyResourcesCount { get; }
+        public Dictionary<int, int> PlayersResourcesCount { get; }
 
-        public CardsStolenEventThiefDto(
+        public CardsStolenEventDto(
             EnumResourceType resource,
-            int quantity,
             int thiefId,
-            int victimId,
-            Dictionary<EnumResourceType, int> thiefResources,
-            int victimResourcesCount,
-            int thiefResourcesCount)
+            Dictionary<int, int> victimIdsToAmounts,
+            Dictionary<EnumResourceType, int> myResources,
+            int myResourcesCount,
+            Dictionary<int, int> playersResourcesCount)
         {
             Resource = resource;
-            Quantity = quantity;
             ThiefId = thiefId;
-            VictimId = victimId;
-            ThiefResources = thiefResources;
-            VictimResourcesCount = victimResourcesCount;
-            ThiefResourcesCount = thiefResourcesCount;
-        }
-    }
-
-    public sealed class CardsStolenEventVictimDto : IDomainEventDto
-    {
-        public EnumResourceType Resource;
-        public int Quantity;
-        public int ThiefId;
-        public int VictimId;
-        public int ThiefResourcesCount;
-        public Dictionary<EnumResourceType, int> VictimResources;
-        public int VictimResourcesCount;
-
-        public CardsStolenEventVictimDto(
-            EnumResourceType resource,
-            int quantity,
-            int thiefId,
-            int victimId,
-            int thiefResourcesCount,
-            Dictionary<EnumResourceType, int> victimResources,
-            int victimResourcesCount)
-        {
-            Resource = resource;
-            Quantity = quantity;
-            ThiefId = thiefId;
-            VictimId = victimId;
-            ThiefResourcesCount = thiefResourcesCount;
-            VictimResources = victimResources;
-            VictimResourcesCount = victimResourcesCount;
-        }
-    }
-
-    public sealed class CardsStolenEventPublicDto : IDomainEventDto
-    {
-        public EnumResourceType Resource;
-        public int Quantity;
-        public int ThiefId;
-        public int VictimId;
-        public int ThiefResourcesCount;
-        public int VictimResourcesCount;
-
-        public CardsStolenEventPublicDto(
-            EnumResourceType resource,
-            int quantity,
-            int thiefId,
-            int victimId,
-            int thiefResourcesCount,
-            int victimResourcesCount)
-        {
-            Resource = resource;
-            Quantity = quantity;
-            ThiefId = thiefId;
-            VictimId = victimId;
-            ThiefResourcesCount = thiefResourcesCount;
-            VictimResourcesCount = victimResourcesCount;
+            VictimIdsToAmounts = victimIdsToAmounts;
+            MyResources = myResources;
+            MyResourcesCount = myResourcesCount;
+            PlayersResourcesCount = playersResourcesCount;
         }
     }
 
@@ -210,13 +155,6 @@ namespace Catan.Shared.Dtos.DomainEvents
             IEnumerable<int> devCardsPlayable)
         {
             DevCardsPlayable = devCardsPlayable;
-        }
-    }
-
-    public sealed class DevCardPlayabilityChangedEventPublicDto : IDomainEventDto
-    {
-        public DevCardPlayabilityChangedEventPublicDto()
-        {
         }
     }
 }

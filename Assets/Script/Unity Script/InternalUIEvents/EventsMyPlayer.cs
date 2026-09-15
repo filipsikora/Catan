@@ -1,15 +1,6 @@
-﻿using Catan.Shared.Data;
-using Catan.Unity.Interfaces;
-using System.Collections.Generic;
+﻿using Catan.Unity.Interfaces;
 
 namespace Catan.Unity.InternalUIEvents
 {
-    public sealed class MyResourcesChangedUIEvent : IInternalUIEvents
-    {
-        public Dictionary<EnumResourceType, int> Resources { get; }
-        public MyResourcesChangedUIEvent(Dictionary<EnumResourceType, int> resources)
-        {
-            Resources = resources;
-        }
-    }
+    public sealed class MyResourcesChangedUIEvent : IInternalUIEvents { }
 }

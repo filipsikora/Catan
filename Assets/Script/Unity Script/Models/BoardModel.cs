@@ -1,5 +1,4 @@
-﻿using Catan.Shared.Dtos.UiMessages;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Unity.Catan.Models;
 
 namespace Catan.Unity.Models

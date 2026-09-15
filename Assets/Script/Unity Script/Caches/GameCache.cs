@@ -1,5 +1,4 @@
-﻿using Catan.Shared.Data;
-using Catan.Unity.Models;
+﻿using Catan.Unity.Models;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -48,7 +47,7 @@ namespace Catan.Unity.Caches
                 return MyPlayer.BuildingsLeft;
             }
             var otherPlayer = OtherPlayers.FirstOrDefault(player => player.Id == playerId);
-            return otherPlayer?. ?? new Dictionary<string, int>();
+            return otherPlayer?.BuildingsLeft ?? new Dictionary<string, int>();
         }
     }
 }

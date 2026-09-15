@@ -98,4 +98,27 @@ namespace Catan.Shared.Dtos.DomainEvents
             NewChampionPoints = newChampionPoints;
         }
     }
+
+    public sealed class ResourcesDistributionDonePrivateEventDto : IDomainEventDto
+    {
+        public Dictionary<EnumResourceType, int> PlayerResources { get; }
+        public int PlayerResourcesCount { get; }
+        public Dictionary<int, int> PlayersIdsToResourcesCount { get; }
+        public Dictionary<int, Dictionary<EnumResourceType, int>> PlayersIdstoResourceChange { get; }
+        public Dictionary<EnumResourceType, int> Bank { get; }
+
+        public ResourcesDistributionDonePrivateEventDto(
+            Dictionary<EnumResourceType, int> playerResources,
+            int playerResourcesCount,
+            Dictionary<int, int> otherPlayersIdsToResourcesCount,
+            Dictionary<int, Dictionary<EnumResourceType, int>> playersIdstoResourceChange,
+            Dictionary<EnumResourceType, int> bank)
+        {
+            PlayerResources = playerResources;
+            PlayerResourcesCount = playerResourcesCount;
+            PlayersIdsToResourcesCount = otherPlayersIdsToResourcesCount;
+            PlayersIdstoResourceChange = playersIdstoResourceChange;
+            Bank = bank;
+        }
+    }
 }

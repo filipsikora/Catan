@@ -120,9 +120,6 @@ namespace Unity.Helpers
                 case EnumDomainEventsDto.DevCardPlayabilityChangedEventPrivateDto:
                     return Deserialize<DevCardPlayabilityChangedEventPrivateDto>(update);
 
-                case EnumDomainEventsDto.DevCardPlayabilityChangedEventPublicDto:
-                    return Deserialize<DevCardPlayabilityChangedEventPublicDto>(update);
-
                 default:
                     throw new Exception($"Unknown domain event: {update.DtoType}");
             }

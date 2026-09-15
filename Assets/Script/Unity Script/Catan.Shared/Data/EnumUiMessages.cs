@@ -14,8 +14,6 @@
         PlayerSelectedToDiscardMessage,
         PotentialVictimsFoundMessage,
         BankTradeRatioChangedMessage,
-        TurnNumberChangedMessage,
-        DiceRollChangedMessage,
         VillagePlacedMessage,
         RoadPlacedMessage,
         TownPlacedMessage,

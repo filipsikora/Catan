@@ -13,6 +13,7 @@ using Catan.Unity.Visuals.Controllers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Unity.Catan.Helpers;
 using Unity.Helpers;
 using UnityEngine;
 
@@ -31,8 +32,9 @@ namespace Catan.Unity.Bootstrap
 
         private EventBus _bus;
         private HandlerEvents _eventsHandler;
-        private EventsTranslator _eventsTranslator;
-        private CacheUpdater _dispatcher;
+        private CacheUpdater _cacheUpdater;
+        private LogCreator _logCreator;
+        private LogQueue _logQueue;
 
         private GameClient _client;
 
@@ -69,11 +71,13 @@ namespace Catan.Unity.Bootstrap
             CreateInfrastructure();
 
             _gameFlow = new AdapterGameFlow(_uiManager, _bus, _phaseTransition, GameCache);
-            _dispatcher = new CacheUpdater(GameCache);
-            _eventsHandler = new HandlerEvents(_eventsTranslator, _bus, _client, ConnectionCache.GameId.Value, _gameFlow); // gameid will be removed and this will be moved to create infrastructure
+            _cacheUpdater = new CacheUpdater(GameCache);
+            _logCreator = new LogCreator(GameCache);
+            _logQueue = new LogQueue(_bus);
+            _eventsHandler = new HandlerEvents(_bus, _client, ConnectionCache.GameId.Value, _gameFlow); // gameid will be removed and this will be moved to create infrastructure
             _socket = new GameSocket();
 
-            await _socket.Connect(ConnectionCache.GameId.Value, ConnectionCache.PlayerToken.Value, _dispatcher);
+            await _socket.Connect(ConnectionCache.GameId.Value, ConnectionCache.PlayerToken.Value, _cacheUpdater, _gameFlow, _logCreator, _bus);
 
             var controllerResourceCards = InitializeRendering();
 
@@ -139,7 +143,6 @@ namespace Catan.Unity.Bootstrap
             _bus = new EventBus();
             _client = new GameClient();
             _phaseTransition = new AdapterPhaseTransition();
-            _eventsTranslator = new EventsTranslator(GameCache);
         }
 
         private ControllerResourceCards InitializeVisualControllers()

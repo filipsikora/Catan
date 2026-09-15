@@ -72,16 +72,8 @@ namespace Unity.Helpers
                     HandleKnightCardUsed(domainEventDto);
                     break;
 
-                case CardsStolenEventThiefDto domainEventDto:
-                    HandleCardsStolenThief(domainEventDto);
-                    break;
-
-                case CardsStolenEventVictimDto domainEventDto:
-                    HandleCardsStolenVictim(domainEventDto);
-                    break;
-
-                case CardsStolenEventPublicDto domainEventDto:
-                    HandleCardsStolenPublic(domainEventDto);
+                case CardsStolenEventDto domainEventDto:
+                    HandleCardsStolen(domainEventDto);
                     break;
 
                 case CardStolenEventThiefDto domainEventDto:
@@ -120,10 +112,6 @@ namespace Unity.Helpers
                     HandleKnightChampionChanged(domainEventDto);
                     break;
 
-                case RolledNumberChangedEventDto domainEventDto:
-                    HandleRolledNumberChanged(domainEventDto);
-                    break;
-
                 case PhaseChangedEventDto domainEventDto:
                     HandlePhaseChanged(domainEventDto);
                     break;
@@ -133,7 +121,6 @@ namespace Unity.Helpers
                     break;
 
                 case GameWonEventDto domainEventDto:
-                    HandleGameWon(domainEventDto);
                     break;
 
                 case BankTradeDoneEventPrivateDto domainEventDto:
@@ -164,8 +151,16 @@ namespace Unity.Helpers
                     HandleDevCardPlayabilityChangedPrivate(domainEventDto);
                     break;
 
-                case DevCardPlayabilityChangedEventPublicDto domainEventDto:
-                    HandleDevCardPlayabilityChangedPublic(domainEventDto);
+                case ResourcesDistributionDonePrivateEventDto domainEventDto:
+                    HandleResourcesDistributionDonePrivate(domainEventDto);
+                    break;
+
+                case TurnNumberChangedEventDto domainEventDto:
+                    HandleTurnNumberChanged(domainEventDto);
+                    break;
+
+                case RolledNumberChangedEventDto domainEventDto:
+                    HandleRolledNumberChanged(domainEventDto);
                     break;
 
                 default:
@@ -327,46 +322,14 @@ namespace Unity.Helpers
             }
         }
 
-        private void HandleCardsStolenThief(CardsStolenEventThiefDto dto)
+        private void HandleCardsStolen(CardsStolenEventDto dto)
         {
-            _gameCache.MyPlayer.Resources = dto.ThiefResources;
-            _gameCache.MyPlayer.ResourceCardsNumber = dto.ThiefResourcesCount;
+            _gameCache.MyPlayer.Resources = dto.MyResources;
+            _gameCache.MyPlayer.ResourceCardsNumber = dto.MyResourcesCount;
 
-            OtherPlayerModel? victim = FindOtherPlayer(dto.VictimId);
-
-            if (victim != null)
+            foreach (var kvp in dto.PlayersResourcesCount)
             {
-                victim.ResourceCardsNumber = dto.VictimResourcesCount;
-            }
-        }
-
-        private void HandleCardsStolenVictim(CardsStolenEventVictimDto dto)
-        {
-            _gameCache.MyPlayer.Resources = dto.VictimResources;
-            _gameCache.MyPlayer.ResourceCardsNumber = dto.VictimResourcesCount;
-
-            OtherPlayerModel? thief = FindOtherPlayer(dto.ThiefId);
-
-            if (thief != null)
-            {
-                thief.ResourceCardsNumber = dto.ThiefResourcesCount;
-            }
-        }
-
-        private void HandleCardsStolenPublic(CardsStolenEventPublicDto dto)
-        {
-            OtherPlayerModel? thief = FindOtherPlayer(dto.ThiefId);
-
-            if (thief != null)
-            {
-                thief.ResourceCardsNumber = dto.ThiefResourcesCount;
-            }
-
-            OtherPlayerModel? victim = FindOtherPlayer(dto.VictimId);
-
-            if (victim != null)
-            {
-                victim.ResourceCardsNumber = dto.VictimResourcesCount;
+                UpdateOtherPlayerResourceCount(kvp.Key, kvp.Value);
             }
         }
 
@@ -415,75 +378,175 @@ namespace Unity.Helpers
 
         private void HandleCardsDiscardedPrivate(CardsDiscardedEventPrivateDto dto)
         {
+            _gameCache.GameFlow.Bank = dto.Bank;
+
             _gameCache.MyPlayer.Resources = dto.Resources;
+            _gameCache.MyPlayer.ResourceCardsNumber = dto.PlayerResourcesCount;
         }
 
         private void HandleCardsDiscardedPublic(CardsDiscardedPublicEventDto dto)
         {
+            _gameCache.GameFlow.Bank = dto.Bank;
+
+            OtherPlayerModel? player = FindOtherPlayer(dto.PlayerId);
+
+            if (player != null)
+            {
+                player.ResourceCardsNumber = dto.ResourcesCount;
+            }
         }
 
         private void HandlePlayerResourcesReceivedPrivate(PlayerResourcesReceivedEventPrivateDto dto)
         {
+            _gameCache.GameFlow.Bank = dto.Bank;
+
+            _gameCache.MyPlayer.Resources = dto.PlayerResources;
+            _gameCache.MyPlayer.ResourceCardsNumber = dto.PlayerResourcesCount;
         }
 
         private void HandlePlayerResourcesReceivedPublic(PlayerResourcesReceivedEventPublicDto dto)
         {
+            _gameCache.GameFlow.Bank = dto.Bank;
+
+            UpdateOtherPlayerResourceCount(dto.PlayerId, dto.PlayerResourcesCount);
         }
 
         private void HandleRoadChampionChanged(RoadChampionChangedEventDto dto)
         {
+            if (dto.OldChampionId.HasValue)
+            {
+                OtherPlayerModel? oldChampion = FindOtherPlayer(dto.OldChampionId.Value);
+
+                if (oldChampion != null)
+                {
+                    oldChampion.ExtraPoints = dto.OldChampionExtraPoints ?? 0;
+                    oldChampion.Points = dto.OldChampionPoints ?? 0;
+                }
+            }
+
+            if (dto.NewChampionId.HasValue)
+            {
+                OtherPlayerModel? newChampion = FindOtherPlayer(dto.NewChampionId.Value);
+
+                if (newChampion != null)
+                {
+                    newChampion.ExtraPoints = dto.NewChampionExtraPoints ?? 0;
+                    newChampion.Points = dto.NewChampionPoints ?? 0;
+                }
+            }
+
+            _gameCache.GameFlow.RoadChampionId = dto.NewChampionId;
         }
 
         private void HandleKnightChampionChanged(KnightChampionChangedEventDto dto)
         {
-        }
+            _gameCache.GameFlow.KnightChampionId = dto.NewChampionId;
 
-        private void HandleRolledNumberChanged(RolledNumberChangedEventDto dto)
-        {
+            if (dto.OldChampionId.HasValue)
+            {
+                OtherPlayerModel? oldChampion = FindOtherPlayer(dto.OldChampionId.Value);
+                if (oldChampion != null)
+                {
+                    oldChampion.ExtraPoints = dto.OldChampionExtraPoints ?? 0;
+                    oldChampion.Points = dto.OldChampionPoints ?? 0;
+                }
+            }
+
+            if (dto.NewChampionId.HasValue)
+            {
+                OtherPlayerModel? newChampion = FindOtherPlayer(dto.NewChampionId.Value);
+                if (newChampion != null)
+                {
+                    newChampion.ExtraPoints = dto.NewChampionExtraPoints ?? 0;
+                    newChampion.Points = dto.NewChampionPoints ?? 0;
+                }
+            }
         }
 
         private void HandlePhaseChanged(PhaseChangedEventDto dto)
         {
+            _gameCache.GameFlow.CurrentPhase = dto.Phase;
         }
 
         private void HandlePlayersToMoveChanged(PlayersToMoveChangedEventDto dto)
         {
-        }
-
-        private void HandleGameWon(GameWonEventDto dto)
-        {
+            _gameCache.GameFlow.PlayersToMove = dto.PlayersToMove;
         }
 
         private void HandleBankTradeDonePrivate(BankTradeDoneEventPrivateDto dto)
         {
+            _gameCache.MyPlayer.Resources = dto.PlayerResources;
+            _gameCache.MyPlayer.ResourceCardsNumber = dto.PlayerResourcesCount;
+
+            _gameCache.GameFlow.Bank = dto.Bank;
         }
 
         private void HandleBankTradeDonePublic(BankTradeDoneEventPublicDto dto)
         {
+            UpdateOtherPlayerResourceCount(dto.PlayerId, dto.PlayerResourcesCount);
+
+            _gameCache.GameFlow.Bank = dto.Bank;
         }
 
         private void HandleTradeDoneSeller(TradeDoneEventSellerDto dto)
         {
+            _gameCache.MyPlayer.Resources = dto.SellerResources;
+            _gameCache.MyPlayer.ResourceCardsNumber = dto.SellerResourcesCount;
+
+            UpdateOtherPlayerResourceCount(dto.BuyerId, dto.BuyerResourcesCount);
         }
 
         private void HandleTradeDoneBuyer(TradeDoneEventBuyerDto dto)
         {
+            _gameCache.MyPlayer.ResourceCardsNumber = dto.BuyerResourcesCount;
+            _gameCache.MyPlayer.Resources = dto.BuyerResources;
+
+            UpdateOtherPlayerResourceCount(dto.SellerId, dto.SellerResourcesCount);
         }
 
         private void HandleTradeDonePublic(TradeDoneEventPublicDto dto)
         {
+            UpdateOtherPlayerResourceCount(dto.BuyerId, dto.BuyerResourcesCount);
+
+            UpdateOtherPlayerResourceCount(dto.SellerId, dto.SellerResourcesCount);
         }
 
         private void HandleRobberPlaced(RobberPlacedEventDto dto)
         {
+            _gameCache.Board.BlockedHexId = dto.HexId;
         }
 
         private void HandleDevCardPlayabilityChangedPrivate(DevCardPlayabilityChangedEventPrivateDto dto)
         {
+            var playableCards = dto.DevCardsPlayable.ToHashSet();
+
+            foreach (var devCard in _gameCache.MyPlayer.DevCards)
+            {
+                devCard.IsPlayable = playableCards.Contains(devCard.Id);
+            }
         }
 
-        private void HandleDevCardPlayabilityChangedPublic(DevCardPlayabilityChangedEventPublicDto dto)
+        private void HandleResourcesDistributionDonePrivate(ResourcesDistributionDonePrivateEventDto dto)
         {
+            _gameCache.MyPlayer.Resources = dto.PlayerResources;
+            _gameCache.MyPlayer.ResourceCardsNumber = dto.PlayerResourcesCount;
+
+            foreach (var kvp in dto.PlayersIdsToResourcesCount)
+            {
+                UpdateOtherPlayerResourceCount(kvp.Key, kvp.Value);
+            }
+
+            _gameCache.GameFlow.Bank = dto.Bank;
+        }
+
+        private void HandleRolledNumberChanged(RolledNumberChangedEventDto dto)
+        {
+            _gameCache.GameFlow.RolledNumber = dto.NewRolledNumber;
+        }
+
+        private void HandleTurnNumberChanged(TurnNumberChangedEventDto dto)
+        {
+            _gameCache.GameFlow.TurnNumber = dto.NewTurnNumber;
         }
 
         private OtherPlayerModel? FindOtherPlayer(int playerId)

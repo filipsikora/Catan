@@ -1,15 +1,23 @@
-﻿using Catan.Shared.Data;
-using Catan.Unity.Interfaces;
+﻿using Catan.Unity.Interfaces;
 using System.Collections.Generic;
 
 namespace Catan.Unity.InternalUIEvents
 {
-    public sealed class BankInformationChangedUIEvent : IInternalUIEvents
+    public sealed class BankInformationChangedUIEvent : IInternalUIEvents { }
+
+    public sealed class GameWonUIEvent : IInternalUIEvents
     {
-        public Dictionary<EnumResourceType, int> Bank { get; }
-        public BankInformationChangedUIEvent(Dictionary<EnumResourceType, int> bank)
+        public int PlayerId { get; }
+        public Dictionary<int, int> PlayerScoresToIds;
+
+        public GameWonUIEvent(int playerId, Dictionary<int, int> playerScoresToIds)
         {
-            Bank = bank;
+            PlayerId = playerId;
+            PlayerScoresToIds = playerScoresToIds;
         }
     }
+
+    public sealed class GameInformationChangedUIEvent : IInternalUIEvents { }
+
+
 }

@@ -51,4 +51,13 @@ namespace Catan.Shared.Dtos.DomainEvents
             PlayerScoresToIds = playerScoresToIds;
         }
     }
+
+    public sealed class TurnNumberChangedEventDto : IDomainEventDto
+    {
+        public int NewTurnNumber;
+        public TurnNumberChangedEventDto(int newTurnNumber)
+        {
+            NewTurnNumber = newTurnNumber;
+        }
+    }
 }

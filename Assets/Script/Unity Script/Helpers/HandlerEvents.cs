@@ -10,7 +10,6 @@ namespace Catan.Unity.Helpers
 {
     public class HandlerEvents
     {
-        private EventsTranslator _translator;
         private EventBus _bus;
 
         private GameClient _client;
@@ -23,9 +22,8 @@ namespace Catan.Unity.Helpers
         public int? SelectedVertexId;
         public int? SelectedEdgeId;
 
-        public HandlerEvents(EventsTranslator translator, EventBus bus, GameClient client, Guid gameId, AdapterGameFlow gameFlow)
+        public HandlerEvents(EventBus bus, GameClient client, Guid gameId, AdapterGameFlow gameFlow)
         {
-            _translator = translator;
             _bus = bus;
             _client = client;
             _gameId = gameId;

@@ -37,4 +37,7 @@ namespace Catan.Unity.InternalUIEvents
             BuildingsCount = buildingsCount;
         }
     }
+
+    public sealed class PlayerInformationTableChangedUIEvent : IInternalUIEvents { }
+    }
 }

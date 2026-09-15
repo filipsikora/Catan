@@ -20,9 +20,7 @@
         VictoryCardUsedEventDto,
         KnightCardUsedEventDto,
 
-        CardsStolenEventThiefDto,
-        CardsStolenEventVictimDto,
-        CardsStolenEventPublicDto,
+        CardsStolenEventDto,
 
         CardStolenEventThiefDto,
         CardStolenEventVictimDto,
@@ -52,6 +50,9 @@
         RobberPlacedEventDto,
 
         DevCardPlayabilityChangedEventPrivateDto,
-        DevCardPlayabilityChangedEventPublicDto
+
+        ResourcesDistributionDonePrivateEventDto,
+
+        TurnNumberChangedEventDto
     }
 }
