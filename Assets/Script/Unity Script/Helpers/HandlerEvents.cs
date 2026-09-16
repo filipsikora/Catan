@@ -15,19 +15,11 @@ namespace Catan.Unity.Helpers
         private GameClient _client;
         private Guid _gameId;
 
-        private AdapterGameFlow _gameFlow;
-
-        // temporary 
-
-        public int? SelectedVertexId;
-        public int? SelectedEdgeId;
-
-        public HandlerEvents(EventBus bus, GameClient client, Guid gameId, AdapterGameFlow gameFlow)
+        public HandlerEvents(EventBus bus, GameClient client, Guid gameId)
         {
             _bus = bus;
             _client = client;
             _gameId = gameId;
-            _gameFlow = gameFlow;
         }
 
         public async void Execute(EnumCommandType type, object? data = null)    
@@ -46,7 +38,7 @@ namespace Catan.Unity.Helpers
             {
                 UnityEngine.Debug.Log($"{dto.Type}, {dto.Data}");
                 response = await _client.SendCommand(_gameId, dto);
-                UnityEngine.Debug.Log($"{response.Success} {response.NextPhase} {response.UiMessages}");
+                UnityEngine.Debug.Log($"{response.Success} {response.UiMessages}");
             }
 
             catch (Exception ex)
@@ -61,19 +53,11 @@ namespace Catan.Unity.Helpers
                 return;
             }
 
-            if (response.NextPhase != null)
-            {
-                if (!Enum.TryParse<EnumGamePhases>(response.NextPhase, out var nextPhase))
-                    throw new Exception($"Failed to parse NextPhase: {response.NextPhase}");
-
-                _gameFlow.ChangePhase(nextPhase);
-            }
-
             foreach (var message in response.UiMessages)
             {
                 UnityEngine.Debug.Log($"{message.Type}, {message.Data} translating");
 
-                var uiMessage = _translator.TranslateUIMessage(message);
+                var uiMessage = EventsTranslator.TranslateUIMessage(message);
 
                 _bus.Publish(uiMessage);
             }
@@ -91,24 +75,6 @@ namespace Catan.Unity.Helpers
                 UnityEngine.Debug.Log($"Query error: {queryName}, {ex.Message}");
                 return default;
             }
-        }
-
-        // temporary
-
-        public void SetSelectedVertexId(int vertexId)
-        {
-            SelectedVertexId = vertexId;
-        }
-
-        public void SetSelectedEdgeId(int edgeId)
-        {
-            SelectedEdgeId = edgeId;
-        }
-
-        public void ResetSelectedPositions()
-        {
-            SelectedEdgeId = null;
-            SelectedVertexId = null;
         }
     }
 }

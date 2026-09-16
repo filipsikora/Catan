@@ -1,4 +1,5 @@
-﻿using Catan.Unity.Helpers;
+﻿using Catan.Unity.Caches;
+using Catan.Unity.Helpers;
 using Catan.Unity.Panels;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
@@ -9,7 +10,7 @@ namespace Catan.Unity.Phases.Adapters
     {
         private BinderBeforeRoll _binder;
 
-        public AdapterBeforeRoll(ManagerUI ui, EventBus bus, HandlerEvents eventHandler) : base(ui, bus, eventHandler) { }
+        public AdapterBeforeRoll(ManagerUI ui, EventBus bus, HandlerEvents eventHandler, GameCache gameCache) : base(ui, bus, eventHandler, gameCache) { }
 
         public override void OnEnter()
         {

@@ -1,4 +1,5 @@
 ﻿using Catan.Shared.Data;
+using Catan.Unity.Caches;
 using Catan.Unity.Data;
 using Catan.Unity.Helpers;
 using Catan.Unity.InternalUIEvents;
@@ -8,7 +9,11 @@ namespace Catan.Unity.Phases.Binders
 {
     public class BinderNormalRound : BaseBinder
     {
-        public BinderNormalRound(ManagerUI ui, EventBus bus, HandlerEvents eventsHandler) : base(ui, bus, eventsHandler) { }
+        private readonly SelectionCache _selectionCache;
+        public BinderNormalRound(ManagerUI ui, EventBus bus, HandlerEvents eventsHandler, SelectionCache selectionCache) : base(ui, bus, eventsHandler)
+        {
+            _selectionCache = selectionCache;
+        }
 
         public override void Bind()
         {
@@ -26,48 +31,48 @@ namespace Catan.Unity.Phases.Binders
             {
                 Bus.Publish(new PositionsResetUIEvent());
 
-                if (EventsHandler.SelectedVertexId == null)
+                if (_selectionCache.SelectedVertexId == null)
                 {
                     Bus.Publish(new LogMessageUIEvent(EnumLogTypes.Info, "First select a vertex"));
 
                     return;
                 }
 
-                EventsHandler.Execute(EnumCommandType.BuildVillageCommand, new { vertexId = EventsHandler.SelectedVertexId });
+                EventsHandler.Execute(EnumCommandType.BuildVillageCommand, new { vertexId = _selectionCache.SelectedVertexId });
 
-                EventsHandler.ResetSelectedPositions();
+                _selectionCache.Clear();
             });
 
             UI.MainUIPanel.Bind(EnumMainUIButtons.BuildRoad, () =>
             {
                 Bus.Publish(new PositionsResetUIEvent());
 
-                if (EventsHandler.SelectedEdgeId == null)
+                if (_selectionCache.SelectedEdgeId == null)
                 {
                     Bus.Publish(new LogMessageUIEvent(EnumLogTypes.Info, "First select a road"));
 
                     return;
                 }
 
-                EventsHandler.Execute(EnumCommandType.BuildRoadCommand, new {edgeId = EventsHandler.SelectedEdgeId });
+                EventsHandler.Execute(EnumCommandType.BuildRoadCommand, new {edgeId = _selectionCache.SelectedEdgeId });
 
-                EventsHandler.ResetSelectedPositions();
+                _selectionCache.Clear();
             });
 
             UI.MainUIPanel.Bind(EnumMainUIButtons.UpgradeVillage, () =>
             {
                 Bus.Publish(new PositionsResetUIEvent());
 
-                if (EventsHandler.SelectedVertexId == null)
+                if (_selectionCache.SelectedVertexId == null)
                 {
                     Bus.Publish(new LogMessageUIEvent(EnumLogTypes.Info, "First select a vertex"));
 
                     return;
                 }
 
-                EventsHandler.Execute(EnumCommandType.UpgradeVillageCommand, new { vertexId = EventsHandler.SelectedVertexId });
+                EventsHandler.Execute(EnumCommandType.UpgradeVillageCommand, new { vertexId = _selectionCache.SelectedVertexId });
 
-                EventsHandler.ResetSelectedPositions();
+                _selectionCache.Clear();
             });
 
             UI.MainUIPanel.Bind(EnumMainUIButtons.DevelopmentCards, () =>

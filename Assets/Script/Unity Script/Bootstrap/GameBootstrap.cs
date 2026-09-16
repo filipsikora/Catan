@@ -42,8 +42,9 @@ namespace Catan.Unity.Bootstrap
         private AdapterPhaseTransition _phaseTransition;
         public Dictionary<EnumResourceType, Color> PortColorLookup { get; private set; }
 
-        public GameCache GameCache;
-        public ConnectionCache ConnectionCache;
+        private GameCache _gameCache;
+        private ConnectionCache _connectionCache;
+        private SelectionCache _selectionCache;
 
         private GameSocket _socket;
 
@@ -70,11 +71,11 @@ namespace Catan.Unity.Bootstrap
 
             CreateInfrastructure();
 
-            _gameFlow = new AdapterGameFlow(_uiManager, _bus, _phaseTransition, GameCache);
-            _cacheUpdater = new CacheUpdater(GameCache);
-            _logCreator = new LogCreator(GameCache);
+            _gameFlow = new AdapterGameFlow(_uiManager, _bus, _phaseTransition, _gameCache, _selectionCache);
+            _cacheUpdater = new CacheUpdater(_gameCache);
+            _logCreator = new LogCreator(_gameCache);
             _logQueue = new LogQueue(_bus);
-            _eventsHandler = new HandlerEvents(_bus, _client, ConnectionCache.GameId.Value, _gameFlow); // gameid will be removed and this will be moved to create infrastructure
+            _eventsHandler = new HandlerEvents(_bus, _client, _connectionCache.GameId.Value); // gameid will be removed and this will be moved to create infrastructure
             _socket = new GameSocket();
 
             var controllerResourceCards = InitializeRendering();
@@ -83,7 +84,7 @@ namespace Catan.Unity.Bootstrap
 
             ApplyInitialState();
 
-            await _socket.Connect(ConnectionCache.GameId.Value, ConnectionCache.PlayerToken.Value, _cacheUpdater, _gameFlow, _logCreator, _bus, _logQueue);
+            await _socket.Connect(_connectionCache.GameId.Value, _connectionCache.PlayerToken.Value, _cacheUpdater, _gameFlow, _logCreator, _bus, _logQueue);
 
         }
 
@@ -91,22 +92,22 @@ namespace Catan.Unity.Bootstrap
         {
             var joinGameResponse = await _client.JoinGame();
 
-            ConnectionCache = new ConnectionCache(joinGameResponse.PlayerToken, joinGameResponse.GameId);
+            _connectionCache = new ConnectionCache(joinGameResponse.PlayerToken, joinGameResponse.GameId);
 
             return joinGameResponse.Payload.ToObject<GameStatePerPlayerDto>();
         }
 
         private void ApplyInitialState()
         {
-            _bus.Publish(new RobberMovedUIEvent(GameCache.Board.BlockedHexId));
-            _bus.Publish(new GameFlowReceivedUIEvent(GameCache.GameFlow));
-            _bus.Publish(new PlayerStateReceivedUIEvent(GameCache.MyPlayer));
-            _bus.Publish(new OtherPlayersReceivedUIEvent(GameCache.OtherPlayers)); // those events need to be made while reworking domainevents
+            _bus.Publish(new RobberMovedUIEvent(_gameCache.Board.BlockedHexId));
+            _bus.Publish(new GameFlowReceivedUIEvent(_gameCache.GameFlow));
+            _bus.Publish(new PlayerStateReceivedUIEvent(_gameCache.MyPlayer));
+            _bus.Publish(new OtherPlayersReceivedUIEvent(_gameCache.OtherPlayers)); // those events need to be made while reworking domainevents
         }
 
         private ControllerResourceCards InitializeRendering()
         {
-            InitializeBuilderMap(GameCache.Board);
+            InitializeBuilderMap(_gameCache.Board);
 
             var controllerResourceCards = InitializeVisualControllers();
 
@@ -162,9 +163,11 @@ namespace Catan.Unity.Bootstrap
         private void InitializeCache(GameStatePerPlayerDto joinState)
         {
             var gameFlow = joinState.GameFlow;
-            GameCache = new GameCache(BoardMappers.MapBoardStateToModel(joinState), PlayerMappers.MapPlayerDtoToModel(joinState), PlayerMappers.MapOtherPlayersDtoToModel(joinState.OtherPlayers),
+            _gameCache = new GameCache(BoardMappers.MapBoardStateToModel(joinState), PlayerMappers.MapPlayerDtoToModel(joinState), PlayerMappers.MapOtherPlayersDtoToModel(joinState.OtherPlayers),
                 new GameFlowModel(gameFlow.TurnNumber, gameFlow.RolledNumber, gameFlow.CurrentPlayerId, gameFlow.KnightChampionId, gameFlow.RoadChampionId, gameFlow.CurrentPhase, gameFlow.Bank, 
                 gameFlow.PlayersToMove));
+
+            _selectionCache = new SelectionCache();
         }
     }
 }

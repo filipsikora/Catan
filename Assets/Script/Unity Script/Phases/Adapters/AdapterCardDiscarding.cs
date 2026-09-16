@@ -1,12 +1,10 @@
 ﻿using Catan.Shared.Data;
-using Catan.Shared.Dtos;
+using Catan.Unity.Caches;
 using Catan.Unity.Helpers;
 using Catan.Unity.InternalUIEvents;
 using Catan.Unity.Panels;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using EventBus = Catan.Unity.Helpers.EventBus;
 
 namespace Catan.Unity.Phases.Adapters
@@ -14,11 +12,11 @@ namespace Catan.Unity.Phases.Adapters
     public class AdapterCardDiscarding : BasePhaseAdapter
     {
         private BinderCardDiscarding _binder;
-        private Dictionary<EnumResourceType, int> _resources;
+        private GameCache _gameCache;
 
-        public AdapterCardDiscarding(ManagerUI ui, EventBus bus, HandlerEvents eventHandler, Dictionary<EnumResourceType, int> resources) : base(ui, bus, eventHandler)
+        public AdapterCardDiscarding(ManagerUI ui, EventBus bus, HandlerEvents eventHandler, GameCache gameCache) : base(ui, bus, eventHandler, gameCache)
         {
-            _resources = resources;
+            _gameCache = gameCache;
         }
 
         public override void OnEnter()
@@ -34,7 +32,7 @@ namespace Catan.Unity.Phases.Adapters
             EventBus.Subscribe<PlayerSelectedToDiscardUIEvent>(OnPlayerChosen);
             EventBus.Subscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
 
-            UI.CardDiscardPanel.Show(_resources);
+            UI.CardDiscardPanel.Show(_gameCache.MyPlayer.Resources);
         }
 
         private void OnResourceCardClicked(ResourceCardClickedUIEvent signal)

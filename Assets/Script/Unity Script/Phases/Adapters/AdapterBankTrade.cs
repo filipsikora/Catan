@@ -7,18 +7,15 @@ using Catan.Unity.Data;
 using Catan.Shared.Data;
 using Catan.Unity.Helpers;
 using System.Collections.Generic;
+using Catan.Unity.Caches;
 
 namespace Catan.Unity.Phases.Adapters
 {
     public class AdapterBankTrade : BasePhaseAdapter
     {
         private BinderBankTrade _binder;
-        private Dictionary<EnumResourceType, int> _resources;
 
-        public AdapterBankTrade(ManagerUI ui, EventBus bus, HandlerEvents eventHandler, Dictionary<EnumResourceType, int> resources) : base(ui,bus, eventHandler)
-        {
-            _resources = resources;
-        }
+        public AdapterBankTrade(ManagerUI ui, EventBus bus, HandlerEvents eventHandler, Dictionary<EnumResourceType, int> resources, GameCache gameCache) : base(ui, bus, eventHandler, gameCache) { }
 
         public override void OnEnter()
         {
@@ -32,7 +29,7 @@ namespace Catan.Unity.Phases.Adapters
             EventBus.Subscribe<BankTradeRatioChangedUIEvent>(OnRatioChanged);
             EventBus.Subscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
 
-            UI.BankTradePanel.Show(_resources);
+            UI.BankTradePanel.Show(GameCache.GameFlow.Bank);
         }
 
         private void OnRatioChanged(BankTradeRatioChangedUIEvent signal)

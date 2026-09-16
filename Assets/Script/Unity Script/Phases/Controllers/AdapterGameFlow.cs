@@ -13,13 +13,15 @@ namespace Catan.Unity.Phases.Controllers
         private readonly EventBus _bus;
         private HandlerEvents _eventsHandler;
         private GameCache _gameCache;
+        private SelectionCache _selectionCache;
 
-        public AdapterGameFlow(ManagerUI ui, EventBus bus, AdapterPhaseTransition phases, GameCache gameCache)
+        public AdapterGameFlow(ManagerUI ui, EventBus bus, AdapterPhaseTransition phases, GameCache gameCache, SelectionCache selectionCache)
         {
             _ui = ui;
             _bus = bus;
             _phases = phases;
             _gameCache = gameCache;
+            _selectionCache = selectionCache;
         }
 
         public void Initialize(HandlerEvents eventsHandler)
@@ -38,7 +40,7 @@ namespace Catan.Unity.Phases.Controllers
                     break;
 
                 case EnumGamePhases.NormalRound:
-                    _phases.TransitionTo(new AdapterNormalRound(_ui, _bus, _eventsHandler));
+                    _phases.TransitionTo(new AdapterNormalRound(_ui, _bus, _eventsHandler, _selectionCache));
                     break;
 
                 case EnumGamePhases.BeforeRoll:
@@ -82,7 +84,7 @@ namespace Catan.Unity.Phases.Controllers
                     break;
 
                 case EnumGamePhases.FirstRoundsBuilding:
-                    _phases.TransitionTo(new AdapterFirstRoundsBuilding(_ui, _bus, _eventsHandler));
+                    _phases.TransitionTo(new AdapterFirstRoundsBuilding(_ui, _bus, _eventsHandler, _selectionCache));
                     break;
             }
         }

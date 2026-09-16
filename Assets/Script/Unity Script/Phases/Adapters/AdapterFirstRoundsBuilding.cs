@@ -1,4 +1,5 @@
 ﻿using Catan.Shared.Data;
+using Catan.Unity.Caches;
 using Catan.Unity.Helpers;
 using Catan.Unity.InternalUIEvents;
 using Catan.Unity.Panels;
@@ -10,12 +11,16 @@ namespace Catan.Unity.Phases.Adapters
     public class AdapterFirstRoundsBuilding : BasePhaseAdapter
     {
         public BinderFirstRoundBuildings _binder;
+        private readonly SelectionCache _selectionCache;
 
-        public AdapterFirstRoundsBuilding(ManagerUI ui, EventBus bus, HandlerEvents eventHandler) : base(ui, bus, eventHandler) { }
+        public AdapterFirstRoundsBuilding(ManagerUI ui, EventBus bus, HandlerEvents eventHandler, SelectionCache selectionCache) : base(ui, bus, eventHandler)
+        {
+            _selectionCache = selectionCache;
+        }
 
         public override void OnEnter()
         {
-            _binder = new BinderFirstRoundBuildings(UI, EventBus, EventsHandler);
+            _binder = new BinderFirstRoundBuildings(UI, EventBus, EventsHandler, _selectionCache);
             _binder.Bind();
 
             UI.MainUIPanel.gameObject.SetActive(true);
@@ -37,16 +42,14 @@ namespace Catan.Unity.Phases.Adapters
 
         private void OnVertexClicked(VertexClickedUIEvent signal)
         {
-            EventsHandler.ResetSelectedPositions();
-            EventsHandler.SetSelectedVertexId(signal.VertexId);
+            _selectionCache.SelectVertex(signal.VertexId);
 
             EventsHandler.Execute(EnumCommandType.VertexClickedCommand, new { vertexId = signal.VertexId });
         }
 
         private void OnEdgeClicked(EdgeClickedUIEvent signal)
         {
-            EventsHandler.ResetSelectedPositions();
-            EventsHandler.SetSelectedEdgeId(signal.EdgeId);
+            _selectionCache.SelectEdge(signal.EdgeId);
 
             EventsHandler.Execute(EnumCommandType.EdgeClickedCommand, new { edgeId = signal.EdgeId });
         }
