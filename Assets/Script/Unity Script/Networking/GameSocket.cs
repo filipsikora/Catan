@@ -19,15 +19,17 @@ namespace Catan.Unity.Networking
         private CacheUpdater _updater;
         private AdapterGameFlow _gameFlow;
         private LogCreator _logCreator;
+        private LogQueue _logQueue;
         private EventBus _bus;
 
-        public async Task Connect(Guid gameId, Guid playerToken, CacheUpdater dispatcher, AdapterGameFlow gameFlow, LogCreator logCreator, EventBus bus)
+        public async Task Connect(Guid gameId, Guid playerToken, CacheUpdater dispatcher, AdapterGameFlow gameFlow, LogCreator logCreator, EventBus bus, LogQueue logQueue)
         {
             _socket = new ClientWebSocket();
             _updater = dispatcher;
             _bus = bus;
             _gameFlow = gameFlow;
             _logCreator = logCreator;
+            _logQueue = logQueue;
 
             var uri = new Uri($"ws://localhost:5000/games/{gameId}/{playerToken}/socket");
 
@@ -74,8 +76,7 @@ namespace Catan.Unity.Networking
             }
 
             var log = _logCreator.CreateLog(domainEventDto);
-
-            // publish it
+            _logQueue.AddLogToQueue(log);
         }
 
 

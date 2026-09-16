@@ -37,5 +37,11 @@ namespace Catan.Unity.Helpers
             var nextLog = _logMessages.Dequeue();
             _bus.Publish(nextLog);
         }
+
+        public void LogDisplayFinished()
+        {
+            _isDisplaying = false;
+            DisplayNextLog();
+        }
     }
 }

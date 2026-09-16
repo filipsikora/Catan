@@ -56,7 +56,7 @@ namespace Unity.Catan.Helpers
                     {
                         if (dto.ThiefId == _cache.MyPlayer.PlayerId)
                         {
-                            return new LogMessageUIEvent(type, $"You stole {dto.VictimIdsToAmounts.Count} {dto.Resource} cards from other players");
+                            return new LogMessageUIEvent(type, $"You stole {dto.VictimIdsToAmounts.Values.Sum()} {dto.Resource} cards from other players");
                         }
 
                         return new LogMessageUIEvent(type, $"Player {dto.ThiefId} stole {dto.VictimIdsToAmounts.Values.Sum()} {dto.Resource} cards from other players");

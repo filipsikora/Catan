@@ -22,7 +22,7 @@ namespace Catan.Unity.Panels
         public FactoryResourceCards factoryResourceCards;
         public FactoryDevelopmentCards factoryDevCards;
             
-        public void Initialize(EventBus bus, ControllerResourceCards controller, BoardManager boardManager)
+        public void Initialize(EventBus bus, ControllerResourceCards controller, BoardManager boardManager, LogQueue logQueue)
         {
             factoryResourceCards.Initialize(bus, boardManager);
             factoryDevCards.Initialize(bus);
@@ -31,6 +31,7 @@ namespace Catan.Unity.Panels
 
             VictimSelectorPanel.Initialize(bus);
             TradeOfferPanel.Initialize(bus);
+            LogsPanel.Initialize(logQueue);
         }
 
         public void UpdateTurnCounter(int turn) => MainUIPanel.UpdateTurnCounter(turn);

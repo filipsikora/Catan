@@ -466,6 +466,7 @@ namespace Unity.Helpers
         private void HandlePhaseChanged(PhaseChangedEventDto dto)
         {
             _gameCache.GameFlow.CurrentPhase = dto.Phase;
+            _gameCache.GameFlow.PlayersToMove = dto.PlayersToMove;
         }
 
         private void HandlePlayersToMoveChanged(PlayersToMoveChangedEventDto dto)

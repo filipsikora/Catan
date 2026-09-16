@@ -77,13 +77,14 @@ namespace Catan.Unity.Bootstrap
             _eventsHandler = new HandlerEvents(_bus, _client, ConnectionCache.GameId.Value, _gameFlow); // gameid will be removed and this will be moved to create infrastructure
             _socket = new GameSocket();
 
-            await _socket.Connect(ConnectionCache.GameId.Value, ConnectionCache.PlayerToken.Value, _cacheUpdater, _gameFlow, _logCreator, _bus);
-
             var controllerResourceCards = InitializeRendering();
 
             InitializeInfrastructure(controllerResourceCards);
 
             ApplyInitialState();
+
+            await _socket.Connect(ConnectionCache.GameId.Value, ConnectionCache.PlayerToken.Value, _cacheUpdater, _gameFlow, _logCreator, _bus, _logQueue);
+
         }
 
         private async Task<GameStatePerPlayerDto> JoinGame()
@@ -115,7 +116,7 @@ namespace Catan.Unity.Bootstrap
         private void InitializeInfrastructure(ControllerResourceCards controllerResourceCards)
         {
             _clickHandler.Initialize(_bus);
-            _uiManager.Initialize(_bus, controllerResourceCards, _boardManager);
+            _uiManager.Initialize(_bus, controllerResourceCards, _boardManager, _logQueue);
             _gameFlow.Initialize(_eventsHandler);
         }
 
