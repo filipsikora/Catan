@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using Catan.Unity.Visuals.Models;
-using Catan.Shared.Dtos;
+using Catan.Unity.Models;
 
 namespace Catan.Unity.Helpers
 {
@@ -15,7 +15,7 @@ namespace Catan.Unity.Helpers
             _bus = bus;
         }
 
-        public GameObject DrawDevelopmentCard(DevelopmentCardDto dto, Transform parent)
+        public GameObject DrawDevelopmentCard(DevCardModel dto, Transform parent)
         {
             GameObject cardObject = Instantiate(DevelopmentCardPrefab, parent);
 

@@ -1,41 +1,26 @@
-﻿using Catan.Shared.Data;
-using Catan.Shared.Dtos;
+﻿using Catan.Unity.Caches;
 using Catan.Unity.Helpers;
 using Catan.Unity.InternalUIEvents;
 using Catan.Unity.Panels;
-using System.Threading.Tasks;
 
 namespace Catan.Unity.Visuals.Controllers
 {
     public sealed class ControllerPlayerUI
     {
         private readonly PlayerUI _playerUI;
-        private readonly HandlerEvents _eventsHandler;
+        private readonly GameCache _gameCache;
 
-        public ControllerPlayerUI(HandlerEvents eventsHandler, PlayerUI playerUI, EventBus bus)
+        public ControllerPlayerUI(PlayerUI playerUI, EventBus bus, GameCache gameCache)
         {
-            _eventsHandler = eventsHandler;
             _playerUI = playerUI;
+            _gameCache = gameCache;
 
-            bus.Subscribe<PlayerStateChangedUIEvent>(UpdatePlayerUI);
+            bus.Subscribe<MyResourcesChangedUIEvent>(UpdateMyResources);
         }
 
-        private async void UpdatePlayerUI(PlayerStateChangedUIEvent signal)
+        private void UpdateMyResources(MyResourcesChangedUIEvent signal)
         {
-            var data = await LoadPlayerData(signal.PlayerId);
-            var resources = await LoadPlayerCards(signal.PlayerId);
-
-            _playerUI.UpdatePlayerInfo(data, resources);
-        }
-
-        private async Task<PlayerDataDto> LoadPlayerData(int playerId)
-        {
-            return await _eventsHandler.Query<PlayerDataDto>(EnumQueryName.PlayerData, new { playerId });
-        }
-
-        private async Task<PlayerCardsDto> LoadPlayerCards(int playerId)
-        {
-            return await _eventsHandler.Query<PlayerCardsDto>(EnumQueryName.PlayerCards, new { playerId });
+            _playerUI.UpdateResources(_gameCache.MyPlayer.Resources);
         }
     }
 }

@@ -2,56 +2,22 @@
 using TMPro;
 using Catan.Unity.Helpers;
 using Catan.Shared.Data;
-using Catan.Unity.Visuals;
-using Catan.Shared.Dtos;
+using System.Collections.Generic;
 
 namespace Catan.Unity.Panels
 {
     public class PlayerUI : MonoBehaviour
     {
         public TextMeshProUGUI PlayerNameText;
-        public TextMeshProUGUI PlayerBuildingsText;
+        public TextMeshProUGUI PlayerBuildingsText; // remnants to be moved to information ui
         public TextMeshProUGUI PlayerPointsText;
 
         public Transform ResourceCardsPanel;
-
         public FactoryResourceCards ResourceCardFactory;
 
-        public void UpdatePlayerInfo(PlayerDataDto dataDto, PlayerCardsDto cardsDto)
+        public void UpdateResources(Dictionary<EnumResourceType, int> resources)
         {
-            UpdateTexts(dataDto);
-            UpdateResourceCards(cardsDto);
-        }
-
-        public void UpdateTexts(PlayerDataDto dataDto)
-        {
-            PlayerNameText.text = $"{dataDto.Name}";
-
-            string buildingsInfo = "";
-
-            foreach (var (key, value) in dataDto.BuildingsLeft)
-            {
-                buildingsInfo += $"{key}: {value} available\n";
-            }
-
-            PlayerBuildingsText.text = buildingsInfo;
-            PlayerPointsText.text = $"{dataDto.Name}: {dataDto.Points} points, {dataDto.Knights} knights, {dataDto.VictoryPoints + dataDto.ExtraPoints} extra points";
-        }
-
-        public void UpdateResourceCards(PlayerCardsDto cardsDto)
-        {
-            VisualsUI.ClearContainer(ResourceCardsPanel);
-
-            foreach (var entry in cardsDto.PlayerResources)
-            {
-                EnumResourceType type = Mappers.MapStringResourcesToEnum(entry.Key);
-                int count = entry.Value;
-
-                for (int i = 0; i < count; i++)
-                {
-                    ResourceCardFactory.DrawResourceCard(type, EnumResourceCardLocation.PlayerHand, ResourceCardsPanel);
-                }
-            }
+            // redraw resources using visualhelper
         }
     }
 }

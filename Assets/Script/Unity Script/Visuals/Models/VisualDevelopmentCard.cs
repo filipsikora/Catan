@@ -5,6 +5,7 @@ using Catan.Shared.Data;
 using Catan.Unity.Helpers;
 using Catan.Unity.InternalUIEvents;
 using Catan.Shared.Dtos;
+using Catan.Unity.Models;
 
 namespace Catan.Unity.Visuals.Models
 {
@@ -23,12 +24,12 @@ namespace Catan.Unity.Visuals.Models
 
         private int _id { get; set; }
 
-        public void Initialize(DevelopmentCardDto dto, EventBus bus)
+        public void Initialize(DevCardModel devCard, EventBus bus)
         {
-            _id = dto.Id;
+            _id = devCard.Id;
             _bus = bus;
 
-            SetupVisuals(dto.Type, dto.IsNew, dto.IsPlayable);
+            SetupVisuals(devCard.Type, devCard.IsPlayable);
         }
 
         public void OnCardClicked()
@@ -36,7 +37,7 @@ namespace Catan.Unity.Visuals.Models
             _bus.Publish(new DevelopmentCardClickedUIEvent(_id));
         }
 
-        public void SetupVisuals(EnumDevelopmentCardTypes type, bool isNew, bool isPlayable)
+        public void SetupVisuals(EnumDevelopmentCardTypes type, bool isPlayable)
         {
             Icon.gameObject.SetActive(false);
             Icon.sprite = null;

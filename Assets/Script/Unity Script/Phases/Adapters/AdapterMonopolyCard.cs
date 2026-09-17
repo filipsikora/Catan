@@ -1,4 +1,5 @@
 ﻿using Catan.Shared.Data;
+using Catan.Unity.Caches;
 using Catan.Unity.Data;
 using Catan.Unity.Helpers;
 using Catan.Unity.InternalUIEvents;
@@ -12,14 +13,14 @@ namespace Catan.Unity.Phases.Adapters
     {
         public BinderCardSelection _binder;
 
-        public AdapterMonopolyCard(ManagerUI ui, EventBus bus, HandlerEvents eventHandler) : base(ui, bus, eventHandler) { }
+        public AdapterMonopolyCard(ManagerUI ui, EventBus bus, HandlerEvents eventHandler, GameCache gameCache) : base(ui, bus, eventHandler, gameCache) { }
 
         public override void OnEnter()
         {
             _binder = new BinderCardSelection(UI, EventBus, EventsHandler);
 
             VisualsUI.SetMainAndPlayerUIVisibility(false, UI.MainUIPanel, UI.PlayerUIPanel);
-            UI.CardSelectorPanel.Show( "Choose resource to steal from the other players");
+            UI.CardSelectorPanel.Show("Choose resource to steal from the other players");
 
             _binder.Bind();
 

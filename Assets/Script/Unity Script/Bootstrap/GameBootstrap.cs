@@ -99,10 +99,11 @@ namespace Catan.Unity.Bootstrap
 
         private void ApplyInitialState()
         {
-            _bus.Publish(new RobberMovedUIEvent(_gameCache.Board.BlockedHexId));
-            _bus.Publish(new GameFlowReceivedUIEvent(_gameCache.GameFlow));
-            _bus.Publish(new PlayerStateReceivedUIEvent(_gameCache.MyPlayer));
-            _bus.Publish(new OtherPlayersReceivedUIEvent(_gameCache.OtherPlayers)); // those events need to be made while reworking domainevents
+            _bus.Publish(new RobberMovedUIEvent());
+            _bus.Publish(new RolledNumberChangedUIEvent());
+            _bus.Publish(new TurnNumberChangedUIEvent());
+            _bus.Publish(new MyResourcesChangedUIEvent());
+            _bus.Publish(new PlayerInformationTableChangedUIEvent()); 
         }
 
         private ControllerResourceCards InitializeRendering()

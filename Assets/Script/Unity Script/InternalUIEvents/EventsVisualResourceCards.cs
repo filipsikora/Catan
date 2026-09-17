@@ -22,16 +22,6 @@ namespace Catan.Unity.InternalUIEvents
         }
     }
 
-    public class ResourceCardDestroyedUIEvent : IInternalUIEvents
-    {
-        public int VisualResourceCardId { get; }
-
-        public ResourceCardDestroyedUIEvent(int visualResourceCardId)
-        {
-            VisualResourceCardId = visualResourceCardId;
-        }
-    }
-
     public class ResourceCardVisualStateChangedUIEvent : IInternalUIEvents
     {
         public int VisualResourceCardId;

@@ -14,7 +14,7 @@ namespace Catan.Unity.Phases.Adapters
         private BinderNormalRound _binder;
         private readonly SelectionCache _selectionCache;
 
-        public AdapterNormalRound(ManagerUI ui, EventBus bus, HandlerEvents eventHandler, SelectionCache selectionCache) : base(ui, bus, eventHandler)
+        public AdapterNormalRound(ManagerUI ui, EventBus bus, HandlerEvents eventHandler, SelectionCache selectionCache, GameCache gameCache) : base(ui, bus, eventHandler, gameCache)
         {
             _selectionCache = selectionCache;
         }

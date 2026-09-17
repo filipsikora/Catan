@@ -1,17 +1,16 @@
 ﻿using Catan.Shared.Data;
-using Catan.Shared.Dtos;
+using Catan.Unity.Caches;
 using Catan.Unity.Helpers;
 using Catan.Unity.InternalUIEvents;
 using Catan.Unity.Panels;
 using Catan.Unity.Visuals;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Linq;
 
 namespace Catan.Unity.Phases.Adapters
 {
     public class AdapterRobberPlacing : BasePhaseAdapter
     {
-        public AdapterRobberPlacing(ManagerUI ui, EventBus bus, HandlerEvents eventHandler) : base(ui, bus, eventHandler) { }
+        public AdapterRobberPlacing(ManagerUI ui, EventBus bus, HandlerEvents eventHandler, GameCache gameCache) : base(ui, bus, eventHandler, gameCache) { }
 
         public override void OnEnter()
         {
@@ -31,19 +30,14 @@ namespace Catan.Unity.Phases.Adapters
 
         private void OnPotentialVictimsFound(PotentialVictimsFoundUIEvent signal)
         {
-            _ = LoadData(signal.VictimsIds);
+            var potentialVictims = signal.VictimsIds.Select(x => GameCache.OtherPlayers.FirstOrDefault(p => p.Id == x)).Where(x => x != null).ToList();
+
+            UI.VictimSelectorPanel.Show(potentialVictims);
         }
 
         private void OnPlayerChosen(PlayerClickedUIEvent signal)
         {
             EventsHandler.Execute(EnumCommandType.VictimChosenCommand, new { victimId = signal.PlayerId });
-        }
-
-        private async Task LoadData(List<int> victimsIds)
-        {
-            var snapshot = await EventsHandler.Query<List<PlayerNameDto>>(EnumQueryName.SomePlayersNames, new { playerIds = victimsIds });
-            UI.VictimSelectorPanel.Show(snapshot);
-
         }
 
         public override void OnExit()

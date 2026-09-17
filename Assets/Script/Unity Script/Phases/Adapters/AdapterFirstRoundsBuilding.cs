@@ -13,7 +13,7 @@ namespace Catan.Unity.Phases.Adapters
         public BinderFirstRoundBuildings _binder;
         private readonly SelectionCache _selectionCache;
 
-        public AdapterFirstRoundsBuilding(ManagerUI ui, EventBus bus, HandlerEvents eventHandler, SelectionCache selectionCache) : base(ui, bus, eventHandler)
+        public AdapterFirstRoundsBuilding(ManagerUI ui, EventBus bus, HandlerEvents eventHandler, SelectionCache selectionCache, GameCache gameCache) : base(ui, bus, eventHandler, gameCache)
         {
             _selectionCache = selectionCache;
         }

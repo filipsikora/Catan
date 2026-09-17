@@ -12,12 +12,8 @@ namespace Catan.Unity.Phases.Adapters
     public class AdapterCardDiscarding : BasePhaseAdapter
     {
         private BinderCardDiscarding _binder;
-        private GameCache _gameCache;
 
-        public AdapterCardDiscarding(ManagerUI ui, EventBus bus, HandlerEvents eventHandler, GameCache gameCache) : base(ui, bus, eventHandler, gameCache)
-        {
-            _gameCache = gameCache;
-        }
+        public AdapterCardDiscarding(ManagerUI ui, EventBus bus, HandlerEvents eventHandler, GameCache gameCache) : base(ui, bus, eventHandler, gameCache) { }
 
         public override void OnEnter()
         {
@@ -29,10 +25,18 @@ namespace Catan.Unity.Phases.Adapters
             VisualsUI.SetMainAndPlayerUIVisibility(false, UI.MainUIPanel, UI.PlayerUIPanel);
 
             EventBus.Subscribe<SelectionChangedUIEvent>(OnAcceptedDiscardVisibilityChanged);
-            EventBus.Subscribe<PlayerSelectedToDiscardUIEvent>(OnPlayerChosen);
             EventBus.Subscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
+            EventBus.Subscribe<PlayersToMoveChangedUIEvent>(OnPlayersToMoveChanged);
 
-            UI.CardDiscardPanel.Show(_gameCache.MyPlayer.Resources);
+            if (GameCache.GameFlow.PlayersToMove.Contains(GameCache.MyPlayer.PlayerId))
+            {
+                UI.CardDiscardPanel.Show(GameCache.MyPlayer.Resources);
+            }
+
+            else
+            {
+                // show await panel
+            }
         }
 
         private void OnResourceCardClicked(ResourceCardClickedUIEvent signal)
@@ -55,14 +59,17 @@ namespace Catan.Unity.Phases.Adapters
             EventBus.Publish(new ResourceCardToggledUIEvent(signal.VisualResourceCardId));
         }
 
-        private void OnPlayerChosen(PlayerSelectedToDiscardUIEvent signal)
-        {
-            _ = LoadData(signal.PlayerId);
-        }
-
         private void OnAcceptedDiscardVisibilityChanged(SelectionChangedUIEvent signal)
         {
             UI.CardDiscardPanel.ConfirmDiscardButton.gameObject.SetActive(signal.ActionAvailable);
+        }
+
+        private void OnPlayersToMoveChanged(PlayersToMoveChangedUIEvent signal)
+        {
+            if (!signal.PlayersToMove.Contains(GameCache.MyPlayer.PlayerId))
+            {
+                // show await panel + hide discard panel
+            }
         }
 
         public override void OnExit()
@@ -70,8 +77,8 @@ namespace Catan.Unity.Phases.Adapters
             _binder.Unbind();
 
             EventBus.Unsubscribe<SelectionChangedUIEvent>(OnAcceptedDiscardVisibilityChanged);
-            EventBus.Unsubscribe<PlayerSelectedToDiscardUIEvent>(OnPlayerChosen);
             EventBus.Unsubscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
+            EventBus.Unsubscribe<PlayersToMoveChangedUIEvent>(OnPlayersToMoveChanged);
 
             UI.CardDiscardPanel.gameObject.SetActive(false);
         }

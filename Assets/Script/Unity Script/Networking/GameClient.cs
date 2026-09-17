@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Catan.Unity.Mappers;
 
 namespace Catan.Unity.Networking
 {
@@ -74,7 +75,7 @@ namespace Catan.Unity.Networking
 
         public async Task<T> SendQuery<T>(Guid gameId, EnumQueryName queryName, object? data = null)
         {
-            var queryString = Mappers.MapEnumQueryToString(queryName);
+            var queryString = EnumMappers.MapEnumQueryToString(queryName);
             var url = $"{_baseUrl}/{gameId}/queries/{queryString}";
 
             if (data != null)

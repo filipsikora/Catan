@@ -17,7 +17,19 @@ namespace Catan.Unity.InternalUIEvents
         }
     }
 
-    public sealed class GameInformationChangedUIEvent : IInternalUIEvents { }
+    public sealed class PlayersToMoveChangedUIEvent : IInternalUIEvents
+    {
+        public List<int> PlayersToMove;
 
+        public PlayersToMoveChangedUIEvent(List<int> playersToMove)
+        {
+            PlayersToMove = playersToMove;
+        }
+    }
 
+    public sealed class PlayerInformationTableChangedUIEvent : IInternalUIEvents { }
+
+    public sealed class TurnNumberChangedUIEvent : IInternalUIEvents { }
+
+    public sealed class RolledNumberChangedUIEvent : IInternalUIEvents { }
 }

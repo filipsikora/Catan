@@ -1,5 +1,6 @@
 ﻿using Catan.Shared.Data;
 using Catan.Shared.Dtos;
+using Catan.Unity.Caches;
 using Catan.Unity.Helpers;
 using Catan.Unity.InternalUIEvents;
 using Catan.Unity.Panels;
@@ -10,13 +11,22 @@ namespace Catan.Unity.Phases.Controllers
 {
     public class AdapterCardStealing : BasePhaseAdapter
     {
-        public AdapterCardStealing(ManagerUI ui, EventBus bus, HandlerEvents eventHandler) : base(ui, bus, eventHandler) { }
+        public AdapterCardStealing(ManagerUI ui, EventBus bus, HandlerEvents eventHandler, GameCache gameCache) : base(ui, bus, eventHandler, gameCache) { }
 
         public override void OnEnter()
         {
             EventBus.Subscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
 
-            ShowVictimsCards();
+            if (GameCache.GameFlow.PlayersToMove.Contains(GameCache.MyPlayer.PlayerId))
+            {
+                ShowVictimsCards();
+            }
+
+            else
+            {
+                // show awaiting panel
+            }
+
         }
 
         public void ShowVictimsCards()
@@ -34,7 +44,7 @@ namespace Catan.Unity.Phases.Controllers
 
         private async Task LoadData()
         {
-            var snapshot = await EventsHandler.Query<PlayerCardsDto>(EnumQueryName.VictimCards);
+            var snapshot = await EventsHandler.Query<PlayerResourcesDto>(EnumQueryName.VictimCards);
             UI.CardTheftPanel.Show(snapshot);
         }
 

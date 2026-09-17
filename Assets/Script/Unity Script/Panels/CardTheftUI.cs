@@ -13,7 +13,7 @@ namespace Catan.Unity.Panels
         public FactoryResourceCards CardFactory;
         public TextMeshProUGUI TitleText;
 
-        public void Show(PlayerCardsDto resourcesSnapshot)
+        public void Show(PlayerResourcesDto resourcesSnapshot)
         {
             gameObject.SetActive(true);
 
@@ -21,12 +21,11 @@ namespace Catan.Unity.Panels
 
             foreach (var entry in resourcesSnapshot.PlayerResources)
             {
-                EnumResourceType type = Mappers.MapStringResourcesToEnum(entry.Key);
                 int count = entry.Value;
 
                 for (int i = 0; i < count; i++)
                 {
-                    CardFactory.DrawResourceCard(type, EnumResourceCardLocation.VictimHand, CardsContainer, false);
+                    CardFactory.DrawResourceCard(entry.Key, EnumResourceCardLocation.VictimHand, CardsContainer, false);
                 }
             }
         }

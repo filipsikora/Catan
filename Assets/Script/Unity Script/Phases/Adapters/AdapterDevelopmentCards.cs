@@ -1,12 +1,10 @@
 ﻿using Catan.Shared.Data;
-using Catan.Shared.Dtos;
+using Catan.Unity.Caches;
 using Catan.Unity.Helpers;
 using Catan.Unity.InternalUIEvents;
 using Catan.Unity.Panels;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Catan.Unity.Phases.Adapters
 {
@@ -14,7 +12,7 @@ namespace Catan.Unity.Phases.Adapters
     {
         private BinderDevelopmentCards _binder;
 
-        public AdapterDevelopmentCards(ManagerUI ui, EventBus bus, HandlerEvents eventHandler) : base(ui, bus, eventHandler) { }
+        public AdapterDevelopmentCards(ManagerUI ui, EventBus bus, HandlerEvents eventHandler, GameCache gameCache) : base(ui, bus, eventHandler, gameCache) { }
 
         public override void OnEnter()
         {
@@ -27,18 +25,12 @@ namespace Catan.Unity.Phases.Adapters
 
             EventBus.Subscribe<DevelopmentCardClickedUIEvent>(OnDevCardClicked);
 
-            _ = LoadData();
+            UI.DevelopmentCardsPanel.Show(GameCache.MyPlayer.DevCards);
         }
 
         private void OnDevCardClicked(DevelopmentCardClickedUIEvent signal)
         {
             EventsHandler.Execute(EnumCommandType.DevelopmentCardClickedPlayedCommand, new { developmentCardId = signal.CardId });
-        }
-
-        private async Task LoadData()
-        {
-            var snapshot = await EventsHandler.Query<List<DevelopmentCardDto>>(EnumQueryName.CurrentPlayerDevCards);
-            UI.DevelopmentCardsPanel.Show(snapshot);
         }
 
         public override void OnExit()

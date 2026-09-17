@@ -11,6 +11,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Catan.Shared.Dtos;
+using Catan.Unity.Models;
 
 namespace Catan.Unity.Panels
 {
@@ -37,7 +38,7 @@ namespace Catan.Unity.Panels
             _bus = bus;
         }
 
-        public void Show(IReadOnlyList<PlayerNameDto> potentialPartnersData)
+        public void Show(IReadOnlyList<OtherPlayerModel> potentialPartnersData)
         {
             gameObject.SetActive(true);
 

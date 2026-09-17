@@ -43,7 +43,7 @@ namespace Catan.Unity.Helpers
                 case EnumUiMessages.ActionRejectedMessage:
                     {
                         var dto = data.ToObject<ActionRejectedDto>();
-                        return new ActionRejectedUIEvent(dto.PlayerId, Mappers.MapStringFailureReasonToEnum(dto.Reason));
+                        return new ActionRejectedUIEvent(dto.PlayerId, dto.Reason);
                     }
 
                 case EnumUiMessages.PotentialVictimsFoundMessage:
@@ -55,8 +55,7 @@ namespace Catan.Unity.Helpers
                 case EnumUiMessages.BankTradeRatioChangedMessage:
                     {
                         var dto = data.ToObject<BankTradeRatioChangedDto>();
-                        var nullable = true;
-                        return new BankTradeRatioChangedUIEvent(dto.Ratio, dto.PossibleForPlayer, Mappers.MapStringResourcesToEnum(dto.Resource, nullable));
+                        return new BankTradeRatioChangedUIEvent(dto.Ratio, dto.PossibleForPlayer, dto.Resource);
                     }
 
                 default:
@@ -91,7 +90,7 @@ namespace Catan.Unity.Helpers
                     }
 
                 case RoadPlacedEventPrivateDto dto:
-                                        {
+                    {
                         uiEvents.Add(new RoadPlacedUIEvent(dto.EdgeId, dto.OwnerId));
 
                         uiEvents.Add(new MyResourcesChangedUIEvent());
@@ -117,7 +116,7 @@ namespace Catan.Unity.Helpers
                         uiEvents.Add(new MyResourcesChangedUIEvent());
 
                         uiEvents.Add(new BankInformationChangedUIEvent());
-                        uiEvents.Add(new PlayerInformationTableChangedUIEvent()); 
+                        uiEvents.Add(new PlayerInformationTableChangedUIEvent());
                         return uiEvents;
                     }
 
@@ -143,7 +142,7 @@ namespace Catan.Unity.Helpers
                     {
                         uiEvents.Add(new BankInformationChangedUIEvent());
                         uiEvents.Add(new PlayerInformationTableChangedUIEvent());
-                        return uiEvents;    
+                        return uiEvents;
                     }
 
                 case DevCardUsedEventPrivateDto:
@@ -297,7 +296,7 @@ namespace Catan.Unity.Helpers
                     }
 
                 case ResourcesDistributionDonePrivateEventDto:
-                                        {
+                    {
                         uiEvents.Add(new MyResourcesChangedUIEvent());
 
                         uiEvents.Add(new BankInformationChangedUIEvent());
@@ -307,13 +306,19 @@ namespace Catan.Unity.Helpers
 
                 case TurnNumberChangedEventDto dto:
                     {
-                        uiEvents.Add(new GameInformationChangedUIEvent());
+                        uiEvents.Add(new TurnNumberChangedUIEvent());
                         return uiEvents;
                     }
 
                 case RolledNumberChangedEventDto dto:
                     {
-                        uiEvents.Add(new GameInformationChangedUIEvent());
+                        uiEvents.Add(new RolledNumberChangedUIEvent());
+                        return uiEvents;
+                    }
+
+                case PlayersToMoveChangedEventDto dto:
+                    {
+                        uiEvents.Add(new PlayersToMoveChangedUIEvent(dto.PlayersToMove));
                         return uiEvents;
                     }
 

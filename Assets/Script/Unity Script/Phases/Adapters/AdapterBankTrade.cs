@@ -6,7 +6,6 @@ using Catan.Unity.Panels;
 using Catan.Unity.Data;
 using Catan.Shared.Data;
 using Catan.Unity.Helpers;
-using System.Collections.Generic;
 using Catan.Unity.Caches;
 
 namespace Catan.Unity.Phases.Adapters
@@ -15,7 +14,7 @@ namespace Catan.Unity.Phases.Adapters
     {
         private BinderBankTrade _binder;
 
-        public AdapterBankTrade(ManagerUI ui, EventBus bus, HandlerEvents eventHandler, Dictionary<EnumResourceType, int> resources, GameCache gameCache) : base(ui, bus, eventHandler, gameCache) { }
+        public AdapterBankTrade(ManagerUI ui, EventBus bus, HandlerEvents eventHandler, GameCache gameCache) : base(ui, bus, eventHandler, gameCache) { }
 
         public override void OnEnter()
         {

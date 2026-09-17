@@ -53,4 +53,12 @@ namespace Catan.Shared.Dtos
     {
         public List<BasicPlayerDto> OtherPlayers { get; set; }
     }
+
+    public sealed class DevelopmentCardDto
+    {
+        public EnumDevelopmentCardTypes Type { get; set; }
+        public int Id { get; set; }
+        public bool IsNew { get; set; }
+        public bool IsPlayable { get; set; }
+    }
 }

@@ -1,12 +1,10 @@
 ﻿using Catan.Shared.Data;
-using Catan.Shared.Dtos;
+using Catan.Unity.Caches;
 using Catan.Unity.Helpers;
 using Catan.Unity.InternalUIEvents;
 using Catan.Unity.Panels;
 using Catan.Unity.Phases.Binders;
 using Catan.Unity.Visuals;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Catan.Unity.Phases.Adapters
 {
@@ -14,7 +12,7 @@ namespace Catan.Unity.Phases.Adapters
     {
         private BinderTradeOffer _binder;
 
-        public AdapterTradeOffer(ManagerUI ui, EventBus bus, HandlerEvents eventHandler) : base(ui, bus, eventHandler) { }
+        public AdapterTradeOffer(ManagerUI ui, EventBus bus, HandlerEvents eventHandler, GameCache gameCache) : base(ui, bus, eventHandler, gameCache) { }
 
         public override void OnEnter()
         {
@@ -22,8 +20,6 @@ namespace Catan.Unity.Phases.Adapters
 
             _binder = new BinderTradeOffer(UI, EventBus, EventsHandler);
             _binder.Bind();
-
-            _ = LoadData();
 
             VisualsUI.SetMainAndPlayerUIVisibility(false, UI.MainUIPanel, UI.PlayerUIPanel);
 
@@ -34,6 +30,8 @@ namespace Catan.Unity.Phases.Adapters
             EventBus.Subscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
 
             EventBus.Subscribe<PlayerClickedUIEvent>(OnPlayerChosen);
+
+            UI.TradeOfferPanel.Show(GameCache.OtherPlayers);
         }
 
         private void OnDesiredCardsChanged(DesiredCardsChangedUIEvent signal)
@@ -65,12 +63,6 @@ namespace Catan.Unity.Phases.Adapters
         {
             EventsHandler.Execute(EnumCommandType.TradePartnerChosenCommand, new { playerId = signal.PlayerId });
         }
-        private async Task LoadData()
-        {
-            var snapshot = await EventsHandler.Query<List<PlayerNameDto>>(EnumQueryName.NotCurrentPlayerNames);
-            UI.TradeOfferPanel.Show(snapshot);
-        }
-
 
         public override void OnExit()
         {

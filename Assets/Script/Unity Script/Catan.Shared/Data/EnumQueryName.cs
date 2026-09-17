@@ -2,15 +2,7 @@
 {
     public enum EnumQueryName
     {
-        Board,
-        PlayerData,
-        PlayerCards,
-        ResourcesAvailability,
         VictimCards,
-        CurrentPlayerDevCards,
-        NotCurrentPlayerNames,
-        TradeOfferData,
-        SomePlayersNames,
-        FullPlayer
+        TradeOfferData
     }
 }

@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using TMPro;
 using Catan.Unity.Helpers;
 using Catan.Unity.InternalUIEvents;
-using Catan.Shared.Dtos;
+using Catan.Unity.Models;
 
 namespace Catan.Unity.Panels
 {
@@ -21,7 +21,7 @@ namespace Catan.Unity.Panels
             _bus = bus;
         }
 
-        public void Show(IReadOnlyList<PlayerNameDto> potentialVictimsData)
+        public void Show(IReadOnlyList<OtherPlayerModel> potentialVictims)
         {
             gameObject.SetActive(true);
 
@@ -30,7 +30,7 @@ namespace Catan.Unity.Panels
                 Destroy(child.gameObject);
             }
 
-            foreach (var victimData in potentialVictimsData)
+            foreach (var victimData in potentialVictims)
             {
                 var buttonObj = Instantiate(ButtonPlayerOptionPrefab, ButtonsContainer);
                 buttonObj.GetComponentInChildren<TextMeshProUGUI>().text = victimData.Name;
