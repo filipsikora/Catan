@@ -14,8 +14,6 @@ namespace Catan.Unity.Phases.Adapters
 
         public override void OnEnter()
         {
-            VisualsUI.SetMainAndPlayerUIVisibility(false, UI.MainUIPanel, UI.PlayerUIPanel);
-
             EventBus.Subscribe<HexClickedUIEvent>(OnHexClicked);
 
             EventBus.Subscribe<PotentialVictimsFoundUIEvent>(OnPotentialVictimsFound);
@@ -32,7 +30,7 @@ namespace Catan.Unity.Phases.Adapters
         {
             var potentialVictims = signal.VictimsIds.Select(x => GameCache.OtherPlayers.FirstOrDefault(p => p.Id == x)).Where(x => x != null).ToList();
 
-            UI.VictimSelectorPanel.Show(potentialVictims);
+            UI.VictimSelectorPanel.Show(potentialVictims, EventBus);
         }
 
         private void OnPlayerChosen(PlayerClickedUIEvent signal)
@@ -47,8 +45,6 @@ namespace Catan.Unity.Phases.Adapters
             EventBus.Unsubscribe<PotentialVictimsFoundUIEvent>(OnPotentialVictimsFound);
 
             EventBus.Unsubscribe<PlayerClickedUIEvent>(OnPlayerChosen);
-
-            UI.VictimSelectorPanel.gameObject.SetActive(false);
         }
     }
 }

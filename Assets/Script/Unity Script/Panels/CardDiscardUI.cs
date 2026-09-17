@@ -1,5 +1,4 @@
 using Catan.Shared.Data;
-using Catan.Shared.Dtos;
 using Catan.Unity.Data;
 using Catan.Unity.Helpers;
 using Catan.Unity.Visuals;
@@ -29,9 +28,10 @@ namespace Catan.Unity.Panels
 
         public void Show(Dictionary<EnumResourceType, int> resources)
         {
+            gameObject.SetActive(true);
+
             VisualsUI.ClearContainer(CardsContainer, _resourceCardsController);
 
-            gameObject.SetActive(true);
             ConfirmDiscardButton.gameObject.SetActive(false);
 
             foreach (var entry in resources)
@@ -39,6 +39,11 @@ namespace Catan.Unity.Panels
                 for (int i = 0; i < entry.Value; i++)
                     CardFactory.Create(entry.Key, EnumResourceCardLocation.VictimHand, CardsContainer, _resourceCardsController);
             }
+        }
+
+        public void Hide()
+        {
+            this.gameObject.SetActive(false);
         }
     }
 }

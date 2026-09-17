@@ -8,13 +8,6 @@ namespace Catan.Unity.Helpers
     {
         public GameObject DevelopmentCardPrefab;
 
-        private EventBus _bus;
-
-        public void Initialize(EventBus bus)
-        {
-            _bus = bus;
-        }
-
         public GameObject DrawDevelopmentCard(DevCardModel dto, Transform parent)
         {
             GameObject cardObject = Instantiate(DevelopmentCardPrefab, parent);

@@ -6,7 +6,6 @@ using Catan.Shared.Data;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Catan.Shared.Dtos;
 using Catan.Unity.Visuals.Controllers;
 using System.Collections.Generic;
 

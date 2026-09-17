@@ -1,9 +1,9 @@
 ﻿using Catan.Shared.Data;
+using Catan.Unity.Caches;
 using Catan.Unity.Helpers;
 using Catan.Unity.InternalUIEvents;
 using Catan.Unity.Panels;
 using Catan.Unity.Phases.Binders;
-using Catan.Unity.Visuals;
 
 namespace Catan.Unity.Phases.Adapters
 {
@@ -11,20 +11,20 @@ namespace Catan.Unity.Phases.Adapters
     {
         BinderCardSelection _binder;
 
-        public AdapterYearOfPlentyCard(ManagerUI ui, EventBus bus, HandlerEvents eventHandler) : base(ui, bus, eventHandler) { }
+        public AdapterYearOfPlentyCard(ManagerUI ui, EventBus bus, HandlerEvents eventHandler, GameCache gameCache) : base(ui, bus, eventHandler, gameCache) { }
 
         public override void OnEnter()
         {
-            UI.CardSelectorPanel.gameObject.SetActive(true);
-
             _binder = new BinderCardSelection(UI, EventBus, EventsHandler);
             _binder.Bind();
 
-            VisualsUI.SetMainAndPlayerUIVisibility(false, UI.MainUIPanel, UI.PlayerUIPanel);
-            UI.CardSelectorPanel.Show("Choose two resources to get for free");
-
             EventBus.Subscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
             EventBus.Subscribe<SelectionChangedUIEvent>(OnDesiredCardsChanged);
+
+            if (GameCache.GameFlow.PlayersToMove.Contains(GameCache.MyPlayer.PlayerId))
+            {
+                UI.CardSelectorPanel.Show("Choose two resources to get for free");
+            }
         }
 
         private void OnDesiredCardsChanged(SelectionChangedUIEvent signal)
@@ -49,9 +49,9 @@ namespace Catan.Unity.Phases.Adapters
         {
             _binder.Unbind();
 
-            VisualsUI.SetMainAndPlayerUIVisibility(true, UI.MainUIPanel, UI.PlayerUIPanel);
             UI.CardSelectorPanel.AcceptCardsButton.gameObject.SetActive(false);
             UI.CardSelectorPanel.gameObject.SetActive(false);
+            UI.AwaitingPanel.Hide();
 
             EventBus.Unsubscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
             EventBus.Unsubscribe<SelectionChangedUIEvent>(OnDesiredCardsChanged);

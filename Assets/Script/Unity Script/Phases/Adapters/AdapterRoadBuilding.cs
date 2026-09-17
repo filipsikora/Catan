@@ -24,9 +24,6 @@ namespace Catan.Unity.Phases.Adapters
             _binder = new BinderNormalRound(UI, EventBus, EventsHandler, _selectionCache);
             _binder.Bind();
 
-            VisualsUI.SetParentVisibility(UI.PlayerUIPanel, false);
-            VisualsUI.MakeAllChildrenVisible(UI.MainUIPanel.ButtonsContainer, false);
-
             EventBus.Subscribe<EdgeClickedUIEvent>(OnEdgeClicked);
 
             EventBus.Subscribe<BuildOptionsSentUIEvent>(OnPositionClicked);
@@ -55,8 +52,6 @@ namespace Catan.Unity.Phases.Adapters
 
         public override void OnExit()
         {
-            VisualsUI.SetParentVisibility(UI.PlayerUIPanel, true);
-
             EventBus.Unsubscribe<EdgeClickedUIEvent>(OnEdgeClicked);
 
             EventBus.Unsubscribe<BuildOptionsSentUIEvent>(OnPositionClicked);

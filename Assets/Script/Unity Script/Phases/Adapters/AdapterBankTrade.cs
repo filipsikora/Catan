@@ -18,8 +18,6 @@ namespace Catan.Unity.Phases.Adapters
 
         public override void OnEnter()
         {
-            UI.BankTradePanel.gameObject.SetActive(true);
-
             _binder = new BinderBankTrade(UI, EventBus, EventsHandler);
             _binder.Bind();
 
@@ -28,7 +26,11 @@ namespace Catan.Unity.Phases.Adapters
             EventBus.Subscribe<BankTradeRatioChangedUIEvent>(OnRatioChanged);
             EventBus.Subscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
 
-            UI.BankTradePanel.Show(GameCache.GameFlow.Bank);
+            if (GameCache.GameFlow.PlayersToMove.Contains(GameCache.MyPlayer.PlayerId))
+            {
+                UI.BankTradePanel.gameObject.SetActive(true);
+                UI.BankTradePanel.Show(GameCache.GameFlow.Bank);
+            }
         }
 
         private void OnRatioChanged(BankTradeRatioChangedUIEvent signal)
@@ -61,7 +63,6 @@ namespace Catan.Unity.Phases.Adapters
             EventBus.Unsubscribe<BankTradeRatioChangedUIEvent>(OnRatioChanged);
             EventBus.Unsubscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
 
-            VisualsUI.SetMainAndPlayerUIVisibility(true, UI.MainUIPanel, UI.PlayerUIPanel);
             UI.BankTradePanel.gameObject.SetActive(false);
         }
     }

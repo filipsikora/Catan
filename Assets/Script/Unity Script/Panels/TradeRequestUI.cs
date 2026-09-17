@@ -28,8 +28,10 @@ namespace Catan.Unity.Panels
             RegisterButton(EnumTradeRequestUIButtons.RefuseTradeRequest, RefuseTradeButton);
         }
 
-        public void Show(string sellerName, string buyerName, Dictionary<EnumResourceType, int> offered, Dictionary<EnumResourceType, int> desired)
+        public void Show(string sellerName, string buyerName, Dictionary<EnumResourceType, int> offered, Dictionary<EnumResourceType, int> desired, bool canTrade)
         {
+            AcceptTradeButton.gameObject.SetActive(canTrade);
+
             string text = $"{buyerName}, {sellerName} is offering";
             TradeOfferText.text = text;
 

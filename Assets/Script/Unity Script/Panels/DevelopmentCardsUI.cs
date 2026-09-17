@@ -21,7 +21,7 @@ namespace Catan.Unity.Panels
             RegisterButton(EnumDevelopmentCardsUIButtons.CancelDevelopmentCards, CancelDevelopmentCardsButton);
         }
 
-        public void Show(IReadOnlyList<DevCardModel> cards)
+        public void Show(IReadOnlyList<DevCardModel> cards, EventBus bus)
         {
             CancelDevelopmentCardsButton.gameObject.SetActive(true);
             gameObject.SetActive(true);
@@ -30,7 +30,7 @@ namespace Catan.Unity.Panels
 
             foreach (var card in cards)
             {
-                DevelopmentCardFactory.DrawDevelopmentCard(card, CardsContainer);
+                DevelopmentCardFactory.DrawDevelopmentCard(card, CardsContainer, bus);
             }
         }
     }

@@ -10,7 +10,6 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Catan.Shared.Dtos;
 using Catan.Unity.Models;
 
 namespace Catan.Unity.Panels
@@ -26,21 +25,15 @@ namespace Catan.Unity.Panels
         public Button CancelTradeButton;
         public GameObject PlayerButtonPrefab;
 
-        private EventBus _bus;
-
         public void Awake()
         {
             RegisterButton(EnumTradeOfferUIButtons.CancelTradeOffer, CancelTradeButton);
         }
 
-        public void Initialize(EventBus bus)
-        {
-            _bus = bus;
-        }
-
-        public void Show(IReadOnlyList<OtherPlayerModel> potentialPartnersData)
+        public void Show(IReadOnlyList<OtherPlayerModel> potentialPartnersData, EventBus bus)
         {
             gameObject.SetActive(true);
+            PlayersButtonsContainer.gameObject.SetActive(false);
 
             VisualsUI.ClearContainer(CardsChoiceContainer);
             VisualsUI.ClearContainer(CardsReviewContainer);
@@ -55,7 +48,7 @@ namespace Catan.Unity.Panels
             {
                 var buttonObj = Instantiate(PlayerButtonPrefab, PlayersButtonsContainer);
                 buttonObj.GetComponentInChildren<TextMeshProUGUI>().text = player.Name;
-                buttonObj.GetComponent<Button>().onClick.AddListener(() => _bus.Publish(new PlayerClickedUIEvent(player.Id)));
+                buttonObj.GetComponent<Button>().onClick.AddListener(() => bus.Publish(new PlayerClickedUIEvent(player.Id)));
             }
         }
 

@@ -24,9 +24,8 @@ namespace Catan.Unity.Phases.Controllers
 
             else
             {
-                // show awaiting panel
+                UI.AwaitingPanel.Show();
             }
-
         }
 
         public void ShowVictimsCards()
@@ -53,6 +52,7 @@ namespace Catan.Unity.Phases.Controllers
             EventBus.Unsubscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
 
             UI.CardTheftPanel.gameObject.SetActive(false);
+            UI.AwaitingPanel.Hide();
         }
     }
 }

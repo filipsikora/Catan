@@ -4,7 +4,6 @@ using Catan.Unity.Helpers;
 using Catan.Unity.InternalUIEvents;
 using Catan.Unity.Panels;
 using Catan.Unity.Phases.Binders;
-using Catan.Unity.Visuals;
 
 namespace Catan.Unity.Phases.Adapters
 {
@@ -16,14 +15,8 @@ namespace Catan.Unity.Phases.Adapters
 
         public override void OnEnter()
         {
-            UI.TradeOfferPanel.gameObject.SetActive(true);
-
             _binder = new BinderTradeOffer(UI, EventBus, EventsHandler);
             _binder.Bind();
-
-            VisualsUI.SetMainAndPlayerUIVisibility(false, UI.MainUIPanel, UI.PlayerUIPanel);
-
-            UI.TradeOfferPanel.PlayersButtonsContainer.gameObject.SetActive(false);
 
             EventBus.Subscribe<DesiredCardsChangedUIEvent>(OnDesiredCardsChanged);
 
@@ -31,7 +24,10 @@ namespace Catan.Unity.Phases.Adapters
 
             EventBus.Subscribe<PlayerClickedUIEvent>(OnPlayerChosen);
 
-            UI.TradeOfferPanel.Show(GameCache.OtherPlayers);
+            if (GameCache.GameFlow.PlayersToMove.Contains(GameCache.MyPlayer.PlayerId))
+            {
+                UI.TradeOfferPanel.Show(GameCache.OtherPlayers, EventBus);
+            }
         }
 
         private void OnDesiredCardsChanged(DesiredCardsChangedUIEvent signal)
@@ -74,7 +70,6 @@ namespace Catan.Unity.Phases.Adapters
 
             EventBus.Unsubscribe<PlayerClickedUIEvent>(OnPlayerChosen);
 
-            VisualsUI.SetMainAndPlayerUIVisibility(true, UI.MainUIPanel, UI.PlayerUIPanel);
             UI.TradeOfferPanel.gameObject.SetActive(false);
         }
     }

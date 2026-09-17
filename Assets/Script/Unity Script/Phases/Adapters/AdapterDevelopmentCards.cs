@@ -4,7 +4,6 @@ using Catan.Unity.Helpers;
 using Catan.Unity.InternalUIEvents;
 using Catan.Unity.Panels;
 using Catan.Unity.Phases.Binders;
-using Catan.Unity.Visuals;
 
 namespace Catan.Unity.Phases.Adapters
 {
@@ -21,11 +20,13 @@ namespace Catan.Unity.Phases.Adapters
             _binder = new BinderDevelopmentCards(UI, EventBus, EventsHandler);
             _binder.Bind();
 
-            VisualsUI.SetMainAndPlayerUIVisibility(false, UI.MainUIPanel, UI.PlayerUIPanel);
 
             EventBus.Subscribe<DevelopmentCardClickedUIEvent>(OnDevCardClicked);
 
-            UI.DevelopmentCardsPanel.Show(GameCache.MyPlayer.DevCards);
+            if (GameCache.GameFlow.PlayersToMove.Contains(GameCache.MyPlayer.PlayerId))
+            {
+                UI.DevelopmentCardsPanel.Show(GameCache.MyPlayer.DevCards, EventBus);
+            }
         }
 
         private void OnDevCardClicked(DevelopmentCardClickedUIEvent signal)
@@ -38,7 +39,6 @@ namespace Catan.Unity.Phases.Adapters
             _binder.Unbind();
 
             UI.DevelopmentCardsPanel.gameObject.SetActive(false);
-            VisualsUI.SetMainAndPlayerUIVisibility(true, UI.MainUIPanel, UI.PlayerUIPanel);
 
             EventBus.Unsubscribe<DevelopmentCardClickedUIEvent>(OnDevCardClicked);
         }

@@ -17,26 +17,14 @@ namespace Catan.Unity.Phases.Adapters
 
         public override void OnEnter()
         {
-            UI.CardDiscardPanel.gameObject.SetActive(true);
-
             _binder = new BinderCardDiscarding(UI, EventBus, EventsHandler);
             _binder.Bind();
-
-            VisualsUI.SetMainAndPlayerUIVisibility(false, UI.MainUIPanel, UI.PlayerUIPanel);
 
             EventBus.Subscribe<SelectionChangedUIEvent>(OnAcceptedDiscardVisibilityChanged);
             EventBus.Subscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
             EventBus.Subscribe<PlayersToMoveChangedUIEvent>(OnPlayersToMoveChanged);
 
-            if (GameCache.GameFlow.PlayersToMove.Contains(GameCache.MyPlayer.PlayerId))
-            {
-                UI.CardDiscardPanel.Show(GameCache.MyPlayer.Resources);
-            }
-
-            else
-            {
-                // show await panel
-            }
+            UpdateParticipationUI();
         }
 
         private void OnResourceCardClicked(ResourceCardClickedUIEvent signal)
@@ -66,9 +54,23 @@ namespace Catan.Unity.Phases.Adapters
 
         private void OnPlayersToMoveChanged(PlayersToMoveChangedUIEvent signal)
         {
-            if (!signal.PlayersToMove.Contains(GameCache.MyPlayer.PlayerId))
+            UpdateParticipationUI();
+        }
+
+        private void UpdateParticipationUI()
+        {
+            bool canAct = GameCache.GameFlow.PlayersToMove.Contains(GameCache.MyPlayer.PlayerId);
+
+            if (canAct)
             {
-                // show await panel + hide discard panel
+                UI.AwaitingPanel.Hide();
+                UI.CardDiscardPanel.Show(GameCache.MyPlayer.Resources);
+            }
+
+            else
+            {
+                UI.AwaitingPanel.Show();
+                UI.CardDiscardPanel.Hide();
             }
         }
 
@@ -80,7 +82,8 @@ namespace Catan.Unity.Phases.Adapters
             EventBus.Unsubscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
             EventBus.Unsubscribe<PlayersToMoveChangedUIEvent>(OnPlayersToMoveChanged);
 
-            UI.CardDiscardPanel.gameObject.SetActive(false);
+            UI.CardDiscardPanel.Hide();
+            UI.AwaitingPanel.Hide();
         }
     }
 }

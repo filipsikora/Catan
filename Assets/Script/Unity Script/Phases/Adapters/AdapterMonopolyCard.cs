@@ -5,7 +5,6 @@ using Catan.Unity.Helpers;
 using Catan.Unity.InternalUIEvents;
 using Catan.Unity.Panels;
 using Catan.Unity.Phases.Binders;
-using Catan.Unity.Visuals;
 
 namespace Catan.Unity.Phases.Adapters
 {
@@ -19,7 +18,6 @@ namespace Catan.Unity.Phases.Adapters
         {
             _binder = new BinderCardSelection(UI, EventBus, EventsHandler);
 
-            VisualsUI.SetMainAndPlayerUIVisibility(false, UI.MainUIPanel, UI.PlayerUIPanel);
             UI.CardSelectorPanel.Show("Choose resource to steal from the other players");
 
             _binder.Bind();
@@ -57,7 +55,6 @@ namespace Catan.Unity.Phases.Adapters
 
             EventBus.Unsubscribe<ResourceCardClickedUIEvent>(OnResourceCardClicked);
 
-            VisualsUI.SetMainAndPlayerUIVisibility(true, UI.MainUIPanel, UI.PlayerUIPanel);
             UI.CardSelectorPanel.AcceptCardsButton.gameObject.SetActive(false);
             UI.CardSelectorPanel.gameObject.SetActive(false);
         }

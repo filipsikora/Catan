@@ -1,6 +1,6 @@
-﻿using Catan.Shared.Dtos;
-using Catan.Unity.Helpers;
+﻿using Catan.Unity.Helpers;
 using Catan.Unity.Visuals.Controllers;
+using Unity.Catan.Panels;
 using UnityEngine;
 
 namespace Catan.Unity.Panels
@@ -18,6 +18,8 @@ namespace Catan.Unity.Panels
         public DevelopmentCardsUI DevelopmentCardsPanel;
         public CardSelectorUI CardSelectorPanel;
         public LogsUI LogsPanel;
+        public InformationUI InformationPanel;
+        public AwaitingUI AwaitingPanel;
 
         public FactoryResourceCards factoryResourceCards;
         public FactoryDevelopmentCards factoryDevCards;
@@ -25,21 +27,18 @@ namespace Catan.Unity.Panels
         public void Initialize(EventBus bus, ControllerResourceCards controller, BoardManager boardManager, LogQueue logQueue)
         {
             factoryResourceCards.Initialize(bus, boardManager);
-            factoryDevCards.Initialize(bus);
 
             BankTradePanel.Initialize(controller);
 
-            VictimSelectorPanel.Initialize(bus);
-            TradeOfferPanel.Initialize(bus);
             LogsPanel.Initialize(logQueue);
-        }
 
-        public void UpdateTurnCounter(int turn) => MainUIPanel.UpdateTurnCounter(turn);
-        public void UpdateRolledDice(int lastRoll) => MainUIPanel.UpdateRolledDice(lastRoll);
+            MainUIPanel.gameObject.SetActive(true);
+            PlayerUIPanel.gameObject.SetActive(true);
+            InformationPanel.gameObject.SetActive(true);
+            LogsPanel.gameObject.SetActive(true);
+        }
 
         public void ShowTradeOfferButton() => MainUIPanel.ShowTradeOfferButton();
         public void HideTradeOfferButton() => MainUIPanel.HideTradeOfferButton();
-
-        public void UpdatePlayerInfo(PlayerDataDto dataSnapshot, PlayerCardsDto cardsSnapshot) => PlayerUIPanel.UpdatePlayerInfo(dataSnapshot, cardsSnapshot);
     }
 }

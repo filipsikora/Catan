@@ -23,11 +23,6 @@ namespace Catan.Unity.Phases.Adapters
             _binder = new BinderFirstRoundBuildings(UI, EventBus, EventsHandler, _selectionCache);
             _binder.Bind();
 
-            UI.MainUIPanel.gameObject.SetActive(true);
-            UI.PlayerUIPanel.gameObject.SetActive(true);
-
-            VisualsUI.SetMainAndPlayerUIVisibility(true, UI.MainUIPanel, UI.PlayerUIPanel);
-
             VisualsUI.MakeAllChildrenVisible(UI.MainUIPanel.ButtonsContainer, false);
 
             EventBus.Subscribe<BuildOptionsSentUIEvent>(OnPositionClicked);

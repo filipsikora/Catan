@@ -5,7 +5,6 @@ using Catan.Unity.Helpers;
 using Catan.Unity.Panels;
 using Catan.Unity.Phases.Adapters;
 using Catan.Unity.Phases.Binders;
-using Catan.Unity.Visuals;
 using System.Threading.Tasks;
 
 namespace Catan.Unity.Phases.Controllers
@@ -18,22 +17,25 @@ namespace Catan.Unity.Phases.Controllers
 
         public override void OnEnter()
         {
-            UI.TradeRequestPanel.gameObject.SetActive(true);
-
             _binder = new BinderTradeRequest(UI, EventBus, EventsHandler);
             _binder.Bind();
 
             _ = LoadData();
-
-            VisualsUI.SetMainAndPlayerUIVisibility(false, UI.MainUIPanel, UI.PlayerUIPanel);
         }
 
         private async Task LoadData()
         {
             var snapshot = await EventsHandler.Query<TradeOfferedDto>(EnumQueryName.TradeOfferData);
 
-            UI.TradeRequestPanel.AcceptTradeButton.gameObject.SetActive(snapshot.CanTrade);
-            UI.TradeRequestPanel.Show(snapshot.SellerName, snapshot.BuyerName, snapshot.Offered,snapshot.Desired);
+            if (snapshot.BuyerId == GameCache.MyPlayer.PlayerId)
+            {
+                UI.TradeRequestPanel.Show(snapshot.SellerName, snapshot.BuyerName, snapshot.Offered, snapshot.Desired, snapshot.CanTrade);
+            }
+
+            else if (snapshot.SellerId == GameCache.MyPlayer.PlayerId)
+            {
+                UI.AwaitingPanel.Show();
+            }
         }
 
         public override void OnExit()
@@ -41,7 +43,7 @@ namespace Catan.Unity.Phases.Controllers
             _binder.Unbind();
 
             UI.TradeRequestPanel.gameObject.SetActive(false);
-            VisualsUI.SetMainAndPlayerUIVisibility(true, UI.MainUIPanel, UI.PlayerUIPanel);
+            UI.AwaitingPanel.Hide();
         }
     }
 }

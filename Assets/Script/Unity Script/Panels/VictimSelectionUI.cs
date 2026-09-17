@@ -14,14 +14,7 @@ namespace Catan.Unity.Panels
         public Transform ButtonsContainer;
         public GameObject ButtonPlayerOptionPrefab;
 
-        private EventBus _bus;
-
-        public void Initialize(EventBus bus)
-        {
-            _bus = bus;
-        }
-
-        public void Show(IReadOnlyList<OtherPlayerModel> potentialVictims)
+        public void Show(IReadOnlyList<OtherPlayerModel> potentialVictims, EventBus bus)
         {
             gameObject.SetActive(true);
 
@@ -37,7 +30,7 @@ namespace Catan.Unity.Panels
 
                 buttonObj.GetComponent<Button>().onClick.AddListener(() =>
                 {
-                    _bus.Publish(new PlayerClickedUIEvent(victimData.Id));
+                    bus.Publish(new PlayerClickedUIEvent(victimData.Id));
                     gameObject.SetActive(false);
                 });
             }
